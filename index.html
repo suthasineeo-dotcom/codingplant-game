@@ -1,0 +1,151 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏡 หน้าแรก | สวนแสนสุข</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Kanit', sans-serif; background-color: #f0fdf4; 
+            background-image: radial-gradient(#bbf7d0 3px, transparent 3px); background-size: 40px 40px;
+            text-align: center; color: #333; margin: 0; padding: 0 0 50px 0;
+        }
+        
+        /* --- แถบเมนูด้านบน --- */
+        .nav-menu { background: #a855f7; padding: 15px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; position: relative; }
+        .nav-menu a.main-link { background: #d8b4fe; color: #4c1d95; text-decoration: none; font-weight: 800; font-size: 18px; padding: 10px 20px; border-radius: 20px; border: 3px solid #f3e8ff; box-shadow: 0 4px 0px #9333ea; transition: 0.2s; }
+        .nav-menu a.main-link:active { transform: translateY(4px); box-shadow: 0 0px 0px #9333ea; }
+        
+        /* --- เมนูมุมซ้ายบน (ปุ่มบ้าน) --- */
+        .top-left-menu { position: absolute; top: 12px; left: 15px; z-index: 100; display: flex; gap: 10px; align-items: center; }
+        .btn-home-login { background: #ffffff; border: 3px solid #f3e8ff; width: 46px; height: 46px; font-size: 22px; border-radius: 50%; text-decoration: none; box-shadow: 0 4px 0px #9333ea; display: flex; justify-content: center; align-items: center; transition: 0.2s; color: #333; }
+        .btn-home-login:hover { background: #fdf4ff; }
+        .btn-home-login:active { transform: translateY(4px); box-shadow: 0 0px 0px #9333ea; }
+
+        @media (max-width: 768px) { 
+            .top-left-menu { position: static; margin-bottom: 10px; display: flex; justify-content: center; width: 100%; flex-wrap: wrap; } 
+            .nav-menu { flex-direction: column; align-items: center; } 
+        }
+
+        /* --- ส่วนอื่นๆ ในหน้าแรก --- */
+        .welcome-title { font-size: 40px; font-weight: 800; color: #16a34a; margin-top: 40px; text-shadow: 2px 2px 0px white; }
+        .welcome-sub { font-size: 22px; font-weight: 600; color: #6b7280; margin-bottom: 30px; }
+        
+        .lobby-container { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; padding: 20px; max-width: 1100px; margin: 0 auto; }
+        .lobby-card { background: white; border: 5px solid #bbf7d0; border-radius: 30px; padding: 30px 15px; width: 220px; text-decoration: none; color: #1f2937; transition: 0.2s; box-shadow: 0 10px 0px #bbf7d0; }
+        .lobby-card:hover { transform: translateY(-8px); box-shadow: 0 15px 0px #86efac; border-color: #86efac; }
+        .lobby-icon { font-size: 70px; margin-bottom: 15px; display: inline-block; animation: bounce 2s infinite; }
+        
+        .lobby-card:nth-child(1) .lobby-icon { animation-delay: 0.0s; }
+        .lobby-card:nth-child(2) .lobby-icon { animation-delay: 0.3s; }
+        .lobby-card:nth-child(3) .lobby-icon { animation-delay: 0.6s; }
+        .lobby-card:nth-child(4) .lobby-icon { animation-delay: 0.9s; }
+        
+        .lobby-name { font-size: 22px; font-weight: 800; color: #1e1b4b; }
+        .lobby-go { display: inline-block; margin-top: 15px; background: #fde047; padding: 8px 20px; border-radius: 15px; font-weight: 800; border: 2px solid #ca8a04; box-shadow: 0 3px 0px #ca8a04; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    </style>
+</head>
+<body>
+
+    <div class="nav-menu">
+        <div class="top-left-menu">
+            <a href="login.html" class="btn-home-login" title="กลับหน้าเข้าสู่ระบบ">🏠</a>
+        </div>
+        
+        <a href="index.html" class="main-link" style="background:#fde047; color:#854d0e; border-color:white; box-shadow: 0 4px 0px #ca8a04;">🏡 หน้าแรก</a>
+        <a href="mission.html" class="main-link">⚔️ ภารกิจ</a>
+        <a href="resource.html" class="main-link">📚 แหล่งเรียนรู้</a>
+        <a href="share.html" class="main-link">🤝 แบ่งปัน</a>
+        <a href="monster-hatchery.html" class="main-link">🌱 แปลงปลูกต้นไม้</a>
+        <a href="profile.html" class="main-link" style="background:#60a5fa; color:#1e3a8a; border-color:#bfdbfe; box-shadow: 0 4px 0px #2563eb;">👤 โปรไฟล์</a> 
+    </div>
+
+    <h1 class="welcome-title">✨ ยินดีต้อนรับสู่สวนแสนสุข ✨</h1>
+    <p class="welcome-sub">👇 เด็กๆ ป.4 เลือกปุ่มที่ต้องการไปได้เลยกั๊บ! 👇</p>
+
+    <div id="welcome-box" style="margin: -10px auto 30px auto; padding: 15px; max-width: 600px; background: white; border: 4px dashed #4ade80; border-radius: 20px; box-shadow: 0 6px 0px #bbf7d0; display: none; justify-content: center; gap: 15px; flex-wrap: wrap; align-items: center;">
+        <span style="font-size: 18px; font-weight: bold; color: #16a34a; width: 100%;">🛡️ ผู้พิทักษ์สวนที่กำลังทำภารกิจ 🛡️</span>
+    </div>
+        
+    <div class="lobby-container">
+        <a href="mission.html" class="lobby-card" style="border-color:#fca5a5; box-shadow: 0 10px 0px #fca5a5;">
+            <span class="lobby-icon">⚔️</span>
+            <div class="lobby-name">เริ่มภารกิจ</div>
+            <span class="lobby-go" style="background:#ef4444; border-color:#b91c1c; color:white; box-shadow: 0 3px 0px #b91c1c;">ลุยเลย! 🚀</span>
+        </a>
+        <a href="resource.html" class="lobby-card" style="border-color:#bae6fd; box-shadow: 0 10px 0px #bae6fd;">
+            <span class="lobby-icon">📚</span>
+            <div class="lobby-name">ห้องสมุด</div>
+            <span class="lobby-go" style="background:#38bdf8; border-color:#0369a1; color:white; box-shadow: 0 3px 0px #0369a1;">ค้นคว้า 🔍</span>
+        </a>
+        <a href="share.html" class="lobby-card" style="border-color:#fbcfe8; box-shadow: 0 10px 0px #fbcfe8;">
+            <span class="lobby-icon">🤝</span>
+            <div class="lobby-name">บอร์ดแบ่งปัน</div>
+            <span class="lobby-go" style="background:#f472b6; border-color:#db2777; color:white; box-shadow: 0 3px 0px #db2777;">ดูเพื่อนๆ ✨</span>
+        </a>
+        <a href="monster-hatchery.html" class="lobby-card" style="border-color:#bbf7d0; box-shadow: 0 10px 0px #bbf7d0;">
+            <span class="lobby-icon">🌱</span>
+            <div class="lobby-name">แปลงปลูกต้นไม้</div>
+            <span class="lobby-go" style="background:#4ade80; border-color:#16a34a; color:white; box-shadow: 0 3px 0px #16a34a;">ดูคะแนน 💧</span>
+        </a>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // กำหนดค่าคอนฟิกสำหรับเชื่อมต่อกับฐานข้อมูล Firestore ของคุณครู
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfBIp5gujB9cE2twLz483hllYOubgYuks",
+            authDomain: "codingplant-f19fc.firebaseapp.com",
+            projectId: "codingplant-f19fc",
+            storageBucket: "codingplant-f19fc.firebasestorage.app",
+            messagingSenderId: "194545106875",
+            appId: "1:194545106875:web:d4b7ca3dd6b57f46cc8e9e",
+            measurementId: "G-Y6C9LXKJ1H"
+        };
+        
+        // สั่งเปิดใช้งาน Firebase (ถ้ายังไม่ได้เปิด)
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.firestore();
+
+        // ฟังก์ชันไปดึงชื่อและอวตารมาโชว์ในกล่องต้อนรับ
+        async function showWelcomeProfiles() {
+            const loggedInUsers = JSON.parse(localStorage.getItem("loggedInUsers") || "[]");
+            const welcomeBox = document.getElementById("welcome-box");
+
+            // ถ้ามีเด็กๆ ล็อกอินค้างไว้ในระบบเครื่องนี้จริง ให้ทำงาน
+            if (loggedInUsers.length > 0) {
+                welcomeBox.style.display = "flex"; // เปิดแสดงผลกล่องต้อนรับหลังจากซ่อนไว้ตอนแรก
+                
+                // วนลูปตามรายชื่อรหัสเด็กทุกคนที่ล็อกอินเข้ามาพร้อมกัน
+                for (let docId of loggedInUsers) {
+                    try {
+                        let doc = await db.collection("users").doc(docId).get();
+                        if (doc.exists) {
+                            let data = doc.data();
+                            let avatar = data.avatar || "👤"; // ถ้ายังไม่มีอวตาร จะแสดงรูปเงาคนเริ่มต้นกั๊บ
+                            let name = data.nickname || "ผู้พิทักษ์";
+                            
+                            // สร้างป้ายชื่อน่ารักๆ ธีมสีเขียวพาสเทล
+                            let profileBadge = document.createElement("div");
+                            profileBadge.style.cssText = "background: #f0fdf4; padding: 6px 16px; border-radius: 15px; border: 2px solid #86efac; font-weight: bold; font-size: 22px; display: flex; align-items: center; gap: 8px; box-shadow: 0 3px 0px #bbf7d0;";
+                            profileBadge.innerHTML = `<span>${avatar}</span> <span style="color:#166534; font-size:18px;">${name}</span>`;
+                            
+                            // แปะป้ายเข้าไปในกล่องต้อนรับ
+                            welcomeBox.appendChild(profileBadge);
+                        }
+                    } catch (error) {
+                        console.error("Error loading profile:", error);
+                    }
+                }
+            }
+        }
+
+        // สั่งให้ฟังก์ชันนี้ทำงานทันทีที่เด็กๆ เปิดเข้าหน้านี้มาครับ
+        showWelcomeProfiles();
+    </script>
+</body>
+</html>

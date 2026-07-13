@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👤 โปรไฟล์ | สวนแสนสุข</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        body { 
+            font-family: 'Kanit', sans-serif; background-color: #eff6ff; 
+            background-image: radial-gradient(#dbeafe 3px, transparent 3px); background-size: 40px 40px;
+            text-align: center; color: #333; margin: 0; padding: 0 0 50px 0;
+        }
+        .nav-menu { background: #3b82f6; padding: 15px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        .nav-menu a { background: #93c5fd; color: #1e3a8a; text-decoration: none; font-weight: 800; font-size: 18px; padding: 10px 20px; border-radius: 20px; border: 3px solid #eff6ff; box-shadow: 0 4px 0px #2563eb; transition: 0.2s; }
+        .nav-menu a:active { transform: translateY(4px); box-shadow: 0 0px 0px #2563eb; }
+        
+        .page-title { font-size: 36px; font-weight: 800; color: #1d4ed8; margin-top: 30px; text-shadow: 2px 2px 0px white; }
+        
+        .profiles-container { display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px; max-width: 600px; margin: 0 auto; }
+        
+        .profile-card { background: white; border: 5px solid #93c5fd; border-radius: 25px; padding: 20px; width: 100%; box-shadow: 0 8px 0px #bfdbfe; text-align: left; position: relative; }
+        
+        .section-label { font-weight: 800; color: #2563eb; font-size: 18px; margin-bottom: 10px; }
+        
+        .input-name { width: 100%; padding: 10px; font-size: 18px; border: 3px solid #dbeafe; border-radius: 12px; outline: none; font-family: 'Kanit'; font-weight: 600; box-sizing: border-box; margin-bottom: 15px; }
+        .input-name:focus { border-color: #60a5fa; }
+        
+        .avatar-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
+        .avatar-option { font-size: 30px; cursor: pointer; padding: 5px; border-radius: 15px; border: 3px solid transparent; transition: 0.2s; background: #f8fafc; }
+        .avatar-option:hover { background: #e2e8f0; }
+        .avatar-option.selected { border-color: #3b82f6; background: #dbeafe; transform: scale(1.1); box-shadow: 0 4px 0px #93c5fd; }
+        
+        .btn-save { background: #4ade80; color: #14532d; border: none; padding: 10px 20px; font-size: 18px; font-weight: 800; border-radius: 15px; cursor: pointer; box-shadow: 0 4px 0px #16a34a; font-family: 'Kanit'; width: 100%; transition: 0.2s; }
+        .btn-save:active { transform: translateY(4px); box-shadow: 0 0px 0px #16a34a; }
+        .btn-save:disabled { background: #9ca3af; box-shadow: 0 4px 0px #4b5563; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+    <div class="nav-menu">
+        <a href="index.html" style="background:#fde047; color:#854d0e; border-color:white; box-shadow: 0 4px 0px #ca8a04;">🏡 หน้าแรก</a>
+        <a href="mission.html">⚔️ ภารกิจ</a>
+        <a href="resource.html">📚 แหล่งเรียนรู้</a>
+        <a href="share.html">🤝 แบ่งปัน</a>
+        <a href="monster-hatchery.html">🌱 แปลงปลูกต้นไม้</a>
+        <a href="profile.html" style="background:#60a5fa; color:#1e3a8a; border-color:#bfdbfe; box-shadow: 0 4px 0px #2563eb;">👤 โปรไฟล์</a> </div>
+     </div>
+
+    <h1 class="page-title">เปลี่ยนรูปโปรไฟล์ & ชื่อ ✏️</h1>
+    <p style="color: #64748b; font-weight: 600; margin-bottom: 20px;">เลือกเปลี่ยนข้อมูลของตัวเองได้เลยกั๊บ!</p>
+
+    <div class="profiles-container" id="profilesContainer">
+        <p>กำลังโหลดข้อมูล... ⏳</p>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfBIp5gujB9cE2twLz483hllYOubgYuks",
+            authDomain: "codingplant-f19fc.firebaseapp.com",
+            projectId: "codingplant-f19fc",
+            storageBucket: "codingplant-f19fc.firebasestorage.app",
+            messagingSenderId: "194545106875",
+            appId: "1:194545106875:web:d4b7ca3dd6b57f46cc8e9e",
+            measurementId: "G-Y6C9LXKJ1H"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // รายการอวตารที่ให้เด็กๆ เลือกได้ (เพิ่มลดได้ตามใจชอบ)
+        const availableAvatars = ["🐶", "🐱", "🐰", "🦊", "🐻", "🐼", "🐯", "🦁", "🐸", "🐧", "🦄", "👽", "🤖", "👻", "💩"];
+
+        async function loadProfiles() {
+            const loggedInUsers = JSON.parse(localStorage.getItem("loggedInUsers") || "[]");
+            const container = document.getElementById("profilesContainer");
+
+            if (loggedInUsers.length === 0) {
+                container.innerHTML = `<p style="color:red; font-weight:bold;">ไม่พบข้อมูลการล็อกอิน กรุณากลับไปหน้าเข้าสู่ระบบครับ</p>`;
+                return;
+            }
+
+            container.innerHTML = ""; // ล้างข้อความกำลังโหลด
+
+            for (let docId of loggedInUsers) {
+                try {
+                    let doc = await db.collection("users").doc(docId).get();
+                    if (doc.exists) {
+                        let data = doc.data();
+                        let currentAvatar = data.avatar || "👤";
+                        let currentName = data.nickname || "";
+
+                        // สร้างการ์ดโปรไฟล์สำหรับแต่ละคน
+                        let card = document.createElement("div");
+                        card.className = "profile-card";
+                        
+                        let avatarHtml = availableAvatars.map(emoji => 
+                            `<div class="avatar-option ${emoji === currentAvatar ? 'selected' : ''}" 
+                                  onclick="selectAvatar(this, '${docId}', '${emoji}')">${emoji}</div>`
+                        ).join('');
+
+                        card.innerHTML = `
+                            <div class="section-label">🧑‍🎓 ชื่อเล่นปัจจุบัน</div>
+                            <input type="text" id="name_${docId}" class="input-name" value="${currentName}">
+                            
+                            <div class="section-label">🎨 เลือกอวตารใหม่</div>
+                            <div class="avatar-grid" id="grid_${docId}">
+                                ${avatarHtml}
+                            </div>
+                            
+                            <input type="hidden" id="avatar_${docId}" value="${currentAvatar}">
+                            
+                            <button class="btn-save" id="btn_${docId}" onclick="saveProfile('${docId}')">💾 บันทึกการเปลี่ยนแปลง</button>
+                        `;
+                        container.appendChild(card);
+                    }
+                } catch (error) {
+                    console.error("Error loading user:", error);
+                }
+            }
+        }
+
+        // ฟังก์ชันเมื่อคลิกเลือกอวตาร
+        function selectAvatar(element, docId, emoji) {
+            // ลบ class selected ออกจากทุกคนในกลุ่มเดียวกัน
+            let grid = document.getElementById(`grid_${docId}`);
+            let options = grid.getElementsByClassName("avatar-option");
+            for(let opt of options) {
+                opt.classList.remove("selected");
+            }
+            // เพิ่ม class selected ให้ตัวที่โดนคลิก
+            element.classList.add("selected");
+            // อัปเดตค่า input ที่ซ่อนไว้
+            document.getElementById(`avatar_${docId}`).value = emoji;
+        }
+
+        // ฟังก์ชันบันทึกข้อมูลลง Firestore
+        async function saveProfile(docId) {
+            let newName = document.getElementById(`name_${docId}`).value.trim();
+            let newAvatar = document.getElementById(`avatar_${docId}`).value;
+            let btn = document.getElementById(`btn_${docId}`);
+
+            if (newName === "") {
+                alert("ชื่อเล่นห้ามว่างนะกั๊บ! 📝");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "กำลังบันทึก... ⏳";
+
+            try {
+                await db.collection("users").doc(docId).update({
+                    nickname: newName,
+                    avatar: newAvatar
+                });
+                btn.innerText = "✅ บันทึกสำเร็จ!";
+                btn.style.background = "#34d399";
+                btn.style.boxShadow = "0 4px 0px #059669";
+                
+                // รีเซ็ตปุ่มกลับเป็นเหมือนเดิมหลังจาก 2 วินาที
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.innerText = "💾 บันทึกการเปลี่ยนแปลง";
+                    btn.style.background = "#4ade80";
+                    btn.style.boxShadow = "0 4px 0px #16a34a";
+                }, 2000);
+
+            } catch (error) {
+                console.error("Error updating profile:", error);
+                alert("เกิดข้อผิดพลาดในการบันทึก ลองใหม่อีกครั้งนะกั๊บ 😢");
+                btn.disabled = false;
+                btn.innerText = "💾 บันทึกการเปลี่ยนแปลง";
+            }
+        }
+
+        // โหลดข้อมูลทันทีเมื่อเปิดหน้า
+        loadProfiles();
+    </script>
+</body>
+</html>

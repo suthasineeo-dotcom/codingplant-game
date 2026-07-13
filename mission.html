@@ -1,0 +1,501 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚔️ ภารกิจ | สวนแสนสุข</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #fafaf9;
+            background-image: radial-gradient(#e7e5e4 3px, transparent 3px);
+            background-size: 40px 40px;
+            text-align: center;
+            color: #333;
+            margin: 0;
+            padding: 0 0 50px 0;
+        }
+
+        .nav-menu {
+            background: #a855f7;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            position: relative; 
+        }
+
+        .nav-menu a.main-link {
+            background: #d8b4fe;
+            color: #4c1d95;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 18px;
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 3px solid #f3e8ff;
+            box-shadow: 0 4px 0px #9333ea;
+            transition: 0.2s;
+        }
+
+        .nav-menu a.main-link:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0px #9333ea;
+        }
+
+        .top-left-menu {
+            position: absolute;
+            top: 12px;
+            left: 15px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-home-login {
+            background: #ffffff;
+            border: 3px solid #f3e8ff;
+            width: 46px;
+            height: 46px;
+            font-size: 22px;
+            border-radius: 50%;
+            text-decoration: none;
+            box-shadow: 0 4px 0px #9333ea;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: 0.2s;
+        }
+
+        .btn-home-login:hover { background: #fdf4ff; }
+        .btn-home-login:active { transform: translateY(4px); box-shadow: 0 0px 0px #9333ea; }
+
+        @media (max-width: 768px) {
+            .top-left-menu {
+                position: static;
+                margin-bottom: 10px;
+                display: flex;
+                justify-content: center;
+                width: 100%;
+                flex-wrap: wrap;
+            }
+            .nav-menu { flex-direction: column; align-items: center; }
+        }
+
+        .select-zone {
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            border: 3px solid #d8b4fe;
+            max-width: 600px;
+            box-shadow: 0 5px 0px #e9d5ff;
+        }
+
+        select {
+            padding: 10px 20px;
+            font-size: 18px;
+            font-family: 'Kanit';
+            font-weight: bold;
+            color: #4c1d95;
+            border: 3px solid #a855f7;
+            border-radius: 10px;
+            width: 90%;
+            cursor: pointer;
+            outline: none;
+        }
+
+        #missionsContainer { max-width: 750px; margin: 0 auto; padding: 0 20px; }
+
+        .mission-outer-wrapper {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 25px;
+            border: 4px dashed #ef4444; 
+            box-shadow: 0 8px 0px #fca5a5;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .mission-title { color: #b91c1c; font-size: 28px; font-weight: 800; margin-top: 0; margin-bottom: 20px; }
+
+        .mission-instruction-box {
+            background: #fdf2f2;
+            padding: 20px;
+            border-radius: 15px;
+            border: 4px solid #f87171;
+            box-shadow: 0 4px 0px #fee2e2;
+            margin-bottom: 20px;
+        }
+
+        .mission-detail { font-size: 20px; color: #7f1d1d; margin: 0; line-height: 1.6; font-weight: 600; }
+
+        .btn-scratch {
+            display: inline-block;
+            background: #8b5cf6;
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            font-weight: 800;
+            border-radius: 15px;
+            border: 3px solid #ddd6fe;
+            box-shadow: 0 5px 0px #6d28d9;
+            transition: 0.2s;
+            margin-bottom: 20px;
+            width: 80%;
+        }
+        .btn-scratch:hover { background: #7c3aed; }
+        .btn-scratch:active { transform: translateY(4px); box-shadow: 0 1px 0px #6d28d9; }
+
+        .btn-library {
+            display: inline-block;
+            background: #38bdf8;
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            font-size: 18px;
+            font-weight: 800;
+            border-radius: 15px;
+            border: 3px solid #0284c7;
+            box-shadow: 0 5px 0px #0369a1;
+            transition: 0.2s;
+            margin-bottom: 15px;
+        }
+        .btn-library:active { transform: translateY(4px); box-shadow: 0 1px 0px #0369a1; }
+
+        .camera-text { color: #ef4444; font-weight: 800; font-size: 16px; margin: 0 0 25px 0; }
+
+        .scaffolding-zone {
+            background: #fefce8;
+            border: 3px dashed #fde047; 
+            border-radius: 15px;
+            padding: 20px;
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        .scaffolding-title { color: #ca8a04; margin-top: 0; text-align: center; font-size: 22px; font-weight: 800; }
+
+        details { background: white; border: 2px solid #fef08a; border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+        summary { background: #fef9c3; padding: 15px; font-weight: 800; color: #a16207; cursor: pointer; font-size: 18px; list-style: none; }
+        summary::-webkit-details-marker { display: none; }
+        .hint-text { padding: 15px; font-size: 18px; color: #451a03; border-top: 2px dashed #fef08a; background: #fff; }
+
+        .btn-submit-work {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: 800;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: 'Kanit';
+            box-shadow: 0 5px 0px #047857;
+            transition: 0.2s;
+            width: 85%;
+        }
+        .btn-submit-work:hover { background: #34d399; }
+        .btn-submit-work:active { transform: translateY(4px); box-shadow: 0 1px 0px #047857; }
+
+        /* 💡 CSS สำหรับแจ้งเตือนในหน้าเว็บ (In-App Notification) */
+        #customAlertBox {
+            position: fixed;
+            top: -400px; /* 🛠️ แก้ตรงนี้: ดันขึ้นไปซ่อนให้สูงกว่าเดิมจะได้ไม่โผล่มากวนใจ */
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fef08a;
+            border: 4px solid #eab308;
+            border-radius: 20px;
+            padding: 20px 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            z-index: 9999;
+            width: 80%;
+            max-width: 500px;
+            transition: top 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #customAlertBox.show {
+            top: 20px; /* ตอนแสดงผลก็เด้งลงมาที่เดิม */
+        }
+
+        #alertTitle { color: #ca8a04; font-size: 22px; font-weight: 800; margin: 0 0 10px 0; }
+        #alertMessage { color: #713f12; font-size: 18px; font-weight: 600; margin: 0 0 15px 0; }
+        
+        .btn-close-alert {
+            background: #eab308;
+            color: white;
+            border: none;
+            padding: 8px 25px;
+            font-size: 18px;
+            font-weight: 800;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Kanit';
+            box-shadow: 0 4px 0px #ca8a04;
+        }
+        .btn-close-alert:active { transform: translateY(3px); box-shadow: 0 1px 0px #ca8a04; }
+
+    </style>
+</head>
+<body>
+
+    <!-- 💡 กล่องแจ้งเตือนในหน้าเว็บ (Custom Alert) -->
+    <div id="customAlertBox">
+        <h3 id="alertTitle">🧚‍♀️ ข้อความจากนางฟ้า</h3>
+        <p id="alertMessage">โหลดข้อความ...</p>
+        <button class="btn-close-alert" onclick="closeCustomAlert()">รับทราบกั๊บ! ✌️</button>
+    </div>
+
+    <div id="notifyPermissionZone" style="display:none; background: #fef08a; padding: 15px; text-align: center; border-bottom: 3px solid #eab308;">
+        <span style="font-weight: 800; color: #a16207; font-size: 18px;">🔔 เพื่อรับคำแนะนำจากคุณครู กดเปิดแจ้งเตือนนะกั๊บ! </span>
+        <button onclick="requestNotification()" style="background:#eab308; color:white; border:none; padding:8px 20px; font-size:16px; font-weight:bold; font-family:'Kanit'; border-radius:10px; cursor:pointer; margin-left:10px; box-shadow: 0 3px 0px #ca8a04;">เปิดรับเสียงกระซิบ</button>
+    </div>
+
+    <div class="nav-menu">
+        <div class="top-left-menu">
+            <a href="login.html" class="btn-home-login" title="กลับหน้าเข้าสู่ระบบ">🏠</a>
+        </div>
+
+        <a href="index.html" class="main-link">🏡 หน้าแรก</a>
+        <a href="mission.html" class="main-link" style="background:#fde047; color:#854d0e; border-color:white; box-shadow: 0 4px 0px #ca8a04;">⚔️ ภารกิจ</a>
+        <a href="resource.html" class="main-link">📚 แหล่งเรียนรู้</a>
+        <a href="share.html" class="main-link">🤝 แบ่งปัน</a>
+        <a href="monster-hatchery.html" class="main-link">🌱 แปลงปลูกต้นไม้</a>
+        <a href="profile.html" class="main-link" style="background:#60a5fa; color:#1e3a8a; border-color:#bfdbfe; box-shadow: 0 4px 0px #2563eb;">👤 โปรไฟล์</a> 
+    </div>
+
+    <div class="select-zone">
+        <h2 style="margin-top:0; color: #7e22ce;">🎯 เลือกภารกิจที่หนูต้องการทำ</h2>
+        <select id="missionFilter" onchange="applyFilter()">
+            <option value="ALL">🌟 แสดงภารกิจทั้งหมด</option>
+        </select>
+    </div>
+
+    <div id="missionsContainer">
+        <p style="color: #78716c; font-weight: bold; font-size: 20px;">กำลังดึงข้อมูลภารกิจเวทมนตร์... ⏳</p>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfBIp5gujB9cE2twLz483hllYOubgYuks",
+            authDomain: "codingplant-f19fc.firebaseapp.com",
+            projectId: "codingplant-f19fc",
+            storageBucket: "codingplant-f19fc.firebasestorage.app",
+            messagingSenderId: "194545106875",
+            appId: "1:194545106875:web:d4b7ca3dd6b57f46cc8e9e"
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        let currentRoom = localStorage.getItem("currentRoom");
+        let loggedInUsers = JSON.parse(localStorage.getItem("loggedInUsers") || "[]");
+
+        if (!currentRoom || loggedInUsers.length === 0) {
+            alert("กรุณาเข้าสู่ระบบก่อนนะกั๊บ! 🔑");
+            window.location.href = "login.html";
+        }
+
+        let allMissionsData = [];
+
+        db.collection("missions").orderBy("updatedAt", "asc").onSnapshot((snapshot) => {
+            const filterDropdown = document.getElementById("missionFilter");
+            allMissionsData = [];
+
+            filterDropdown.innerHTML = '<option value="ALL">🌟 แสดงภารกิจทั้งหมด</option>';
+
+            if(snapshot.empty) {
+                document.getElementById("missionsContainer").innerHTML = '<p style="color: #ef4444; font-weight: bold; font-size: 20px;">ยังไม่มีภารกิจใหม่จากคุณครูเลยกั๊บ 📭</p>';
+                return;
+            }
+
+            snapshot.forEach((doc) => {
+                let m = doc.data();
+                m.id = doc.id;
+                allMissionsData.push(m);
+                filterDropdown.innerHTML += `<option value="${m.id}">${m.id} : ${m.title}</option>`;
+            });
+
+            let savedFilter = localStorage.getItem("currentMissionFilter") || "ALL";
+            filterDropdown.value = savedFilter;
+            renderMissions(savedFilter);
+        });
+
+        function renderMissions(filterId) {
+            const container = document.getElementById("missionsContainer");
+            container.innerHTML = ""; 
+
+            let missionsToShow = allMissionsData;
+            if (filterId !== "ALL") {
+                missionsToShow = allMissionsData.filter(m => m.id === filterId);
+            }
+
+            missionsToShow.forEach((mData) => {
+                let hintsHTML = "";
+                if (mData.hints && mData.hints.length > 0) {
+                    mData.hints.forEach((hintText, index) => {
+                        hintsHTML += `
+                            <details>
+                                <summary>🔍 คำใบ้ที่ ${index + 1}</summary>
+                                <div class="hint-text">${hintText}</div>
+                            </details>
+                        `;
+                    });
+                } else {
+                    hintsHTML = `<div style="text-align:center; padding: 15px; color: #a16207; font-weight:bold;">ภารกิจนี้ไม่มีคำใบ้ หนูทำได้ด้วยตัวเองแน่นอน สู้ๆ! ✌️</div>`;
+                }
+
+                container.innerHTML += `
+                    <div class="mission-outer-wrapper">
+                        <h2 class="mission-title">${mData.title}</h2>
+                        
+                        <div class="mission-instruction-box">
+                            <div class="mission-detail">${mData.detail.replace(/\n/g, "<br>")}</div>
+                        </div>
+
+                        <a href="https://scratch.mit.edu/projects/editor/" target="_blank" class="btn-scratch">
+                            🚀 เปิดประตูมิติไปเขียนโปรแกรม Scratch (แท็บใหม่)
+                        </a>
+                        <br>
+                        
+                        <a href="resource.html" class="btn-library">📚 ไม่รู้วิธีสั่งพี่แมว? ไปค้นคว้าที่ห้องสมุดเวทมนตร์เลย!</a>
+                        <p class="camera-text">📸 ทำเสร็จแล้ว แคปหน้าจอไปส่งที่หน้า "แบ่งปัน" เพื่อรับหยดน้ำนะกั๊บ!</p>
+                        
+                        <div class="scaffolding-zone">
+                            <h2 class="scaffolding-title">💡 ตู้จดหมายนางฟ้า (ขอคำใบ้)</h2>
+                            <p style="font-size:16px; font-weight:600; color:#ca8a04; margin-top:0; text-align:center;">
+                                ถ้ารู้สึกว่ายากไป ลองจิ้มเปิดดูคำใบ้ทีละข้อได้เลยนะ!
+                            </p>
+                            ${hintsHTML}
+                        </div>
+
+                        <button class="btn-submit-work" onclick="goToShare('${mData.id}')">
+                            🚀 ส่งผลงาน "${mData.title}" ตรงนี้เลย
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        function applyFilter() {
+            const selectedId = document.getElementById("missionFilter").value;
+            localStorage.setItem("currentMissionFilter", selectedId); 
+            renderMissions(selectedId);
+        }
+
+        function goToShare(missionId) {
+            localStorage.setItem("currentMissionId", missionId);
+            window.location.href = "share.html";
+        }
+
+        // ==========================================
+        // 💡 ระบบโค้ชนางฟ้า (รับแจ้งเตือนชัวร์ 100%)
+        // ==========================================
+        
+        let isFirstLoadRoom = true;
+        let isFirstLoadAll = true;
+
+        function checkNotificationStatus() {
+            if ("Notification" in window) {
+                if (Notification.permission === "default") {
+                    document.getElementById("notifyPermissionZone").style.display = "block";
+                } else if (Notification.permission === "granted") {
+                    startListeningToCoach();
+                } else {
+                    // ถ้าเด็กกด Block ไว้ ก็ยังให้ฟังฐานข้อมูลอยู่ดี เพื่อใช้เด้ง In-App Alert
+                    startListeningToCoach();
+                }
+            } else {
+                startListeningToCoach(); // บราวเซอร์ไม่รองรับ ก็ฟังผ่าน In-App ได้
+            }
+        }
+
+        function requestNotification() {
+            if (!("Notification" in window)) {
+                document.getElementById("notifyPermissionZone").style.display = "none";
+                startListeningToCoach();
+                return;
+            }
+            Notification.requestPermission().then(permission => {
+                document.getElementById("notifyPermissionZone").style.display = "none";
+                startListeningToCoach();
+            });
+        }
+
+        function startListeningToCoach() {
+            if (!currentRoom) return;
+
+            let formattedRoomCode = currentRoom.replace('ป.', 'P').replace('/', '-');
+
+            // 1. ฟังข้อความแบบเฉพาะเจาะจงห้องตัวเอง
+            db.collection("coach_messages").doc(formattedRoomCode).onSnapshot(doc => {
+                if (doc.exists) {
+                    let data = doc.data();
+                    if (!isFirstLoadRoom) { 
+                        showPushNotification("🧚‍♀️ โค้ชนางฟ้ากระซิบว่า...", data.message);
+                    }
+                }
+                isFirstLoadRoom = false; 
+            });
+
+            // 2. ฟังประกาศรวม (ALL)
+            db.collection("coach_messages").doc("ALL").onSnapshot(doc => {
+                if (doc.exists) {
+                    let data = doc.data();
+                    if (!isFirstLoadAll) {
+                        showPushNotification("📢 ประกาศจากนางฟ้าถึงทุกคน...", data.message);
+                    }
+                }
+                isFirstLoadAll = false;
+            });
+        }
+
+        // ฟังก์ชันสั่งเด้งแจ้งเตือน (ควบ 2 ระบบ OS + หน้าเว็บ)
+        function showPushNotification(title, bodyText) {
+            // ระบบ 1: เด้งแจ้งเตือนในหน้าเว็บ (ชัวร์ 100% ไม่โดนบล็อก)
+            document.getElementById("alertTitle").innerText = title;
+            document.getElementById("alertMessage").innerText = bodyText;
+            document.getElementById("customAlertBox").classList.add("show");
+            
+            // เล่นเสียงแจ้งเตือนเบาๆ (ถ้าต้องการ)
+            // let audio = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
+            // audio.play().catch(e => {});
+
+            // ระบบ 2: เด้งแจ้งเตือนของ Windows/Mac (เผื่อเด็กอยู่หน้าแท็บ Scratch)
+            if ("Notification" in window && Notification.permission === "granted") {
+                const noti = new Notification(title, {
+                    body: bodyText,
+                    icon: "https://cdn-icons-png.flaticon.com/512/3858/3858348.png"
+                });
+                
+                setTimeout(() => noti.close(), 8000);
+                
+                noti.onclick = function() {
+                    window.focus();
+                    this.close();
+                };
+            }
+        }
+
+        // ฟังก์ชันปิดกล่องแจ้งเตือนในหน้าเว็บ
+        function closeCustomAlert() {
+            document.getElementById("customAlertBox").classList.remove("show");
+        }
+
+        checkNotificationStatus();
+    </script>
+</body>
+</html>

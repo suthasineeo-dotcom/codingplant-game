@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👨‍🏫 ระบบจัดการหลังบ้าน | สวนแสนสุข</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+    <style>
+        body { font-family: 'Kanit', sans-serif; background-color: #f1f5f9; margin: 0; padding: 20px; color: #1e293b; }
+        
+        .header { background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; position: relative; display: flex; align-items: center; justify-content: center; }
+        .btn-home-login { position: absolute; left: 20px; background: #ffffff; border: 3px solid #f3e8ff; width: 46px; height: 46px; font-size: 22px; border-radius: 50%; text-decoration: none; box-shadow: 0 4px 0px #9333ea; display: flex; justify-content: center; align-items: center; transition: 0.2s; color: #333; }
+        .btn-home-login:hover { background: #fdf4ff; }
+        .btn-home-login:active { transform: translateY(4px); box-shadow: 0 0px 0px #9333ea; }
+        @media (max-width: 768px) { .header { flex-direction: column; padding: 15px; gap: 10px; } .btn-home-login { position: static; } }
+
+        .tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { background: #e2e8f0; color: #64748b; border: none; padding: 12px 25px; font-size: 18px; font-weight: 800; font-family: 'Kanit'; border-radius: 12px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 0px #cbd5e1;}
+        .tab-btn:hover { background: #cbd5e1; }
+        .tab-btn.active { background: #0ea5e9; color: white; box-shadow: 0 4px 0px #0284c7; }
+        .tab-btn.active-green { background: #10b981; color: white; box-shadow: 0 4px 0px #047857; }
+        .tab-btn.active-orange { background: #f59e0b; color: white; box-shadow: 0 4px 0px #d97706; }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .container { background: white; padding: 30px; border-radius: 15px; border: 3px solid #e2e8f0; box-shadow: 0 5px 0px #cbd5e1; max-width: 900px; margin: 0 auto; transition: max-width 0.3s;}
+        
+        .form-group { margin-bottom: 15px; display: flex; flex-direction: column; text-align: left; }
+        .form-group label { font-weight: 800; color: #0369a1; margin-bottom: 6px; }
+        input, textarea, select { padding: 12px; border: 2px solid #cbd5e1; border-radius: 8px; font-family: 'Kanit'; font-size: 16px; width: 100%; box-sizing: border-box; outline: none; }
+        select { cursor: pointer; font-weight: bold; color: #0f172a; }
+        .hint-container { background: #f8fafc; border: 2px dashed #bae6fd; padding: 15px; border-radius: 10px; margin-bottom: 15px; }
+        .hint-item { display: flex; gap: 10px; margin-bottom: 10px; }
+        .btn-add-hint { background: #e0f2fe; color: #0369a1; border: 2px solid #bae6fd; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Kanit'; transition: 0.2s; }
+        .btn-remove-hint { background: #fee2e2; color: #b91c1c; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-save { background: #10b981; color: white; border: none; padding: 12px 25px; font-size: 18px; font-weight: bold; border-radius: 10px; cursor: pointer; width: 100%; font-family: 'Kanit'; box-shadow: 0 4px 0px #047857; margin-top: 10px; transition: 0.2s;}
+        .btn-save:disabled { background: #94a3b8; box-shadow: 0 4px 0px #64748b; cursor: not-allowed; }
+        .btn-save-blue { background: #3b82f6; box-shadow: 0 4px 0px #2563eb; }
+        .btn-save-orange { background: #f59e0b; box-shadow: 0 4px 0px #d97706; }
+        
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 30px; text-align: left; font-size: 15px; }
+        .data-table th { background: #e0f2fe; color: #0369a1; padding: 12px; border: 1px solid #bae6fd; }
+        .data-table td { padding: 12px; border: 1px solid #e2e8f0; }
+        .btn-action { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-family: 'Kanit'; font-weight: bold; margin-right: 5px; }
+        .btn-blue { background: #bae6fd; color: #0369a1; }
+        .btn-red { background: #fee2e2; color: #b91c1c; }
+
+        .mission-group-container { border: 4px dashed #93c5fd; border-radius: 20px; padding: 25px; margin-bottom: 30px; background-color: #f8fafc; }
+        .mission-group-title { font-size: 24px; color: #0369a1; font-weight: 800; margin-top: 0; margin-bottom: 20px; border-bottom: 3px dashed #bae6fd; padding-bottom: 10px; text-align: left; }
+        .work-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .work-card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 6px 12px rgba(0,0,0,0.08); border: 3px solid #e2e8f0; position: relative; transition: 0.2s; text-align: left; display: flex; flex-direction: column;}
+        .work-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px rgba(0,0,0,0.1); border-color: #a5d6a7; }
+        .work-card.graded { border-color: #a5d6a7; background: #f0fdf4; opacity: 0.85; }
+        .student-info { font-weight: 800; font-size: 18px; color: #0f172a; border-bottom: 2px dashed #cbd5e1; padding-bottom: 10px; margin-bottom: 15px; }
+        .work-img { width: 100%; height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 15px; border: 1px solid #cbd5e1; background: #f8fafc; }
+        .work-content { font-size: 15px; color: #475569; margin-bottom: 20px; min-height: 40px; background: #f8fafc; padding: 15px; border-radius: 10px; font-style: italic; flex-grow: 1;}
+        .time-stamp { font-size: 12px; color: #64748b; font-weight: bold; margin-bottom: 5px;}
+        .btn-grade { background-color: #10b981; color: white; border: none; padding: 12px 15px; border-radius: 10px; cursor: pointer; font-family: 'Kanit'; font-weight: 800; font-size: 16px; width: 100%; box-shadow: 0 4px 0px #047857; transition: 0.1s; }
+        .btn-delete-work { background-color: #fee2e2; color: #ef4444; border: 2px solid #f87171; padding: 10px; border-radius: 10px; cursor: pointer; font-family: 'Kanit'; font-weight: 800; font-size: 14px; width: 100%; margin-top: 10px; transition: 0.1s; }
+    </style>
+</head>
+<body>
+    
+    <div class="header">
+        <a href="login.html" class="btn-home-login" title="กลับหน้าเข้าสู่ระบบ">🏠</a>
+        <h1 style="margin: 0;">👨‍🏫 ระบบจัดการหลังบ้าน (Admin)</h1>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('mission-tab', this)">📝 จัดการภารกิจ</button>
+        <button class="tab-btn" onclick="switchTab('resource-tab', this)">📚 จัดการสื่อ</button>
+        <button class="tab-btn" onclick="switchTab('grading-tab', this, 'active-green')">📥 ตรวจผลงาน</button>
+        <button class="tab-btn" onclick="switchTab('coach-tab', this, 'active-orange')">💬 ส่งข้อความโค้ช</button>
+    </div>
+
+    <div class="container" id="mainContainer">
+        
+        <!-- แท็บระบบโค้ชนางฟ้า -->
+        <div id="coach-tab" class="tab-content">
+            <h2 style="color: #f59e0b; margin-top: 0;">🧚‍♀️ โค้ชนางฟ้า (กระซิบเวทมนตร์)</h2>
+            <div class="form-group">
+                <label>ส่งข้อความไปที่ห้อง:</label>
+                <!-- 💡 แก้ไขรหัสห้องตรงนี้ ไม่ให้มีเครื่องหมายทับ (/) -->
+                <select id="coachRoomSelect">
+                    <option value="ALL">📢 ประกาศทุกห้อง (ทุกคนจะเห็น)</option>
+                    <option value="P4-1">ห้อง ป.4/1</option>
+                    <option value="P4-2">ห้อง ป.4/2</option>
+                    <option value="P4-3">ห้อง ป.4/3</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>ข้อความแนะนำ / คำใบ้เพิ่มเติม:</label>
+                <textarea id="coachMessageInput" rows="3" placeholder="พิมพ์ข้อความแนะนำ หรือให้กำลังใจเด็กๆ ตรงนี้เลยกั๊บ..."></textarea>
+            </div>
+            <button type="button" class="btn-save btn-save-orange" onclick="sendCoachMessage()">✨ ส่งข้อความกระซิบ</button>
+        </div>
+
+        <div id="mission-tab" class="tab-content active">
+            <h2 style="color: #0ea5e9; margin-top: 0;">🎯 สร้าง / แก้ไขข้อมูลภารกิจ</h2>
+            <form id="missionForm" onsubmit="saveMission(event)">
+                <div class="form-group"><label>รหัสภารกิจ (เช่น mission_1):</label><input type="text" id="m_id" required></div>
+                <div class="form-group"><label>ชื่อหัวข้อภารกิจ:</label><input type="text" id="m_title" required></div>
+                <div class="form-group"><label>รายละเอียดคำสั่ง:</label><textarea id="m_detail" rows="3" required></textarea></div>
+                <label style="font-weight: 800; color: #0369a1;">💡 ตู้จดหมายนางฟ้า (คำใบ้):</label>
+                <div class="hint-container">
+                    <div id="hintsList"></div>
+                    <button type="button" class="btn-add-hint" onclick="addHintField()">➕ กดเพื่อเพิ่มคำใบ้อีก</button>
+                </div>
+                <button type="submit" class="btn-save">💾 บันทึกข้อมูลภารกิจ</button>
+            </form>
+            <table class="data-table">
+                <thead><tr><th>รหัสภารกิจ</th><th>ชื่อภารกิจ</th><th>รายละเอียด</th><th>จัดการ</th></tr></thead>
+                <tbody id="missionTableBody"><tr><td colspan="4">กำลังโหลดข้อมูล...</td></tr></tbody>
+            </table>
+        </div>
+
+        <div id="resource-tab" class="tab-content">
+            <h2 style="color: #3b82f6; margin-top: 0;">📚 เพิ่ม / แก้ไข แหล่งเรียนรู้</h2>
+            <form id="resourceForm" onsubmit="saveResource(event)">
+                <div class="form-group">
+                    <label>📘 เลือกภารกิจ:</label>
+                    <select id="r_mission_select" required><option value="" disabled selected>-- เลือกภารกิจ --</option></select>
+                </div>
+                <div class="form-group"><label>🎥 ลิงก์ YouTube:</label><input type="url" id="r_video"></div>
+                <div class="form-group">
+                    <label style="color:#10b981;">📜 ไฟล์สไลด์ / ใบความรู้:</label>
+                    <input type="file" id="r_file_upload" accept=".pdf" style="margin-bottom: 10px;">
+                    <label style="font-size:14px;">🔗 หรือวางลิงก์ Google Slide:</label>
+                    <input type="url" id="r_slide">
+                </div>
+                <div class="form-group"><label>📝 คำแนะนำจากครู:</label><textarea id="r_note" rows="3"></textarea></div>
+                <button type="submit" id="btnSaveRes" class="btn-save btn-save-blue">💾 บันทึกแหล่งเรียนรู้</button>
+            </form>
+            <table class="data-table">
+                <thead><tr><th>ภารกิจ</th><th>YouTube</th><th>เอกสาร</th><th>โน้ตครู</th><th>จัดการ</th></tr></thead>
+                <tbody id="resourcesTableBody"><tr><td colspan="5">กำลังโหลดข้อมูลสื่อ...</td></tr></tbody>
+            </table>
+        </div>
+
+        <div id="grading-tab" class="tab-content">
+            <h2 style="color: #10b981; margin-top: 0; text-align: center; font-size: 28px;">📥 ตรวจผลงาน & รดน้ำต้นไม้</h2>
+            <div id="workContainer">
+                <div style="text-align: center; color: #94a3b8; font-weight: bold; padding: 40px;">⏳ กำลังดึงข้อมูลงานจาก Firebase...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ตั้งค่า Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfBIp5gujB9cE2twLz483hllYOubgYuks",
+            authDomain: "codingplant-f19fc.firebaseapp.com",
+            projectId: "codingplant-f19fc",
+            storageBucket: "codingplant-f19fc.firebasestorage.app",
+            messagingSenderId: "194545106875",
+            appId: "1:194545106875:web:d4b7ca3dd6b57f46cc8e9e"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+        let missionTitlesMap = {};
+
+        function switchTab(tabId, btnElement, activeClass = 'active') {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => { btn.classList.remove('active'); btn.classList.remove('active-green'); btn.classList.remove('active-orange'); });
+            document.getElementById(tabId).classList.add('active');
+            btnElement.classList.add(activeClass);
+            document.getElementById('mainContainer').style.maxWidth = tabId === 'grading-tab' ? "1100px" : "900px";
+        }
+
+        // 🧚‍♀️ ฟังก์ชันส่งข้อความ
+        function sendCoachMessage() {
+            const room = document.getElementById("coachRoomSelect").value;
+            const msg = document.getElementById("coachMessageInput").value.trim();
+            
+            if(!msg) { 
+                alert("กรุณาพิมพ์ข้อความก่อนกดส่งนะกั๊บ!"); 
+                return; 
+            }
+            
+            db.collection("coach_messages").doc(room).set({
+                message: msg,
+                time: Date.now()
+            }).then(() => {
+                let roomText = room;
+                if(room === 'ALL') roomText = 'ทุกห้อง';
+                if(room === 'P4-1') roomText = 'ป.4/1';
+                if(room === 'P4-2') roomText = 'ป.4/2';
+                if(room === 'P4-3') roomText = 'ป.4/3';
+                
+                alert(`✅ ส่งข้อความกระซิบถึง ${roomText} เรียบร้อยแล้ว!`);
+                document.getElementById("coachMessageInput").value = "";
+            }).catch(err => {
+                alert("เกิดข้อผิดพลาด: " + err.message);
+            });
+        }
+
+        db.collection("shared_works").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+            const container = document.getElementById('workContainer');
+            container.innerHTML = '';
+            if (snapshot.empty) {
+                container.innerHTML = `<div style="text-align: center; color: #94a3b8; font-weight: bold; padding: 40px; font-size: 18px;">📭 ยังไม่มีนักเรียนส่งผลงานเข้ามาเลยกั๊บ</div>`;
+                return;
+            }
+            let docs = [];
+            snapshot.forEach(doc => docs.push({ id: doc.id, data: doc.data() }));
+            docs.sort((a, b) => (a.data.isGraded || false) === (b.data.isGraded || false) ? 0 : (a.data.isGraded ? 1 : -1));
+
+            let groupedWorks = {};
+            docs.forEach(item => {
+                let mId = item.data.missionId || item.data.mission || "อื่นๆ";
+                if(!groupedWorks[mId]) groupedWorks[mId] = [];
+                groupedWorks[mId].push(item);
+            });
+
+            for (const [mId, works] of Object.entries(groupedWorks)) {
+                let missionName = missionTitlesMap[mId] || mId;
+                let groupDiv = document.createElement('div');
+                groupDiv.className = 'mission-group-container';
+                groupDiv.innerHTML = `<h3 class="mission-group-title">🎯 ส่งงาน: ${missionName}</h3><div class="work-grid"></div>`;
+                container.appendChild(groupDiv);
+                let gridContainer = groupDiv.querySelector('.work-grid');
+
+                works.forEach(item => {
+                    const work = item.data;
+                    const docId = item.id;
+                    const studentName = work.studentName || work.name || 'ไม่ระบุชื่อ';
+                    const roomName = work.roomName || 'ไม่ระบุห้อง';
+                    const imageUrl = work.imageUrl || work.image || null;
+                    const isGraded = work.isGraded || false;
+                    let timeStr = work.timestamp && work.timestamp.toDate ? work.timestamp.toDate().toLocaleString('th-TH') : 'ไม่ระบุเวลา';
+
+                    const card = document.createElement('div');
+                    card.className = `work-card ${isGraded ? 'graded' : ''}`;
+                    card.innerHTML = `
+                        <div class="time-stamp">⏰ ส่งเมื่อ: ${timeStr}</div>
+                        <div class="student-info">👤 ${studentName} <br><small style="color:#64748b;">📍 ห้อง: ${roomName}</small></div>
+                        ${imageUrl ? `<a href="${imageUrl}" target="_blank"><img src="${imageUrl}" class="work-img"></a>` : ''}
+                        ${work.content ? `<div class="work-content">"${work.content}"</div>` : ''}
+                        <div style="margin-top: auto;">
+                            <button class="btn-grade" onclick="giveReward('${docId}', '${studentName}', '${roomName}', 5)" ${isGraded ? 'disabled' : ''}>
+                                ${isGraded ? '✅ ตรวจแล้ว' : '🌟 ตรวจงาน +5 💧'}
+                            </button>
+                            <button class="btn-delete-work" onclick="deleteWork('${docId}')">🗑️ ลบ</button>
+                        </div>
+                    `;
+                    gridContainer.appendChild(card);
+                });
+            }
+        });
+
+        function giveReward(docId, studentName, roomName, points) {
+            let gardenData = JSON.parse(localStorage.getItem('multiRoomGardenData'));
+            if (gardenData && gardenData.rooms && gardenData.rooms[roomName]) {
+                let student = gardenData.rooms[roomName].find(s => s.name === studentName);
+                if (student) {
+                    student.water = (student.water || 0) + points;
+                    if(!gardenData.history[roomName]) gardenData.history[roomName] = [];
+                    gardenData.history[roomName].push({ studentName: student.name, action: 'เพิ่ม', amount: points, newScore: student.water, time: new Date().toLocaleTimeString('th-TH') });
+                    localStorage.setItem('multiRoomGardenData', JSON.stringify(gardenData));
+                    alert(`🎉 ให้คะแนน +${points} 💧 สำเร็จ!`);
+                }
+            }
+            db.collection("shared_works").doc(docId).update({ isGraded: true });
+        }
+
+        function deleteWork(docId) { if (confirm('ลบผลงานชิ้นนี้ทิ้ง?')) db.collection("shared_works").doc(docId).delete(); }
+        function addHintField(value = "") {
+            const div = document.createElement("div"); div.className = "hint-item";
+            div.innerHTML = `<input type="text" class="hint-input" value="${value}" placeholder="พิมพ์คำใบ้..."><button type="button" class="btn-remove-hint" onclick="this.parentElement.remove()">ลบ</button>`;
+            document.getElementById("hintsList").appendChild(div);
+        }
+        function saveMission(e) {
+            e.preventDefault(); const id = document.getElementById("m_id").value.trim(); const title = document.getElementById("m_title").value.trim(); const detail = document.getElementById("m_detail").value.trim();
+            const hintsArray = []; document.querySelectorAll(".hint-input").forEach(input => { if(input.value.trim()) hintsArray.push(input.value.trim()); });
+            db.collection("missions").doc(id).set({ title: title, detail: detail, hints: hintsArray, updatedAt: firebase.firestore.FieldValue.serverTimestamp() })
+            .then(() => { alert("🎉 บันทึกภารกิจสำเร็จ!"); document.getElementById("missionForm").reset(); document.getElementById("hintsList").innerHTML = ""; addHintField(); });
+        }
+        
+        db.collection("missions").orderBy("updatedAt", "asc").onSnapshot((snapshot) => {
+            const tableBody = document.getElementById("missionTableBody"); const resourceSelect = document.getElementById("r_mission_select");
+            tableBody.innerHTML = ""; resourceSelect.innerHTML = '<option value="" disabled selected>-- เลือกภารกิจ --</option>';
+            if (snapshot.empty) return;
+            snapshot.forEach((doc) => {
+                let m = doc.data(); missionTitlesMap[doc.id] = m.title;
+                tableBody.innerHTML += `<tr><td><strong>${doc.id}</strong></td><td>${m.title}</td><td style="white-space: pre-line;">${m.detail}</td>
+                    <td><button class="btn-action btn-blue" onclick="editMission('${doc.id}', '${encodeURIComponent(m.title)}', '${encodeURIComponent(m.detail)}', '${encodeURIComponent(JSON.stringify(m.hints || []))}')">📝 แก้ไข</button><button class="btn-action btn-red" onclick="deleteMission('${doc.id}')">🗑️</button></td></tr>`;
+                resourceSelect.innerHTML += `<option value="${doc.id}">${doc.id} : ${m.title}</option>`;
+            });
+        });
+
+        function editMission(id, title, detail, hints) {
+            document.getElementById("m_id").value = id; document.getElementById("m_title").value = decodeURIComponent(title); document.getElementById("m_detail").value = decodeURIComponent(detail);
+            document.getElementById("hintsList").innerHTML = ""; JSON.parse(decodeURIComponent(hints)).forEach(hint => addHintField(hint));
+        }
+        function deleteMission(id) { if (confirm(`ลบ ${id}?`)) { db.collection("missions").doc(id).delete(); db.collection("resources").doc(id).delete(); } }
+        async function saveResource(e) {
+            e.preventDefault(); const missionId = document.getElementById("r_mission_select").value; const fileInput = document.getElementById("r_file_upload");
+            let videoLink = document.getElementById("r_video").value.trim(); let slideLink = document.getElementById("r_slide").value.trim(); let note = document.getElementById("r_note").value.trim();
+            try {
+                if (fileInput.files.length > 0) {
+                    let uploadTask = await storage.ref(`resources_slides/${missionId}_${fileInput.files[0].name}`).put(fileInput.files[0]);
+                    slideLink = await uploadTask.ref.getDownloadURL();
+                }
+                await db.collection("resources").doc(missionId).set({ videoLink: videoLink, slideLink: slideLink, note: note, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                alert("📚 บันทึกสื่อสำเร็จ!"); document.getElementById("resourceForm").reset();
+            } catch (err) { alert(err.message); }
+        }
+        db.collection("resources").orderBy("updatedAt", "desc").onSnapshot(snapshot => {
+            document.getElementById("resourcesTableBody").innerHTML = "";
+            snapshot.forEach(doc => {
+                const r = doc.data();
+                document.getElementById("resourcesTableBody").innerHTML += `<tr><td><strong>${doc.id}</strong></td><td>${r.videoLink?'📺':'-'}</td><td>${r.slideLink?'📜':'-'}</td><td>${r.note||'-'}</td>
+                    <td><button class="btn-action btn-blue" onclick="editResource('${doc.id}', '${encodeURIComponent(r.videoLink||'')}', '${encodeURIComponent(r.slideLink||'')}', '${encodeURIComponent(r.note||'')}')">📝</button><button class="btn-action btn-red" onclick="deleteMission('${doc.id}')">🗑️</button></td></tr>`;
+            });
+        });
+        function editResource(id, v, s, n) { document.getElementById("r_mission_select").value = id; document.getElementById("r_video").value = decodeURIComponent(v); document.getElementById("r_slide").value = decodeURIComponent(s); document.getElementById("r_note").value = decodeURIComponent(n); }
+        window.onload = () => { addHintField(); };
+    </script>
+</body>
+</html>

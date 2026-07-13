@@ -1,0 +1,300 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤝 แบ่งปัน | สวนแสนสุข</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Kanit', sans-serif; background-color: #fff1f2; background-image: radial-gradient(#fecdd3 3px, transparent 3px); background-size: 40px 40px; text-align: center; color: #333; margin: 0; padding: 0 0 50px 0; }
+        .nav-menu { background: #a855f7; padding: 15px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; position: relative; }
+        .nav-menu a.main-link { background: #d8b4fe; color: #4c1d95; text-decoration: none; font-weight: 800; font-size: 18px; padding: 10px 20px; border-radius: 20px; border: 3px solid #f3e8ff; box-shadow: 0 4px 0px #9333ea; transition: 0.2s; }
+        .nav-menu a.main-link:active { transform: translateY(4px); box-shadow: 0 0px 0px #9333ea; }
+        
+        .top-left-menu { position: absolute; top: 12px; left: 15px; z-index: 100; display: flex; gap: 10px; align-items: center; }
+        .btn-home-login { background: #ffffff; border: 3px solid #f3e8ff; width: 46px; height: 46px; font-size: 22px; border-radius: 50%; text-decoration: none; box-shadow: 0 4px 0px #9333ea; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
+        .btn-home-login:hover { background: #fdf4ff; }
+        .btn-home-login:active { transform: translateY(4px); box-shadow: 0 0px 0px #9333ea; }
+        
+        /* กล่องโปรไฟล์มุมซ้ายบน */
+        .profile-box { display: flex; align-items: center; gap: 10px; background: white; padding: 4px 12px; border-radius: 25px; border: 3px solid #f3e8ff; box-shadow: 0 4px 0px #9333ea; }
+        .profile-avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #a855f7; object-fit: cover; }
+        .profile-info { display: flex; flex-direction: column; align-items: flex-start; }
+        .user-name { font-size: 13px; font-weight: 800; color: #4c1d95; max-width: 110px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; }
+        .btn-logout { background: #fca5a5; color: #7f1d1d; border: none; padding: 1px 8px; font-size: 11px; font-weight: 800; border-radius: 8px; cursor: pointer; font-family: 'Kanit'; margin-top: 2px; transition: 0.1s; }
+        .page-title { font-size: 36px; font-weight: 800; color: #db2777; margin: 30px 0 10px 0; text-shadow: 2px 2px 0 white; }
+        .padlet-container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        
+        .mission-board { background: rgba(255, 255, 255, 0.9); border: 5px solid #f472b6; border-radius: 25px; padding: 25px; margin-bottom: 40px; box-shadow: 0 10px 0px #fbcfe8; }
+        .board-header { font-size: 26px; font-weight: 800; color: #9d174d; margin: 0; border-bottom: 3px dashed #fbcfe8; padding-bottom: 15px; margin-bottom: 20px; text-align: left; }
+        .upload-form { display: flex; flex-direction: column; gap: 15px; background: #fff5f5; padding: 20px; border-radius: 20px; border: 3px dashed #fca5a5; align-items: center; margin-bottom: 25px; }
+        .input-name { padding: 12px 15px; font-size: 18px; border: 3px solid #fecaca; border-radius: 15px; outline: none; font-family: 'Kanit'; font-weight: 600; width: 100%; max-width: 400px; text-align: center; }
+        select.input-name { cursor: pointer; background-color: #fff; color: #333; }
+        .paste-zone { border: 3px dashed #38bdf8; border-radius: 15px; padding: 20px; width: 100%; max-width: 400px; background-color: #f0f9ff; color: #0284c7; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: center; align-items: center; outline: none; }
+        .preview-image { max-width: 100%; max-height: 200px; border-radius: 10px; margin-top: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .btn-post { background: #4ade80; color: #14532d; border: none; padding: 12px 30px; font-size: 20px; font-weight: 800; border-radius: 15px; cursor: pointer; box-shadow: 0 4px 0px #16a34a; font-family: 'Kanit'; width: 100%; max-width: 436px; transition: 0.2s; }
+        .btn-post:active { transform: translateY(4px); box-shadow: 0 0px 0px #16a34a; }
+        
+        .post-grid { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+        .post-card { background: #fef3c7; border: 4px solid #fde047; border-radius: 15px; padding: 15px; width: 220px; box-shadow: 3px 5px 10px rgba(0,0,0,0.1); text-align: center; position: relative; }
+        .post-card.graded-stamp::before { content: "✅ ตรวจแล้ว"; position: absolute; top: -10px; right: -10px; background: #10b981; color: white; padding: 5px 12px; border-radius: 15px; font-weight: bold; font-size: 13px; box-shadow: 0 4px 0px #047857; transform: rotate(10deg); z-index: 10; }
+        .post-image { background: #fffbeb; width: 100%; height: 140px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 40px; border: 2px dashed #fcd34d; margin-bottom: 10px; overflow: hidden; }
+        .post-image img { width: 100%; height: 100%; object-fit: cover; }
+        .post-name { font-size: 18px; font-weight: 800; color: #78350f; background: white; padding: 5px; border-radius: 10px; margin-bottom: 10px; border: 2px solid #fde047; }
+        .reaction-bar { display: flex; justify-content: center; gap: 8px; }
+        .btn-react { background: white; border: 2px solid #fde047; border-radius: 10px; padding: 5px 10px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.1s; }
+        
+        .modal { display: none; position: fixed; z-index: 1000; padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); }
+        .modal-content { margin: auto; display: block; max-width: 90%; max-height: 80vh; border-radius: 15px; border: 5px solid #fff; }
+        .close-modal { position: absolute; top: 20px; right: 40px; color: #f1f1f1; font-size: 50px; font-weight: bold; cursor: pointer; }
+        @keyframes wiggle { 0%, 100% { transform: scale(1) rotate(0deg); } 20%, 60% { transform: scale(1.05) rotate(-4deg); } 40%, 80% { transform: scale(1.05) rotate(4deg); } }
+        .anim-wiggle { animation: wiggle 0.5s ease; }
+        @media (max-width: 768px) { .top-left-menu { position: static; margin-bottom: 10px; display: flex; justify-content: center; width: 100%; flex-wrap: wrap; } .nav-menu { flex-direction: column; align-items: center; } }
+    </style>
+</head>
+<body>
+    <div class="nav-menu">
+        <div class="top-left-menu">
+            <a href="login.html" class="btn-home-login" title="กลับหน้าเข้าสู่ระบบ">🏠</a>
+            <div id="profileBox" class="profile-box" style="display: none;">
+                <img id="userAvatar" src="" alt="โปรไฟล์" class="profile-avatar">
+                <div class="profile-info">
+                    <span id="userName" class="user-name">กำลังโหลด...</span>
+                    <button class="btn-logout" onclick="logout()">🚪 ออกจากระบบ</button>
+                </div>
+            </div>
+        </div>
+        
+        <a href="index.html" class="main-link">🏡 หน้าแรก</a>
+        <a href="mission.html" class="main-link">⚔️ ภารกิจ</a>
+        <a href="resource.html" class="main-link">📚 แหล่งเรียนรู้</a>
+        <a href="share.html" class="main-link" style="background:#fde047; color:#854d0e; border-color:white; box-shadow: 0 4px 0px #ca8a04;">🤝 แบ่งปัน</a>
+        <a href="monster-hatchery.html" class="main-link">🌱 แปลงปลูกต้นไม้</a>
+        <a href="profile.html" class="main-link" style="background:#60a5fa; color:#1e3a8a; border-color:#bfdbfe; box-shadow: 0 4px 0px #2563eb;">👤 โปรไฟล์</a> 
+    </div>
+
+    <h1 class="page-title">🤝 บอร์ดส่งงานแสนรัก 🤝</h1>
+
+    <div class="padlet-container" id="dynamicMissionContainer">
+        <p style="color: #db2777; font-weight: bold; font-size: 20px;">กำลังโหลดภารกิจเวทมนตร์... ⏳</p>
+    </div>
+
+    <div id="imageModal" class="modal">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="fullImage">
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc, increment, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfBIp5gujB9cE2twLz483hllYOubgYuks",
+            authDomain: "codingplant-f19fc.firebaseapp.com",
+            projectId: "codingplant-f19fc",
+            storageBucket: "codingplant-f19fc.firebasestorage.app",
+            messagingSenderId: "194545106875",
+            appId: "1:194545106875:web:d4b7ca3dd6b57f46cc8e9e"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let pastedImages = {}; 
+        const themeColors = [
+            { border: '#f472b6', bg: '#fff5f5', shadow: '#fbcfe8', title: '#9d174d', dash: '#fca5a5' },
+            { border: '#a78bfa', bg: '#f5f3ff', shadow: '#ede9fe', title: '#5b21b6', dash: '#c4b5fd' },
+            { border: '#38bdf8', bg: '#f0f9ff', shadow: '#bae6fd', title: '#0369a1', dash: '#7dd3fc' },
+            { border: '#4ade80', bg: '#f0fdf4', shadow: '#bbf7d0', title: '#14532d', dash: '#86efac' }
+        ];
+
+        onAuthStateChanged(auth, (user) => {
+            const profileBox = document.getElementById('profileBox');
+            if (user) {
+                profileBox.style.display = 'flex';
+                document.getElementById('userAvatar').src = user.photoURL || 'https://via.placeholder.com/150';
+                document.getElementById('userName').innerText = user.displayName;
+                document.querySelectorAll('.input-name-text').forEach(input => {
+                    if (!input.value) input.value = user.displayName;
+                });
+            } else { profileBox.style.display = 'none'; }
+        });
+
+        async function logout() {
+            if (confirm("หนูต้องการออกจากระบบใช่ไหมกั๊บ? 🚪")) {
+                await signOut(auth);
+                document.querySelectorAll('.input-name-text').forEach(input => input.value = '');
+                alert("ออกจากระบบเสร็จเรียบร้อยแล้ว บ๊ายบายกั๊บ 👋");
+            }
+        }
+
+        // 🌟 1. ดึงข้อมูลภารกิจมาสร้างหน้าจอส่งงาน (มี Dropdown ห้องเรียน)
+        const missionQuery = query(collection(db, "missions"), orderBy("updatedAt", "asc"));
+        onSnapshot(missionQuery, (snapshot) => {
+            const container = document.getElementById("dynamicMissionContainer");
+            container.innerHTML = "";
+            if (snapshot.empty) { container.innerHTML = `<p>📭 ยังไม่มีภารกิจให้ส่งงานในตอนนี้นะกั๊บ</p>`; return; }
+
+            let index = 0;
+            snapshot.forEach((docSnap) => {
+                const mission = docSnap.data();
+                const mId = docSnap.id; 
+                const theme = themeColors[index % themeColors.length]; 
+                const boardHtml = `
+                    <div class="mission-board" id="board_${mId}" style="border-color:${theme.border}; box-shadow: 0 10px 0px ${theme.shadow};">
+                        <h2 class="board-header" style="color:${theme.title}; border-color:${theme.shadow};">🌟 ${mission.title}</h2>
+                        <div class="upload-form" style="background:${theme.bg}; border-color:${theme.dash};">
+                            
+                            <input type="text" class="input-name input-name-text" id="name_${mId}" style="border-color:${theme.dash}; margin-bottom: 5px;" placeholder="👉 พิมพ์ชื่อเล่นหนูตรงนี้กั๊บ...">
+                            
+                            <select class="input-name" id="room_${mId}" style="border-color:${theme.dash}; margin-bottom: 5px;" required>
+                                <option value="" disabled selected>-- 🏫 เลือกห้องเรียนของหนู --</option>
+                                <option value="ห้อง 1/1">ห้อง 1/1</option>
+                                <option value="ห้อง 1/2">ห้อง 1/2</option>
+                                <option value="ห้อง 1/3">ห้อง 1/3</option>
+                                <option value="ห้อง 1/4">ห้อง 1/4</option>
+                            </select>
+
+                            <div class="paste-zone" id="pasteZone_${mId}" tabindex="0" data-mission="${mId}" style="border-color: ${theme.border};">
+                                <p class="paste-text" style="margin: 0; color:${theme.title};">📸 คลิกที่นี่ แล้วกด <strong>Ctrl + V</strong><br>เพื่อวางรูปผลงาน!</p>
+                                <img class="preview-image" id="preview_${mId}" src="" alt="พรีวิว" style="display: none;">
+                            </div>
+                            <button class="btn-post" id="btnPost_${mId}" onclick="postWork('${mId}')">ส่งงานเลย! 🚀</button>
+                        </div>
+                        <div class="post-grid" id="grid_${mId}"></div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', boardHtml);
+                index++;
+            });
+            if (auth.currentUser) {
+                document.querySelectorAll('.input-name-text').forEach(input => {
+                    if (!input.value) input.value = auth.currentUser.displayName;
+                });
+            }
+        });
+
+        // 📸 2. ระบบดักจับการกด Ctrl+V
+        document.addEventListener('paste', function (e) {
+            let targetZone = e.target.closest('.paste-zone');
+            if (!targetZone) return; 
+            e.preventDefault();
+            let missionId = targetZone.getAttribute('data-mission');
+            let clipboardItems = e.clipboardData.items;
+
+            for (let i = 0; i < clipboardItems.length; i++) {
+                if (clipboardItems[i].type.indexOf("image") !== -1) {
+                    let imageFile = clipboardItems[i].getAsFile();
+                    let reader = new FileReader();
+                    reader.onload = function (event) {
+                        let base64Image = event.target.result;
+                        pastedImages[missionId] = base64Image;
+                        let preview = document.getElementById('preview_' + missionId);
+                        preview.src = base64Image; preview.style.display = 'block';
+                        targetZone.querySelector('.paste-text').innerHTML = "✨ วางรูปภาพสำเร็จแล้ว!<br><span style='font-size:14px;'>(กด Ctrl+V เพื่อเปลี่ยนรูป)</span>";
+                    };
+                    reader.readAsDataURL(imageFile);
+                    break;
+                }
+            }
+        });
+
+        // 🚀 3. ระบบส่งงาน
+        async function postWork(missionId) {
+            let nameInput = document.getElementById('name_' + missionId).value;
+            let roomInput = document.getElementById('room_' + missionId).value; 
+            let imageBase64 = pastedImages[missionId];
+            let btn = document.getElementById('btnPost_' + missionId);
+
+            if (nameInput.trim() === '') { alert('อย่าลืมพิมพ์ชื่อของหนูก่อนกดส่งนะกั๊บ! 📝'); return; }
+            if (roomInput === '') { alert('อย่าลืมเลือกห้องเรียนของหนูด้วยนะกั๊บ! 🏫'); return; } 
+            if (!imageBase64) { alert('อย่าลืมคลิกที่กรอบแล้วกด Ctrl+V เพื่อวางรูปผลงานก่อนส่งนะกั๊บ! 📸'); return; }
+
+            btn.disabled = true; btn.innerText = "⏳ กำลังส่งข้อมูล...";
+
+            try {
+                await addDoc(collection(db, "shared_works"), {
+                    studentName: nameInput,
+                    name: nameInput,
+                    roomName: roomInput, 
+                    missionId: missionId,
+                    mission: missionId,
+                    imageUrl: imageBase64,
+                    image: imageBase64,
+                    isGraded: false, 
+                    reactions: { love: 0, like: 0 },
+                    timestamp: serverTimestamp()
+                });
+                
+                pastedImages[missionId] = null;
+                let preview = document.getElementById('preview_' + missionId);
+                preview.src = ''; preview.style.display = 'none';
+                let targetZone = document.getElementById('pasteZone_' + missionId);
+                targetZone.querySelector('.paste-text').innerHTML = "📸 คลิกที่นี่ แล้วกด <strong>Ctrl + V</strong><br>เพื่อวางรูปผลงาน!";
+                
+                alert('เย้! ส่งงานสำเร็จแล้วกั๊บ 🎉');
+            } catch (error) { alert('เกิดข้อผิดพลาดในการส่งงาน กรุณาลองใหม่กั๊บ 🚀'); }
+
+            btn.disabled = false; btn.innerText = "ส่งงานเลย! 🚀";
+        }
+
+        // 🌟 4. ดึงผลงานมาแสดงในการ์ดตามภารกิจ
+        const sharesQuery = query(collection(db, "shared_works"), orderBy("timestamp", "desc"));
+        onSnapshot(sharesQuery, (snapshot) => {
+            document.querySelectorAll('.post-grid').forEach(grid => grid.innerHTML = '');
+            let reactedDocs = JSON.parse(localStorage.getItem('reactedDocs') || '{}');
+
+            snapshot.forEach((docSnap) => {
+                const id = docSnap.id; const data = docSnap.data();
+                
+                const missionId = data.missionId || data.mission;
+                const nameInput = data.studentName || data.name;
+                const roomNameDisplay = data.roomName || 'ไม่ระบุห้อง'; 
+                const imageBase64 = data.imageUrl || data.image;
+                const isGraded = data.isGraded || false;
+                
+                const loveCount = data.reactions?.love || 0; const likeCount = data.reactions?.like || 0;
+                const hasLoved = reactedDocs[id + '_❤️'] ? 'style="background: #fca5a5; color: white;" disabled' : '';
+                const hasLiked = reactedDocs[id + '_👍'] ? 'style="background: #fca5a5; color: white;" disabled' : '';
+                const gradedClass = isGraded ? 'graded-stamp' : '';
+
+                let targetGrid = document.getElementById('grid_' + missionId);
+                if (targetGrid) {
+                    const cardHtml = `
+                        <div class="post-card ${gradedClass}">
+                            <div class="post-image" style="padding: 0; border: none;">
+                                <img src="${imageBase64}" alt="ผลงานของ ${nameInput}" style="cursor: pointer; transition: 0.2s;" onclick="openModal('${imageBase64}')" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            </div>
+                            <div class="post-name">${nameInput} <small style="color:#64748b; font-size: 14px; display:block;">(${roomNameDisplay})</small></div>
+                            <div class="reaction-bar">
+                                <button class="btn-react" ${hasLoved} onclick="addReaction(this, '${id}', '❤️')">❤️ <span>${loveCount}</span></button>
+                                <button class="btn-react" ${hasLiked} onclick="addReaction(this, '${id}', '👍')">👍 <span>${likeCount}</span></button>
+                            </div>
+                        </div>`;
+                    targetGrid.appendChild(document.createRange().createContextualFragment(cardHtml));
+                }
+            });
+        });
+
+        async function addReaction(btn, docId, emoji) {
+            let card = btn.closest('.post-card');
+            if (card) { card.classList.remove('anim-wiggle'); void card.offsetWidth; card.classList.add('anim-wiggle'); }
+            let reactedDocs = JSON.parse(localStorage.getItem('reactedDocs') || '{}');
+            if (reactedDocs[docId + '_' + emoji]) return;
+            try {
+                const docRef = doc(db, "shared_works", docId);
+                if (emoji === '❤️') await updateDoc(docRef, { "reactions.love": increment(1) });
+                else if (emoji === '👍') await updateDoc(docRef, { "reactions.like": increment(1) });
+                reactedDocs[docId + '_' + emoji] = true;
+                localStorage.setItem('reactedDocs', JSON.stringify(reactedDocs));
+            } catch (error) { console.error(error); }
+        }
+
+        function openModal(imgSrc) { document.getElementById('imageModal').style.display = "block"; document.getElementById('fullImage').src = imgSrc; }
+        function closeModal() { document.getElementById('imageModal').style.display = "none"; }
+        window.onclick = function (event) { let modal = document.getElementById('imageModal'); if (event.target == modal) closeModal(); }
+        window.logout = logout; window.postWork = postWork; window.addReaction = addReaction; window.openModal = openModal; window.closeModal = closeModal;
+    </script>
+</body>
+</html>

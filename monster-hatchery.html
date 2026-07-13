@@ -1,0 +1,848 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌱 แปลงปลูกต้นไม้ | สวนแสนสุข</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        /* =========================================================
+           👑 CSS เมนูด้านบน (สไตล์พาสเทลสวนแสนสุข)
+           ========================================================= */
+        .nav-menu {
+            background: #a855f7;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            position: relative; 
+        }
+
+        .nav-menu a.main-link {
+            background: #d8b4fe;
+            color: #4c1d95;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 18px;
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 3px solid #f3e8ff;
+            box-shadow: 0 4px 0px #9333ea;
+            transition: 0.2s;
+            font-family: 'Kanit', sans-serif;
+        }
+
+        .nav-menu a.main-link:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0px #9333ea;
+        }
+
+        .top-left-menu {
+            position: absolute;
+            top: 12px;
+            left: 15px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-home-login {
+            background: #ffffff;
+            border: 3px solid #f3e8ff;
+            width: 46px;
+            height: 46px;
+            font-size: 22px;
+            border-radius: 50%;
+            text-decoration: none;
+            box-shadow: 0 4px 0px #9333ea;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: 0.2s;
+        }
+        .btn-home-login:active { transform: translateY(4px); box-shadow: 0 0px 0px #9333ea; }
+
+        @media (max-width: 768px) {
+            .top-left-menu {
+                position: static;
+                margin-bottom: 10px;
+                display: flex;
+                justify-content: center;
+                width: 100%;
+            }
+            .nav-menu { flex-direction: column; align-items: center; }
+        }
+
+        /* =========================================================
+           🌱 CSS ระบบบริหารจัดการสวนห้องเรียน (Magic Tree Ver.)
+           ========================================================= */
+        body { 
+            font-family: 'Kanit', sans-serif; 
+            background-color: #f3fbe8; 
+            background-image: radial-gradient(#c8e6c9 2px, transparent 2px);
+            background-size: 30px 30px;
+            text-align: center; color: #444; margin: 0; padding: 0; overflow-x: hidden;
+        }
+        
+        .top-bar { background: linear-gradient(135deg, #4caf50, #2e7d32); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(46, 125, 50, 0.2); border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;}
+        .top-left { display: flex; align-items: center; gap: 15px; }
+        .top-bar h1 { margin: 0; font-size: 26px; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);}
+        .room-selector { font-size: 16px; padding: 8px 12px; border-radius: 12px; border: none; cursor: pointer; font-family: 'Kanit', sans-serif; outline: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
+        
+        .search-box { 
+            font-size: 16px; 
+            padding: 8px 15px; 
+            border-radius: 12px; 
+            border: 2px solid #a5d6a7; 
+            font-family: 'Kanit', sans-serif; 
+            outline: none; 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); 
+            margin-left: 10px;
+            width: 200px;
+            transition: 0.3s;
+        }
+        .search-box:focus {
+            border-color: #4caf50;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+        }
+        
+        .nav-btn { background-color: #ffe082; color: #5d4037; border: none; padding: 10px 18px; border-radius: 12px; font-size: 16px; cursor: pointer; font-weight: bold; transition: all 0.3s; font-family: 'Kanit', sans-serif; box-shadow: 0 4px 0px #ffca28; margin-left: 5px; margin-top: 5px;}
+        .nav-btn:hover { transform: translateY(2px); box-shadow: 0 2px 0px #ffca28; background-color: #ffd54f; }
+        .nav-btn:active { transform: translateY(4px); box-shadow: 0 0px 0px #ffca28; }
+
+        .btn-spin { background-color: #ff8a65; color: white; box-shadow: 0 4px 0px #d84315; animation: pulseSpin 2s infinite; }
+        @keyframes pulseSpin { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        p.subtitle { color: #5d4037; margin: 0 0 20px 0; font-size: 1.2em; font-weight: bold;}
+
+        /* โซนหลัก */
+        .main-wrapper { display: flex; flex-direction: row; gap: 20px; padding: 0 20px 100px 20px; justify-content: center; flex-wrap: wrap; }
+        .garden-zone { flex: 3; min-width: 600px; }
+        .card-container { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+        
+        /* การ์ดนักเรียน */
+        .student-card { background-color: white; border-radius: 20px; padding: 25px 15px 20px 15px; width: 190px; box-shadow: 0 8px 15px rgba(0,0,0,0.05); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); border: 4px solid #fff; position: relative;}
+        .student-card:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 12px 20px rgba(76, 175, 80, 0.15); border-color: #c8e6c9;}
+        
+        .lucky-winner { animation: luckyGlow 1s infinite alternate; z-index: 50; transform: scale(1.1); box-shadow: 0 15px 30px rgba(255, 152, 0, 0.4);}
+        @keyframes luckyGlow { 0% { border-color: #ff9800; background-color: #fff8e1; } 100% { border-color: #ffea00; background-color: #fffde7; } }
+        
+        .badge { position: absolute; top: -12px; right: -10px; padding: 5px 12px; border-radius: 15px; font-size: 12px; font-weight: bold; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.15); z-index: 5; border: 2px solid white;}
+        
+        /* แอนิเมชันต้นไม้ปกติ */
+        .avatar { font-size: 65px; margin: 10px 0; user-select: none; display: inline-block; animation: sway 3s ease-in-out infinite; transform-origin: bottom center; cursor: help;}
+        @keyframes sway { 0% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } 100% { transform: rotate(-5deg); } }
+        
+        /* 🌟 เอฟเฟกต์พิเศษสำหรับเลเวล 8 (อลังการ) 🌟 */
+        .avatar-max { animation: magicFloat 3s ease-in-out infinite, magicGlow 2s infinite alternate; transform-origin: center center; }
+        @keyframes magicFloat { 0% { transform: translateY(0px) scale(1.1); } 50% { transform: translateY(-12px) scale(1.15); } 100% { transform: translateY(0px) scale(1.1); } }
+        @keyframes magicGlow { 0% { filter: drop-shadow(0 0 5px #ffea00); } 100% { filter: drop-shadow(0 0 25px #ffb300) drop-shadow(0 0 40px #ff9800); } }
+
+        .name { font-weight: bold; font-size: 18px; margin-bottom: 5px; color: #3e2723;}
+        .level { font-size: 13px; color: #fff; font-weight: bold; background-color: #ffb74d; padding: 3px 10px; border-radius: 12px; display: inline-block;}
+        .water-score { font-size: 18px; color: #29b6f6; font-weight: bold; margin-top: 10px;}
+        
+        .progress-bg { background-color: #eee; height: 10px; border-radius: 10px; width: 80%; margin: 8px auto; overflow: hidden; position: relative; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);}
+        .progress-fill { background: linear-gradient(90deg, #4fc3f7, #0288d1); height: 100%; border-radius: 10px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        .speech-bubble { position: absolute; top: -5px; left: 50%; transform: translateX(-50%); background: #fff9c4; color: #f57f17; padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); opacity: 0; transition: opacity 0.3s, top 0.3s; pointer-events: none; z-index: 10; white-space: nowrap; border: 2px solid #fff176;}
+        .speech-bubble::after { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); border-width: 5px 5px 0; border-style: solid; border-color: #fff9c4 transparent transparent transparent; display: block; width: 0; }
+        .speech-bubble.show { opacity: 1; top: -25px; animation: bounceIn 0.5s; }
+        @keyframes bounceIn { 0% { transform: translateX(-50%) scale(0.5); } 50% { transform: translateX(-50%) scale(1.1); } 100% { transform: translateX(-50%) scale(1); } }
+
+        /* กลุ่มปุ่มรดน้ำ */
+        .action-buttons { display: flex; gap: 8px; margin-top: 15px; }
+        .btn-add { background-color: #4fc3f7; color: white; border: none; padding: 10px; border-radius: 12px; font-size: 14px; cursor: pointer; flex: 2; font-weight: bold; font-family: 'Kanit'; box-shadow: 0 4px 0px #0288d1; transition: 0.1s;}
+        .btn-add:hover { background-color: #29b6f6; }
+        .btn-add:active { transform: translateY(4px); box-shadow: 0 0px 0px #0288d1; }
+        
+        .btn-remove { background-color: #ff8a80; color: white; border: none; padding: 10px; border-radius: 12px; font-size: 14px; cursor: pointer; flex: 1; font-weight: bold; font-family: 'Kanit'; box-shadow: 0 4px 0px #d50000; transition: 0.1s;}
+        .btn-remove:hover { background-color: #ff5252; }
+        .btn-remove:active { transform: translateY(4px); box-shadow: 0 0px 0px #d50000; }
+
+        .action-buttons-bottom { display: flex; gap: 8px; margin-top: 8px; }
+        .btn-work { background-color: #ba68c8; color: white; border: none; padding: 10px; border-radius: 12px; font-size: 14px; cursor: pointer; flex: 1; font-weight: bold; font-family: 'Kanit'; box-shadow: 0 4px 0px #8e24aa; transition: 0.1s;}
+        .btn-work:hover { background-color: #ab47bc; }
+        .btn-work:active { transform: translateY(4px); box-shadow: 0 0px 0px #8e24aa; }
+
+        .level-max { border-color: #ffe082; background-color: #fffde7; }
+
+        /* โซนด้านข้าง */
+        .sidebar-zone { flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px; }
+        .panel { background-color: white; border-radius: 20px; padding: 20px; box-shadow: 0 8px 15px rgba(0,0,0,0.05); text-align: left; position: relative;}
+        .panel h2 { color: #2e7d32; font-size: 20px; margin-top: 0; border-bottom: 2px dashed #a5d6a7; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center;}
+        
+        .btn-view-all { background-color: #ffb74d; color: white; border: none; padding: 5px 12px; border-radius: 10px; font-size: 13px; font-weight: bold; cursor: pointer; font-family: 'Kanit'; box-shadow: 0 3px 0px #f57c00; transition: 0.2s;}
+        .btn-view-all:hover { background-color: #ffa726; }
+        .btn-view-all:active { transform: translateY(2px); box-shadow: 0 1px 0px #f57c00; }
+
+        .leaderboard-list { list-style: none; padding: 0; margin: 0; max-height: 200px; overflow-y: auto; padding-right: 5px; }
+        .leaderboard-item { display: flex; justify-content: space-between; padding: 12px 5px; border-bottom: 1px solid #f1f8e9; align-items: center; transition: background-color 0.2s; border-radius: 8px;}
+        .rank { font-weight: bold; color: #ffb300; margin-right: 10px; font-size: 1.2em; background: #fff8e1; padding: 2px 8px; border-radius: 8px;}
+        .top-rank { color: #f57c00; font-size: 1.1em;}
+        #history-log { max-height: 250px; overflow-y: auto; font-size: 13px; color: #555; line-height: 1.6; padding-right: 5px;}
+        .log-entry { margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #eee; display: flex; flex-direction: column;}
+        .log-action-add { color: #4caf50; font-weight: bold; }
+        .log-action-remove { color: #f44336; font-weight: bold; }
+
+        /* Dashboard */
+        .stat-row { display: flex; align-items: center; margin-bottom: 15px; }
+        .stat-label { width: 150px; font-weight: bold; color: #5d4037; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        .stat-bar-container { flex: 1; background-color: #f1f8e9; height: 22px; border-radius: 12px; overflow: hidden; margin: 0 15px;}
+        .stat-bar { height: 100%; background: linear-gradient(90deg, #aed581, #689f38); border-radius: 12px; transition: width 0.8s;}
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px;}
+        ::-webkit-scrollbar-thumb { background: #a5d6a7; border-radius: 10px; }
+        
+        /* Modals */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(3px);}
+        .modal-content { background-color: #fff; margin: 5% auto; padding: 25px 35px; border-radius: 20px; width: 80%; max-width: 800px; max-height: 80vh; overflow-y: auto; text-align: left;}
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed #eee; padding-bottom: 15px; margin-bottom: 20px; }
+        .close-btn { color: #ff8a80; font-size: 32px; font-weight: bold; cursor: pointer; transition: 0.2s;}
+
+        .full-rank-list { list-style: none; padding: 0; }
+        .full-rank-item { display: flex; align-items: center; justify-content: space-between; padding: 15px; border-bottom: 1px solid #eee; background: #fdfbf7; margin-bottom: 8px; border-radius: 12px;}
+        .full-rank-item:nth-child(1) { background: #fff8e1; border: 2px solid #ffe082; }
+        
+        .admin-section { background: #fdfbf7; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #f0e6d2;}
+        .admin-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; flex-wrap: wrap;}
+        input[type="text"], textarea { padding: 10px; border: 2px solid #e0e0e0; border-radius: 10px; flex: 1; font-family: 'Kanit'; outline: none; }
+        .btn-green { background: #66bb6a; color: white; border: none; padding: 10px 15px; border-radius: 10px; cursor: pointer; font-family: 'Kanit'; font-weight:bold;}
+        .btn-red { background: #ef5350; color: white; border: none; padding: 10px 15px; border-radius: 10px; cursor: pointer; font-family: 'Kanit'; font-weight:bold;}
+        .btn-blue { background: #42a5f5; color: white; border: none; padding: 10px 15px; border-radius: 10px; cursor: pointer; font-family: 'Kanit'; font-weight:bold;}
+        
+        /* Effects */
+        .confetti { position: fixed; width: 12px; height: 12px; z-index: 9999; animation: fall 3s linear forwards; border-radius: 2px;}
+        @keyframes fall { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 1;} 100% { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+        .float-text { position: absolute; font-weight: bold; font-size: 26px; animation: floatUp 1s forwards; pointer-events: none; z-index: 1000; text-shadow: 2px 2px 0px white;}
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-50px) scale(1.5); } }
+    </style>
+</head>
+<body>
+
+    <div class="nav-menu">
+        <div class="top-left-menu">
+            <a href="login.html" class="btn-home-login" title="กลับหน้าเข้าสู่ระบบ">🏠</a>
+        </div>
+        <a href="index.html" class="main-link">🏡 หน้าแรก</a>
+        <a href="mission.html" class="main-link">⚔️ ภารกิจ</a>
+        <a href="resource.html" class="main-link">📚 แหล่งเรียนรู้</a>
+        <a href="share.html" class="main-link">🤝 แบ่งปัน</a>
+        <a href="monster-hatchery.html" class="main-link" style="background:#fde047; color:#854d0e; border-color:white; box-shadow: 0 4px 0px #ca8a04;">🌱 แปลงปลูกต้นไม้</a>
+        <a href="profile.html" class="main-link" style="background:#60a5fa; color:#1e3a8a; border-color:#bfdbfe; box-shadow: 0 4px 0px #2563eb;">👤 โปรไฟล์</a> 
+    </div>
+
+    <div class="top-bar">
+        <div class="top-left">
+            <h1 id="main-title-display">🌱 สวนแสนสุข (Magic Tree Ver.)</h1>
+            <select id="roomSelect" class="room-selector" onchange="changeRoom()"></select>
+            <input type="text" id="searchStudent" class="search-box" placeholder="🔍 ค้นหาชื่อนักเรียน..." onkeyup="filterStudents()">
+        </div>
+        <div>
+            <span id="teacher-controls" style="display: none;">
+                <button class="nav-btn" style="background-color: #81c784; color: white; box-shadow: 0 4px 0px #388e3c;" onclick="waterAll(1)">💦 รดน้ำทั้งห้อง!</button>
+                <button class="nav-btn" style="background-color: #ef5350; color: white; box-shadow: 0 4px 0px #c62828;" onclick="waterAll(-1)">🔥 หักทั้งห้อง!</button>
+                <button class="nav-btn" style="background-color: #ce93d8; color: white; box-shadow: 0 4px 0px #8e24aa;" onclick="waterAll(3)">📝 ส่งงานทั้งห้อง!</button>
+            </span>
+            
+            <button class="nav-btn btn-spin" onclick="spinWheel()">🎲 สุ่มผู้โชคดี!</button>
+            <button class="nav-btn" style="background-color: #b3e5fc; box-shadow: 0 4px 0px #4fc3f7;" onclick="openDashboard()">📊 สถิติ</button>
+            
+            <span id="teacher-controls-2" style="display: none;">
+                <button class="nav-btn" onclick="openAdmin()">⚙️ ตั้งค่า</button>
+            </span>
+            
+            <button class="nav-btn" id="mode-btn" style="background-color: #90caf9; color: #0d47a1; box-shadow: 0 4px 0px #1e88e5;" onclick="toggleTeacherMode()">🔒 โหมดครู</button>
+        </div>
+    </div>
+
+    <p class="subtitle" id="room-subtitle">กำลังโหลดข้อมูล...</p>
+
+    <div class="main-wrapper">
+        <div class="garden-zone">
+            <div class="card-container" id="classroom-garden"></div>
+        </div>
+        <div class="sidebar-zone">
+            <div class="panel">
+                <h2>🏆 ดาวเด่น (Top 5) <button class="btn-view-all" onclick="openRankModal()">🏆 ดูทั้งหมด</button></h2>
+                <ul class="leaderboard-list" id="leaderboard"></ul>
+            </div>
+            <div class="panel">
+                <h2>📜 บันทึกการรดน้ำ</h2>
+                <div id="history-log"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="rankModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>🏆 ตารางคะแนนทั้งหมดประจำห้อง</h2>
+                <span class="close-btn" onclick="closeModal('rankModal')">&times;</span>
+            </div>
+            <ul class="full-rank-list" id="full-rank-list"></ul>
+        </div>
+    </div>
+
+    <div id="dashboardModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div id="dashboard-title" style="font-size: 22px; font-weight: bold; color: #2e7d32;">📊 สรุปการเจริญเติบโต</div>
+                <span class="close-btn" onclick="closeModal('dashboardModal')">&times;</span>
+            </div>
+            <div id="chart-container"></div>
+        </div>
+    </div>
+
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚙️ ระบบจัดการหลังบ้าน</h2>
+                <span class="close-btn" onclick="closeModal('adminModal')">&times;</span>
+            </div>
+
+            <div class="admin-section">
+                <h3>🏷️ ตั้งค่าชื่อสวน/หัวเว็บ</h3>
+                <div class="admin-row">
+                    <input type="text" id="mainTitleInput" placeholder="เช่น สวนแสนสุขของครูสมหมาย">
+                    <button class="btn-green" onclick="saveMainTitle()">💾 บันทึกชื่อ</button>
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <h3>📂 จัดการห้องเรียน</h3>
+                <div class="admin-row">
+                    <input type="text" id="newRoomName" placeholder="ชื่อห้องใหม่ เช่น ห้อง 1/4">
+                    <button class="btn-green" onclick="addNewRoom()">+ เพิ่มห้อง</button>
+                    <button class="btn-blue" onclick="editCurrentRoom()">✏️ เปลี่ยนชื่อห้อง</button>
+                    <button class="btn-red" onclick="deleteCurrentRoom()">- ลบห้องปัจจุบัน</button>
+                </div>
+            </div>
+            
+            <div class="admin-section">
+                <h3>👤 จัดการรายชื่อนักเรียน</h3>
+                <div class="admin-row" style="align-items: flex-start;">
+                    <textarea id="newStudentName" placeholder="เพิ่มทีละหลายคนได้ โดยเว้นบรรทัด หรือคั่นด้วยลูกน้ำ (,)" style="resize: vertical; min-height: 50px;"></textarea>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <button class="btn-green" onclick="addNewStudent()">+ เพิ่มนักเรียน</button>
+                        <button class="btn-red" onclick="deleteAllStudents()">🗑️ ลบรายชื่อทั้งหมด</button>
+                    </div>
+                </div>
+                <ul class="student-list-admin" id="adminStudentList" style="list-style:none; padding:0; max-height:200px; overflow-y:auto; margin-top:15px; border-top:1px dashed #ccc; text-align: left;"></ul>
+            </div>
+            
+            <div class="admin-section">
+                <h3>💾 สำรองและกู้คืนข้อมูล</h3>
+                <div class="admin-row">
+                    <button class="btn-blue" onclick="exportData()">⬇️ ดาวน์โหลด</button>
+                    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+                    <button class="btn-green" onclick="document.getElementById('importFile').click()">⬆️ อัปโหลด</button>
+                    <button class="btn-red" style="margin-left: auto;" onclick="clearCurrentRoomData()">⚠️ รีเซ็ตคะแนนเป็น 0</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'multiRoomGardenData';
+        
+        // 🌟 อัปเดตตารางคะแนนน้ำ (LEVEL_THRESHOLDS) ให้เหมือน game.html 🌟
+        const LEVEL_THRESHOLDS = [ 
+            { lv: 1, name: "เมล็ดน้อย", water: 0 }, 
+            { lv: 2, name: "แตกใบอ่อน", water: 10 }, 
+            { lv: 3, name: "ต้นกล้า", water: 20 }, 
+            { lv: 4, name: "กระถางน้อย", water: 30 }, 
+            { lv: 5, name: "แตกกิ่งก้าน", water: 40 }, 
+            { lv: 6, name: "บานสะพรั่ง", water: 50 }, 
+            { lv: 7, name: "ออกผลผลิต", water: 65 }, 
+            { lv: 8, name: "ต้นไม้มีชีวิต", water: 80 } 
+        ];
+        const CUTE_MESSAGES = ["สดชื่นจังกั๊บ!", "ขอบคุณฮะครู!", "หูยยย เย็นจัง", "หนูจะรีบโตนะ!", "อร่อยจังเลยย", "รักน้ำ รักปลา!"];
+
+        let state = { currentRoom: "ห้อง 4/1", rooms: {}, history: {} };
+        let spinInterval = null;
+        let isTeacherMode = false; // ตัวแปรล็อกโหมดครู/นักเรียน
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playTone(freq, type, duration) {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.05, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + duration);
+        }
+        function playAddSound() { playTone(880, 'sine', 0.1); setTimeout(() => playTone(1320, 'sine', 0.15), 80); }
+        function playRemoveSound() { playTone(250, 'sawtooth', 0.2); }
+        function playLevelUpSound() { [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => setTimeout(() => playTone(freq, 'square', 0.2), i * 150)); }
+
+        function toggleTeacherMode() {
+            if (!isTeacherMode) {
+                const pass = prompt("🔐 ป้อนรหัสผ่านคุณครูเพื่อเปิดโหมดแก้ไข:");
+                if (pass === "587520") { 
+                    isTeacherMode = true;
+                    alert("🔓 ปลดล็อกโหมดคุณครูเรียบร้อยแล้วกั๊บ!");
+                    renderAll();
+                } else if (pass !== null) {
+                    alert("❌ รหัสผ่านไม่ถูกต้องกั๊บ!");
+                }
+            } else {
+                isTeacherMode = false;
+                alert("🔒 ล็อกระบบกลับสู่โหมดนักเรียน (ดูได้อย่างเดียว) เรียบร้อยครับ");
+                renderAll();
+            }
+        }
+
+        function loadData() {
+            const savedTitle = localStorage.getItem('mainGardenTitle');
+            if (savedTitle) {
+                document.getElementById('main-title-display').innerText = savedTitle;
+                document.getElementById('mainTitleInput').value = savedTitle;
+            }
+
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            if (savedData) {
+                state = JSON.parse(savedData);
+                if (!state.history) state.history = {};
+            } else {
+                state.rooms = { "ห้อง 1/1": [{ id: Date.now().toString(), name: "น้องมะม่วง", water: 0 }] };
+                state.currentRoom = "ห้อง 1/1";
+                state.history = { "ห้อง 1/1": [] };
+                saveData();
+            }
+            populateRoomDropdown();
+            renderAll();
+        }
+
+        function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+        
+        function saveMainTitle() {
+            const newTitle = document.getElementById('mainTitleInput').value.trim();
+            if (newTitle) {
+                document.getElementById('main-title-display').innerText = newTitle;
+                localStorage.setItem('mainGardenTitle', newTitle);
+                alert('บันทึกชื่อเรียบร้อยแล้วกั๊บ!');
+            } else { alert('กรุณาพิมพ์ชื่อก่อนบันทึกด้วยนะกั๊บ'); }
+        }
+
+        function getLevelInfo(score) { return LEVEL_THRESHOLDS.slice().reverse().find(l => score >= l.water) || LEVEL_THRESHOLDS[0]; }
+        
+        // 🌟 อัปเดตอีโมจิและการสุ่มผลไม้ ให้เหมือน game.html 🌟
+        function getAvatar(lv, studentIdentifier) {
+            let emoji = '🌰';
+            if (lv === 7) {
+                const fruits = ['🍇','🍈','🍉','🍊','🍋','🍌','🍍','🥭','🍎','🍏','🍐','🍑','🍒','🍓','🫐','🥝','🍅','🥥','🥕','🌽','🥑','🍆','🥔','🫑','🌶️','🧅','🥜','🥦'];
+                let hash = 0; 
+                const str = studentIdentifier.toString();
+                for (let i = 0; i < str.length; i++) { hash += str.charCodeAt(i); }
+                emoji = fruits[hash % fruits.length];
+            } else {
+                const avatars = { 1:'🌰', 2:'🌱', 3:'🌿', 4:'🪴', 5:'🌳', 6:'🌸', 8:'✨🌳' };
+                emoji = avatars[lv] || avatars[1];
+            }
+            
+            // นำอีโมจิมาครอบด้วย span เพื่อให้มีแอนิเมชันตอนแสดงผล
+            let extraClass = lv >= 8 ? 'avatar-max' : '';
+            return `<span class="avatar ${extraClass}" onclick="showBubble('${studentIdentifier}')">${emoji}</span>`;
+        }
+
+        function getProgressPercentage(score) {
+            const currentLvInfo = getLevelInfo(score);
+            const cLv = currentLvInfo.lv - 1;
+            if(cLv === 7) return 100;
+            if(cLv === -2) return 100;
+
+            const cMin = LEVEL_THRESHOLDS[cLv >= 0 ? cLv : 0].water;
+            const nMin = LEVEL_THRESHOLDS[cLv + 1] ? LEVEL_THRESHOLDS[cLv + 1].water : cMin;
+            return cMin === nMin ? 100 : ((score - cMin) / (nMin - cMin)) * 100;
+        }
+
+        function getBadge(student, index) {
+            if (index === 0 && student.water > 0) return { text: "👑 ที่ 1 ของห้อง", color: "#ffb300" };
+            if (student.water === 0) return { text: "💤 ยังไม่ตื่น", color: "#9e9e9e" };
+            if (student.water >= 30) return { text: "🔥 ร้อนแรงหยุดไม่อยู่", color: "#f44336" };
+            if (student.water >= 12) return { text: "✨ ดาวรุ่งพุ่งแรง", color: "#ab47bc" };
+            return null;
+        }
+
+        function populateRoomDropdown() {
+            const select = document.getElementById('roomSelect'); select.innerHTML = '';
+            for (const room in state.rooms) {
+                const opt = document.createElement('option'); opt.value = room; opt.textContent = room;
+                if (room === state.currentRoom) opt.selected = true;
+                select.appendChild(opt);
+            }
+        }
+
+        function changeRoom() { state.currentRoom = document.getElementById('roomSelect').value; saveData(); renderAll(); }
+        
+        function filterStudents() {
+            let input = document.getElementById('searchStudent').value.toLowerCase();
+            let cards = document.querySelectorAll('.student-card');
+            cards.forEach(card => {
+                let nameElement = card.querySelector('.name');
+                if (nameElement) {
+                    let name = nameElement.textContent || nameElement.innerText;
+                    if (name.toLowerCase().indexOf(input) > -1) { card.style.display = ""; } else { card.style.display = "none"; }
+                }
+            });
+        }
+
+        function renderAll() {
+            // 🔒 ควบคุมการแสดงผลปุ่มแถบด้านบนตามสถานะโหมดครู
+            const teacherControls = document.getElementById('teacher-controls');
+            const teacherControls2 = document.getElementById('teacher-controls-2');
+            const modeBtn = document.getElementById('mode-btn');
+
+            if (isTeacherMode) {
+                teacherControls.style.display = 'inline-block';
+                teacherControls2.style.display = 'inline-block';
+                modeBtn.innerText = "🔓 ล็อกโหมดครู";
+                modeBtn.style.backgroundColor = "#ffb74d";
+                modeBtn.style.boxShadow = "0 4px 0px #f57c00";
+                modeBtn.style.color = "white";
+            } else {
+                teacherControls.style.display = 'none';
+                teacherControls2.style.display = 'none';
+                modeBtn.innerText = "🔒 โหมดครู";
+                modeBtn.style.backgroundColor = "#90caf9";
+                modeBtn.style.boxShadow = "0 4px 0px #1e88e5";
+                modeBtn.style.color = "#0d47a1";
+            }
+
+            document.getElementById('room-subtitle').textContent = `กำลังแสดงผล: สวนแสนน่ารักของ ${state.currentRoom}`;
+            const gardenDiv = document.getElementById('classroom-garden'); gardenDiv.innerHTML = '';
+            const students = state.rooms[state.currentRoom] || [];
+            
+            const sortedStudents = [...students].sort((a, b) => b.water - a.water);
+
+            students.forEach(student => {
+                const lvInfo = getLevelInfo(student.water);
+                const progress = getProgressPercentage(student.water);
+                const rankIndex = sortedStudents.findIndex(s => s.id === student.id);
+                const badge = getBadge(student, rankIndex);
+                const maxClass = lvInfo.lv === 8 ? 'level-max' : '';
+                
+                let actionBtns = '';
+                if (isTeacherMode) {
+                    // 🗑️ นำปุ่มตอบคำถาม +5 ออกตามคำขอ
+                    actionBtns = `
+                        <div class="action-buttons">
+                            <button class="btn-remove" onclick="updateWater('${student.id}', -1, event)">-1</button>
+                            <button class="btn-add" onclick="updateWater('${student.id}', 1, event)">รดน้ำ +1 💧</button>
+                        </div>
+                        <div class="action-buttons-bottom">
+                            <button class="btn-work" onclick="updateWater('${student.id}', 3, event)">📝 ส่งงาน (+3)</button>
+                        </div>
+                    `;
+                }
+
+                const card = document.createElement('div');
+                card.className = `student-card ${maxClass}`;
+                card.id = `student-card-${student.id}`;
+                card.innerHTML = `
+                    ${badge ? `<div class="badge" style="background-color: ${badge.color}">${badge.text}</div>` : ''}
+                    <div style="position:relative;">
+                        <div id="bubble-${student.id}" class="speech-bubble"></div>
+                        ${getAvatar(lvInfo.lv, student.id)}
+                    </div>
+                    <div class="name">${student.name}</div>
+                    <div class="level">LV.${lvInfo.lv} ${lvInfo.name}</div>
+                    <div class="progress-bg"><div class="progress-fill" style="width: ${progress}%"></div></div>
+                    <div class="water-score">${student.water} 💧</div>
+                    ${actionBtns}
+                `;
+                gardenDiv.appendChild(card);
+            });
+
+            const leaderboardUl = document.getElementById('leaderboard'); leaderboardUl.innerHTML = '';
+            sortedStudents.slice(0, 5).forEach((s, i) => {
+                const li = document.createElement('li'); li.className = 'leaderboard-item';
+                li.innerHTML = `<span><span class="rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':`#${i+1}`}</span> ${s.name}</span><span class="water-score">${s.water} 💧</span>`;
+                leaderboardUl.appendChild(li);
+            });
+
+            const historyDiv = document.getElementById('history-log'); historyDiv.innerHTML = '';
+            ([...(state.history[state.currentRoom] || [])]).reverse().slice(0, 15).forEach(entry => {
+                const log = document.createElement('div'); log.className = 'log-entry';
+                const displayAmount = entry.amount || 1;
+                log.innerHTML = `<div><span class="${entry.action==='เพิ่ม'?'log-action-add':'log-action-remove'}">${entry.action==='เพิ่ม'?'+':'-'}${displayAmount} หยด</span> ให้ <strong>${entry.studentName}</strong> ${entry.newScore === 'ทุกคน' ? '' : `(รวม ${entry.newScore} 💧)`}</div><div class="log-time">${entry.time}</div>`;
+                historyDiv.appendChild(log);
+            });
+
+            filterStudents();
+        }
+
+        function spinWheel() {
+            const students = state.rooms[state.currentRoom];
+            if(!students || students.length === 0) { alert("ไม่มีนักเรียนในห้องนี้ให้สุ่มเลยกั๊บ!"); return; }
+            if(spinInterval) return;
+
+            document.querySelectorAll('.student-card').forEach(c => c.classList.remove('lucky-winner'));
+            let times = 0; const maxTimes = 25;
+            
+            spinInterval = setInterval(() => {
+                document.querySelectorAll('.student-card').forEach(c => { c.style.borderColor = 'white'; c.style.transform = ''; });
+                const randomStudent = students[Math.floor(Math.random() * students.length)];
+                const card = document.getElementById('student-card-' + randomStudent.id);
+                if(card) { card.style.borderColor = '#ffca28'; card.style.transform = 'scale(1.05)'; playTone(400 + (times * 15), 'sine', 0.05); }
+                times++;
+                if(times >= maxTimes) {
+                    clearInterval(spinInterval); spinInterval = null;
+                    const finalWinner = students[Math.floor(Math.random() * students.length)];
+                    const winnerCard = document.getElementById('student-card-' + finalWinner.id);
+                    document.querySelectorAll('.student-card').forEach(c => { c.style.borderColor = ''; c.style.transform = ''; });
+                    winnerCard.classList.add('lucky-winner');
+                    winnerCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    playTone(880, 'square', 0.1); setTimeout(() => playTone(1320, 'square', 0.4), 100);
+                    shootConfetti();
+                }
+            }, 100);
+        }
+
+        function shootConfetti() {
+            for(let i = 0; i < 40; i++) {
+                const conf = document.createElement('div'); conf.className = 'confetti';
+                conf.style.left = Math.random() * 100 + 'vw'; conf.style.backgroundColor = ['#ffeb3b', '#ff9800', '#4caf50', '#03a9f4', '#e91e63'][Math.floor(Math.random()*5)];
+                conf.style.animationDuration = (Math.random() * 2 + 2) + 's'; document.body.appendChild(conf);
+                setTimeout(() => conf.remove(), 4000);
+            }
+        }
+
+        function showFloatText(text, x, y, isPositive) {
+            const el = document.createElement('div'); el.className = 'float-text';
+            el.innerText = text; el.style.color = isPositive ? '#4caf50' : '#f44336';
+            el.style.left = x + 'px'; el.style.top = y + 'px';
+            document.body.appendChild(el); setTimeout(() => el.remove(), 1000);
+        }
+
+        function showBubble(studentId) {
+            const bubble = document.getElementById(`bubble-${studentId}`);
+            if(!bubble) return;
+            bubble.innerText = CUTE_MESSAGES[Math.floor(Math.random() * CUTE_MESSAGES.length)];
+            bubble.classList.add('show');
+            setTimeout(() => bubble.classList.remove('show'), 2000);
+        }
+
+        function updateWater(id, amount, event) {
+            const student = state.rooms[state.currentRoom].find(s => s.id === id); if (!student) return;
+            const oldLevel = getLevelInfo(student.water).lv;
+            student.water = Math.max(0, student.water + amount);
+            const newLevel = getLevelInfo(student.water).lv;
+
+            const timeStr = new Date().toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+            if(!state.history[state.currentRoom]) state.history[state.currentRoom] = [];
+            state.history[state.currentRoom].push({ studentName: student.name, action: amount > 0 ? 'เพิ่ม' : 'ลด', amount: Math.abs(amount), newScore: student.water, time: timeStr });
+            
+            if (event) { const rect = event.target.getBoundingClientRect(); showFloatText((amount>0?'+':'')+amount, rect.left + 20, rect.top - 20, amount > 0); }
+            if (amount > 0) { playAddSound(); } else { playRemoveSound(); }
+            if (newLevel > oldLevel) { setTimeout(() => { shootConfetti(); playLevelUpSound(); }, 200); }
+            saveData(); renderAll();
+        }
+
+        function waterAll(amount) {
+            const students = state.rooms[state.currentRoom];
+            if (!students || students.length === 0) { alert("ไม่มีนักเรียนในห้องนี้เลยกั๊บ!"); return; }
+            let levelUpOccurred = false;
+            
+            students.forEach(student => {
+                const oldLevel = getLevelInfo(student.water).lv;
+                student.water = Math.max(0, student.water + amount);
+                if (getLevelInfo(student.water).lv > oldLevel) levelUpOccurred = true;
+            });
+
+            const timeStr = new Date().toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+            if(!state.history[state.currentRoom]) state.history[state.currentRoom] = [];
+            state.history[state.currentRoom].push({ studentName: "ทุกคนในห้อง", action: amount > 0 ? 'เพิ่ม' : 'ลด', amount: Math.abs(amount), newScore: 'ทุกคน', time: timeStr });
+            
+            if (amount > 0) {
+                playAddSound(); shootConfetti();
+                if (levelUpOccurred) { setTimeout(() => { playLevelUpSound(); }, 200); }
+            } else { playRemoveSound(); }
+            saveData(); renderAll();
+        }
+
+        function openRankModal() {
+            openModal('rankModal');
+            const fullRankList = document.getElementById('full-rank-list'); fullRankList.innerHTML = '';
+            renderLevelStats(fullRankList);
+            const students = state.rooms[state.currentRoom] || [];
+            const sortedStudents = [...students].sort((a, b) => b.water - a.water);
+            sortedStudents.forEach((s, i) => {
+                const li = document.createElement('li'); li.className = 'full-rank-item';
+                li.innerHTML = `<span><strong>อันดับที่ ${i + 1}</strong>: ${s.name}</span><span class="water-score">${s.water} 💧</span>`;
+                fullRankList.appendChild(li);
+            });
+        }
+
+        function renderLevelStats(parentElement) {
+            const students = state.rooms[state.currentRoom] || [];
+            const levelCounts = {};
+            students.forEach(student => { const lv = getLevelInfo(student.water).lv; levelCounts[lv] = (levelCounts[lv] || 0) + 1; });
+            const statsBox = document.createElement('div');
+            statsBox.style.cssText = 'background: #e8f5e9; padding: 15px; border-radius: 15px; margin-bottom: 20px; text-align: center; border: 2px dashed #81c784;';
+            const totalStudents = students.length;
+            statsBox.innerHTML = `<h3 style="margin-top:0; color:#2e7d32;">สรุปจำนวนต้นไม้ในห้อง (รวม ${totalStudents} ต้น)</h3>`;
+            const rowDiv = document.createElement('div'); rowDiv.style.cssText = 'display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;';
+            [8, 7, 6, 5, 4, 3, 2, 1].forEach(lv => {
+                if (levelCounts[lv]) {
+                    const badge = document.createElement('div');
+                    badge.style.cssText = 'background: white; padding: 5px 15px; border-radius: 12px; font-weight: bold; color: #555; box-shadow: 0 2px 5px rgba(0,0,0,0.05);';
+                    badge.innerHTML = `LV.${lv} ${getLevelInfo(LEVEL_THRESHOLDS[lv-1].water).name}: <span style="color:#2e7d32; font-size:1.2em;">${levelCounts[lv]}</span> ต้น`;
+                    rowDiv.appendChild(badge);
+                }
+            });
+            statsBox.appendChild(rowDiv); parentElement.appendChild(statsBox);
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'block'; }
+        
+        function openDashboard() {
+            openModal('dashboardModal');
+            document.getElementById('dashboard-title').innerText = `📊 สรุปการเจริญเติบโตของ ${state.currentRoom}`;
+            const container = document.getElementById('chart-container'); container.innerHTML = '';
+            const students = state.rooms[state.currentRoom] || [];
+            const totalStudents = students.length;
+            const levelCounts = {};
+            students.forEach(s => { const lv = getLevelInfo(s.water).lv; levelCounts[lv] = (levelCounts[lv] || 0) + 1; });
+            
+            const summaryHeader = document.createElement('div');
+            summaryHeader.style.cssText = 'background: #e8f5e9; padding: 15px; border-radius: 15px; margin-bottom: 20px; text-align: center; border: 2px dashed #81c784; font-weight:bold; color: #2e7d32;';
+            summaryHeader.innerHTML = `จำนวนนักเรียนทั้งหมดในห้องนี้: <span style="font-size:20px; color:#ff9800;">${totalStudents}</span> คน`;
+            container.appendChild(summaryHeader);
+
+            LEVEL_THRESHOLDS.slice().reverse().forEach(level => {
+                const count = levelCounts[level.lv] || 0;
+                const percentage = totalStudents > 0 ? (count / totalStudents) * 100 : 0;
+                const row = document.createElement('div'); row.className = 'stat-row'; row.style.marginBottom = '15px';
+                
+                // ใช้การสร้างอวาตาร์แบบเดียวกับการ์ดนักเรียน (แต่เพื่อใช้โชว์หน้าสถิติ เลยสุ่ม ID 1 เพื่อดึงผลไม้ที่แน่นอนมาแสดงแทนได้)
+                let sampleIdForPreview = "stats-" + level.lv;
+                const avatarIcon = getAvatar(level.lv, sampleIdForPreview);
+                
+                row.innerHTML = `
+                    <div class="stat-label" style="width: 200px; font-size: 14px; text-align: left; display: flex; align-items: center; gap: 5px;">
+                        <span>${avatarIcon}</span> <strong>LV.${level.lv}</strong> <span style="color:#666;">(${level.name})</span>
+                    </div>
+                    <div class="stat-bar-container" style="background-color: #f5f5f5; height: 26px; margin: 0 15px; border-radius: 8px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);">
+                        <div class="stat-bar" style="width: ${percentage}%; background: linear-gradient(90deg, #aed581, #4caf50); display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; height: 100%; border-radius: 8px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);">
+                            ${count > 0 ? `<span style="color:white; font-size:12px; font-weight:bold;">${Math.round(percentage)}%</span>` : ''}
+                        </div>
+                    </div>
+                    <div style="width: 60px; font-weight: bold; color: #388e3c; font-size: 16px;">${count} คน</div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function openAdmin() { document.getElementById('adminModal').style.display = 'block'; renderAdminStudents(); }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
+        function addNewRoom() {
+            const name = document.getElementById('newRoomName').value.trim();
+            if (!name) return;
+            if (!state.rooms[name]) { state.rooms[name] = []; state.history[name] = []; }
+            state.currentRoom = name; saveData(); populateRoomDropdown(); renderAll(); document.getElementById('newRoomName').value = '';
+        }
+
+        function editCurrentRoom() {
+            const newName = prompt(`กรอกชื่อใหม่สำหรับห้อง "${state.currentRoom}":`, state.currentRoom);
+            if (newName !== null && newName.trim() !== "" && newName !== state.currentRoom) {
+                const finalName = newName.trim();
+                if (state.rooms[finalName]) { alert('ชื่อห้องนี้มีอยู่แล้วกั๊บ โปรดตั้งชื่ออื่น'); return; }
+                state.rooms[finalName] = state.rooms[state.currentRoom];
+                state.history[finalName] = state.history[state.currentRoom];
+                delete state.rooms[state.currentRoom]; delete state.history[state.currentRoom];
+                state.currentRoom = finalName; saveData(); populateRoomDropdown(); renderAll();
+            }
+        }
+
+        function deleteCurrentRoom() {
+            if(Object.keys(state.rooms).length <= 1) { alert('ต้องมีอย่างน้อย 1 ห้องนะกั๊บ ห้ามลบหมด!'); return; }
+            if(confirm(`แน่ใจหรือว่าต้องการลบห้อง ${state.currentRoom}?`)) {
+                delete state.rooms[state.currentRoom]; delete state.history[state.currentRoom];
+                state.currentRoom = Object.keys(state.rooms)[0]; saveData(); populateRoomDropdown(); renderAll();
+            }
+        }
+
+        function renderAdminStudents() {
+            const list = document.getElementById('adminStudentList'); list.innerHTML = '';
+            (state.rooms[state.currentRoom] || []).forEach((s, i) => {
+                const li = document.createElement('li');
+                li.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border-bottom:1px solid #eee;";
+                li.innerHTML = `<span>${i+1}. ${s.name} <small style="color:#2196f3; font-weight:bold;">(${s.water} 💧)</small></span>
+                    <div>
+                        <button style="background:#ffb74d; border:none; border-radius:5px; padding:5px 10px; color:white; cursor:pointer;" onclick="editStudentName('${s.id}')">✏️ แก้ชื่อ</button>
+                        <button style="background:#ef5350; border:none; border-radius:5px; padding:5px 10px; color:white; cursor:pointer;" onclick="deleteStudent('${s.id}')">❌ ลบ</button>
+                    </div>`;
+                list.appendChild(li);
+            });
+        }
+
+        function deleteStudent(id) {
+            if(confirm('ต้องการลบนักเรียนคนนี้ออกใช่ไหมกั๊บ?')) {
+                state.rooms[state.currentRoom] = state.rooms[state.currentRoom].filter(s => s.id !== id);
+                saveData(); renderAll(); renderAdminStudents();
+            }
+        }
+
+        function editStudentName(id) {
+            const student = state.rooms[state.currentRoom].find(s => s.id === id); if(!student) return;
+            const newName = prompt(`แก้ไขชื่อนักเรียน: ${student.name}`, student.name);
+            if(newName !== null && newName.trim() !== "") { student.name = newName.trim(); saveData(); renderAll(); renderAdminStudents(); }
+        }
+
+        function addNewStudent() {
+            const textarea = document.getElementById('newStudentName'); const rawText = textarea.value.trim();
+            if(!rawText) { alert('กรุณากรอกชื่อนักเรียนก่อนกั๊บ'); return; }
+            const names = rawText.split(/[\n,]+/).map(n => n.trim()).filter(n => n.length > 0);
+            if(names.length === 0) return;
+            if(!state.rooms[state.currentRoom]) state.rooms[state.currentRoom] = [];
+            names.forEach(name => { state.rooms[state.currentRoom].push({ id: Date.now().toString() + Math.random().toString(36).substr(2, 5), name: name, water: 0 }); });
+            saveData(); renderAll(); renderAdminStudents(); textarea.value = ''; alert(`เพิ่มสำเร็จ ${names.length} คนกั๊บ!`);
+        }
+
+        function deleteAllStudents() {
+            if(confirm(`⚠️ ยืนยันที่จะลบรายชื่อนักเรียน 'ทั้งหมด' ในห้อง ${state.currentRoom} หรือไม่? (กู้คืนไม่ได้นะกั๊บ!)`)) {
+                state.rooms[state.currentRoom] = []; state.history[state.currentRoom] = [];
+                saveData(); renderAll(); renderAdminStudents(); alert('ลบรายชื่อนักเรียนทั้งหมดในห้องนี้เรียบร้อยแล้วกั๊บ!');
+            }
+        }
+
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+            const dlAnchor = document.createElement('a'); dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", `magic_tree_data_${state.currentRoom}.json`); document.body.appendChild(dlAnchor);
+            dlAnchor.click(); dlAnchor.remove();
+        }
+
+        function importData(event) {
+            const file = event.target.files[0]; if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if(parsed.rooms && parsed.currentRoom) { state = parsed; saveData(); populateRoomDropdown(); renderAll(); renderAdminStudents(); alert('กู้คืนข้อมูลสำเร็จเรียบร้อยแล้วกั๊บ! 🌱'); }
+                    else { alert('รูปแบบไฟล์ JSON ไม่ถูกต้องกั๊บ'); }
+                } catch (err) { alert('เกิดข้อผิดพลาดในการอ่านไฟล์กั๊บ'); }
+            };
+            reader.readAsText(file);
+        }
+
+        function clearCurrentRoomData() {
+            if (confirm('⚠️ ต้องการล้างคะแนนรดน้ำให้เป็น 0 💧 ทั้งห้อง?')) {
+                const students = state.rooms[state.currentRoom] || []; students.forEach(s => s.water = 0);
+                saveData(); renderAll(); renderAdminStudents(); alert('รีเซ็ตคะแนนเป็น 0 ทั้งห้องเรียบร้อยกั๊บ!');
+            }
+        }
+
+        window.onload = loadData;
+    </script>
+</body>
+</html>

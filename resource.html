@@ -1,0 +1,402 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 แหล่งเรียนรู้ | สวนแสนสุข</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #f0f9ff; 
+            background-image: radial-gradient(#bae6fd 3px, transparent 3px);
+            background-size: 40px 40px;
+            text-align: center;
+            color: #333;
+            margin: 0;
+            padding: 0 0 50px 0;
+        }
+
+        /* =========================================================
+           👑 CSS เมนูด้านบน
+           ========================================================= */
+        .nav-menu {
+            background: #a855f7;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            position: relative; 
+        }
+
+        .nav-menu a.main-link {
+            background: #d8b4fe;
+            color: #4c1d95;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 18px;
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 3px solid #f3e8ff;
+            box-shadow: 0 4px 0px #9333ea;
+            transition: 0.2s;
+        }
+
+        .nav-menu a.main-link:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0px #9333ea;
+        }
+
+        .top-left-menu {
+            position: absolute;
+            top: 12px;
+            left: 15px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-home-login {
+            background: #ffffff;
+            border: 3px solid #f3e8ff;
+            width: 46px;
+            height: 46px;
+            font-size: 22px;
+            border-radius: 50%;
+            text-decoration: none;
+            box-shadow: 0 4px 0px #9333ea;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: 0.2s;
+        }
+        .btn-home-login:active { transform: translateY(4px); box-shadow: 0 0px 0px #9333ea; }
+
+        @media (max-width: 768px) {
+            .top-left-menu {
+                position: static;
+                margin-bottom: 10px;
+                display: flex;
+                justify-content: center;
+                width: 100%;
+            }
+            .nav-menu { flex-direction: column; align-items: center; }
+        }
+
+        /* =========================================================
+           📦 CSS โซนตัวเลือกฟิลเตอร์
+           ========================================================= */
+        .select-zone {
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            border: 3px solid #7dd3fc;
+            max-width: 600px;
+            box-shadow: 0 5px 0px #bae6fd;
+        }
+
+        select {
+            padding: 10px 20px;
+            font-size: 18px;
+            font-family: 'Kanit';
+            font-weight: bold;
+            color: #0369a1;
+            border: 3px solid #38bdf8;
+            border-radius: 10px;
+            width: 90%;
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* =========================================================
+           🖼️ CSS กล่องการ์ดแหล่งเรียนรู้ (กรอบประหนาๆ ตามรูปตัวอย่าง)
+           ========================================================= */
+        #resourceContainer {
+            max-width: 750px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .resource-card {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 25px;
+            border: 5px dashed #0284c7; 
+            box-shadow: 0 8px 0px #bae6fd;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .resource-card-title {
+            color: #0369a1;
+            font-size: 26px;
+            font-weight: 800;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 3px dashed #cbd5e1;
+            padding-bottom: 10px;
+        }
+
+        .teacher-note {
+            background: #fdfce8;
+            border: 3px solid #fde047;
+            padding: 15px;
+            border-radius: 15px;
+            color: #854d0e;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* อัตราส่วน 16:9 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 15px;
+            border: 4px solid #0284c7;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 0px #0369a1;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 🌟 เพิ่ม CSS กรอบสำหรับแสดงไฟล์ PDF หรือ สไลด์ 🌟 */
+        .document-container {
+            position: relative;
+            padding-bottom: 70%; 
+            height: 0;
+            overflow: hidden;
+            border-radius: 15px;
+            border: 4px solid #10b981;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 0px #059669;
+            background: #f0fdf4;
+        }
+
+        .document-container iframe, .document-container embed {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .btn-doc {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: 800;
+            border-radius: 15px;
+            border: 3px solid #047857;
+            box-shadow: 0 5px 0px #065f46;
+            transition: 0.2s;
+            width: 80%;
+        }
+        .btn-doc:active { transform: translateY(4px); box-shadow: 0 1px 0px #065f46; }
+
+    </style>
+</head>
+<body>
+
+    <div class="nav-menu">
+        <div class="top-left-menu">
+            <a href="login.html" class="btn-home-login" title="กลับหน้าเข้าสู่ระบบ">🏠</a>
+        </div>
+
+        <a href="index.html" class="main-link">🏡 หน้าแรก</a>
+        <a href="mission.html" class="main-link">⚔️ ภารกิจ</a>
+        <a href="resource.html" class="main-link" style="background:#fde047; color:#854d0e; border-color:white; box-shadow: 0 4px 0px #ca8a04;">📚 แหล่งเรียนรู้</a>
+        <a href="share.html" class="main-link">🤝 แบ่งปัน</a>
+        <a href="monster-hatchery.html" class="main-link">🌱 แปลงปลูกต้นไม้</a>
+        <a href="profile.html" class="main-link" style="background:#60a5fa; color:#1e3a8a; border-color:#bfdbfe; box-shadow: 0 4px 0px #2563eb;">👤 โปรไฟล์</a> 
+    </div>
+
+    <div class="select-zone">
+        <h2 style="margin-top:0; color: #0369a1;">🎯 ค้นหาแหล่งเรียนรู้ประจำภารกิจ</h2>
+        <select id="missionFilter" onchange="filterResourceData()">
+            <option value="ALL">🌟 แสดงแหล่งเรียนรู้ทั้งหมด</option>
+        </select>
+    </div>
+
+    <div id="resourceContainer">
+        <p style="color: #0284c7; font-weight: bold; font-size: 20px;">กำลังเปิดคลังหนังสือเวทมนตร์... ⏳</p>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfBIp5gujB9cE2twLz483hllYOubgYuks",
+            authDomain: "codingplant-f19fc.firebaseapp.com",
+            projectId: "codingplant-f19fc",
+            storageBucket: "codingplant-f19fc.firebasestorage.app",
+            messagingSenderId: "194545106875",
+            appId: "1:194545106875:web:d4b7ca3dd6b57f46cc8e9e"
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        let currentRoom = localStorage.getItem("currentRoom");
+        let loggedInUsers = JSON.parse(localStorage.getItem("loggedInUsers") || "[]");
+
+        if (!currentRoom || loggedInUsers.length === 0) {
+            alert("กรุณาเข้าสู่ระบบก่อนนะกั๊บ! 🔑");
+            window.location.href = "login.html";
+        }
+
+        let allResources = []; 
+        let missionTitles = {}; 
+
+        // โหลดข้อมูลภารกิจเพื่อเอามาแมปชื่อ
+        db.collection("missions").orderBy("updatedAt", "asc").onSnapshot((snapshot) => {
+            const filterDropdown = document.getElementById("missionFilter");
+            filterDropdown.innerHTML = '<option value="ALL">🌟 แสดงแหล่งเรียนรู้ทั้งหมด</option>';
+            missionTitles = {};
+
+            snapshot.forEach((doc) => {
+                let m = doc.data();
+                missionTitles[doc.id] = m.title; 
+                filterDropdown.innerHTML += `<option value="${doc.id}">${doc.id} : ${m.title}</option>`;
+            });
+
+            fetchAndRenderAllResources();
+        });
+
+        // ฟังก์ชันแปลงลิงก์ YouTube ให้ฝังได้
+        function getEmbedUrl(url) {
+            if (!url) return "";
+            let videoId = "";
+            if (url.includes("youtube.com/watch?v=")) {
+                videoId = url.split("v=")[1].split("&")[0];
+            } else if (url.includes("youtu.be/")) {
+                videoId = url.split("youtu.be/")[1].split("?")[0];
+            }
+            return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+        }
+
+        // 🌟 เพิ่มฟังก์ชันแปลงลิงก์สไลด์/PDF ให้แสดงในกรอบได้ 🌟
+        function getDocumentEmbedUrl(url) {
+            if(!url) return "";
+            
+            if (url.includes("docs.google.com/presentation")) {
+                return url.split('/edit')[0].split('/view')[0] + "/embed?start=false&loop=false&delayms=3000";
+            }
+            if (url.includes("canva.com/design") && !url.includes("embed")) {
+                return url.replace("/view", "/view?embed");
+            }
+            
+            return url;
+        }
+
+        // ดึงคลังสื่อทั้งหมด
+        function fetchAndRenderAllResources() {
+            db.collection("resources").orderBy("updatedAt", "asc").onSnapshot((snapshot) => {
+                allResources = [];
+                snapshot.forEach((doc) => {
+                    let r = doc.data();
+                    r.id = doc.id; 
+                    allResources.push(r);
+                });
+                renderCards("ALL");
+            });
+        }
+
+        // วาดการ์ด
+        function renderCards(filterId) {
+            const container = document.getElementById("resourceContainer");
+            container.innerHTML = "";
+
+            let targets = allResources;
+            if (filterId !== "ALL") {
+                targets = allResources.filter(r => r.id === filterId);
+            }
+
+            if (targets.length === 0) {
+                container.innerHTML = `
+                    <div class="resource-card" style="border-color: #ef4444;">
+                        <h3 style="color:#ef4444; margin:0;">📭 ยังไม่มีแหล่งเรียนรู้ที่ต้องการค้นหาในระบบกั๊บ</h3>
+                    </div>
+                `;
+                return;
+            }
+
+            targets.forEach((r) => {
+                let embedUrl = getEmbedUrl(r.videoLink);
+                let embedDocUrl = getDocumentEmbedUrl(r.slideLink); // ประมวลผลเอกสาร
+                let displayTitle = missionTitles[r.id] || r.id; 
+                
+                let cardHTML = `
+                    <div class="resource-card">
+                        <div class="resource-card-title">📘 แหล่งเรียนรู้: ${displayTitle}</div>
+                `;
+                
+                // 1. โน้ต
+                if (r.note && r.note.trim() !== "") {
+                    cardHTML += `
+                        <div class="teacher-note">
+                            👩‍🏫 <b>คุณครูฝากบอกว่า:</b><br>
+                            ${r.note.replace(/\n/g, "<br>")}
+                        </div>
+                    `;
+                }
+
+                // 2. วิดีโอ YouTube
+                if (embedUrl) {
+                    cardHTML += `
+                        <div class="video-container">
+                            <iframe src="${embedUrl}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    `;
+                }
+
+                // 🌟 3. กรอบแสดงสไลด์และเอกสาร 🌟
+                if (embedDocUrl) {
+                    cardHTML += `
+                        <div class="document-container">
+                            <iframe src="${embedDocUrl}" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                        <div style="margin-top: 15px;">
+                            <a href="${r.slideLink}" target="_blank" class="btn-doc">
+                                ✨ เปิดหน้าจอใหญ่
+                            </a>
+                        </div>
+                    `;
+                }
+
+                // กรณีว่าง
+                if (!r.videoLink && !r.slideLink && (!r.note || r.note.trim() === "")) {
+                    cardHTML += `<p style="color: #64748b; font-weight: bold; margin: 0;">ภารกิจนี้คุณครูยังไม่ได้เพิ่มสื่อการสอนกั๊บ 🎈</p>`;
+                }
+
+                cardHTML += `</div>`;
+                container.innerHTML += cardHTML;
+            });
+        }
+
+        // ฟิลเตอร์เมื่อขยับ Dropdown
+        function filterResourceData() {
+            const selectedValue = document.getElementById("missionFilter").value;
+            renderCards(selectedValue);
+        }
+    </script>
+</body>
+</html>

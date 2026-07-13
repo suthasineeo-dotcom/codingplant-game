@@ -1,0 +1,258 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔑 เข้าสู่ระบบกลุ่ม | สวนแสนสุข</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #e0f2fe;
+            background-image: radial-gradient(#bae6fd 3px, transparent 3px);
+            background-size: 40px 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px 0;
+            position: relative; /* เพิ่มเพื่อให้ปุ่มแอดมินอิงตำแหน่งมุมขวาบนของหน้าจอ */
+        }
+
+        /* 👨‍🏫 ปุ่มระบบหลังบ้านของคุณครู มุมขวาบน */
+        .btn-admin {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #fbbf24;
+            color: #78350f;
+            border: 3px solid #f59e0b;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: 800;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: 'Kanit', sans-serif;
+            box-shadow: 0 4px 0px #d97706;
+            transition: 0.2s;
+            z-index: 100;
+        }
+
+        .btn-admin:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0px #d97706;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 25px;
+            border: 5px solid #38bdf8;
+            box-shadow: 0 10px 0px #7dd3fc;
+            text-align: center;
+            width: 90%;
+            max-width: 450px;
+        }
+
+        .logo-icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: #0284c7;
+            margin-top: 0;
+            font-weight: 800;
+            font-size: 28px;
+        }
+
+        .section-label {
+            text-align: left;
+            font-weight: 800;
+            color: #0369a1;
+            margin: 15px 0 5px 5px;
+            font-size: 16px;
+        }
+
+        .input-login {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            border: 3px solid #bae6fd;
+            border-radius: 15px;
+            outline: none;
+            font-family: 'Kanit';
+            font-weight: 600;
+            text-align: center;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        .input-login:focus {
+            border-color: #38bdf8;
+        }
+
+        .names-container {
+            background: #f0f9ff;
+            padding: 15px;
+            border-radius: 18px;
+            border: 2px dashed #7dd3fc;
+            margin-bottom: 20px;
+        }
+
+        .btn-login {
+            background: #4ade80;
+            color: #14532d;
+            border: none;
+            padding: 15px;
+            font-size: 20px;
+            font-weight: 800;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 4px 0px #16a34a;
+            font-family: 'Kanit';
+            width: 100%;
+            transition: 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-login:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0px #16a34a;
+        }
+
+        /* ปรับตำแหน่งปุ่มเมื่อดูบนมือถือ ไม่ให้บังกล่องล็อกอิน */
+        @media (max-width: 600px) {
+            body {
+                flex-direction: column;
+                justify-content: flex-start;
+                padding-top: 80px;
+            }
+            .btn-admin {
+                font-size: 14px;
+                padding: 8px 15px;
+                top: 15px;
+                right: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="btn-admin" onclick="adminLogin()">👨‍🏫 ระบบหลังบ้าน (ครู)</button>
+
+    <div class="login-box">
+        <div class="logo-icon">🌱💧</div>
+        <h1>เข้าสู่สวนแสนสุข (แบบกลุ่ม)</h1>
+        <p style="color: #64748b; margin-bottom: 20px;">เลือกห้องเรียน และพิมพ์ชื่อเล่นของทุกคนในเครื่องนี้เลยกั๊บ!</p>
+
+        <div class="section-label">🏫 1. เลือกห้องเรียนของหนู:</div>
+        <select id="classroom" class="input-login" style="cursor: pointer; text-align-last: center;">
+            <option value="" disabled selected>-- กดเลือกห้องเรียนตรงนี้กั๊บ --</option>
+            <option value="ป.4/1">ห้อง ป.4/1</option>
+            <option value="ป.4/2">ห้อง ป.4/2</option>
+            <option value="ป.4/3">ห้อง ป.4/3</option>
+        </select>
+
+        <div class="section-label">👧👦 2. พิมพ์ชื่อเล่นของสมาชิก (1-3 คน):</div>
+        <div class="names-container">
+            <input type="text" id="name1" class="input-login" placeholder="👤 คนที่ 1 (ชื่อเล่น)...">
+            <input type="text" id="name2" class="input-login" placeholder="👤 คนที่ 2 (ถ้าไม่มีไม่ต้องพิมพ์)...">
+            <input type="text" id="name3" class="input-login" placeholder="👤 คนที่ 3 (ถ้าไม่มีไม่ต้องพิมพ์)...">
+        </div>
+
+        <button class="btn-login" id="btnLogin" onclick="loginGroup()">เข้าสู่สวนแสนสุข 🚀</button>
+    </div>
+
+    <script>
+        // ✅ นำ Config ของคุณครูมาใส่ให้เรียบร้อยแล้วครับ
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfBIp5gujB9cE2twLz483hllYOubgYuks",
+            authDomain: "codingplant-f19fc.firebaseapp.com",
+            projectId: "codingplant-f19fc",
+            storageBucket: "codingplant-f19fc.firebasestorage.app",
+            messagingSenderId: "194545106875",
+            appId: "1:194545106875:web:d4b7ca3dd6b57f46cc8e9e",
+            measurementId: "G-Y6C9LXKJ1H"
+        };
+
+        // เริ่มต้นการทำงานของ Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // 👨‍🏫 ฟังก์ชันระบบหลังบ้านของคุณครู
+        function adminLogin() {
+            let pass = prompt("กรุณาใส่รหัสผ่านสำหรับคุณครู เพื่อเข้าสู่ระบบหลังบ้าน:");
+            
+            if (pass === "587520") {
+                alert("✅ ยินดีต้อนรับคุณครูครับ!");
+                // นำทางไปยังหน้า admin.html ที่คุณครูจะให้ช่วยสร้างใหม่
+                window.location.href = "admin.html"; 
+            } else if (pass !== null && pass !== "") {
+                alert("❌ รหัสผ่านไม่ถูกต้องกั๊บ ลองใหม่อีกครั้งนะ!");
+            }
+        }
+
+        async function loginGroup() {
+            let room = document.getElementById('classroom').value;
+            let n1 = document.getElementById('name1').value.trim();
+            let n2 = document.getElementById('name2').value.trim();
+            let n3 = document.getElementById('name3').value.trim();
+
+            // ตรวจสอบข้อมูลเบื้องต้น
+            if (!room) { alert("อย่าลืมเลือกห้องเรียนก่อนนะกั๊บ! 🏫"); return; }
+            if (n1 === "" && n2 === "" && n3 === "") { alert("อย่างน้อยต้องพิมพ์ชื่อเล่น 1 คนนะกั๊บ! 📝"); return; }
+
+            let btn = document.getElementById('btnLogin');
+            btn.disabled = true;
+            btn.innerText = "กำลังพาเข้าสวน... ⏳";
+
+            // กรองเอาเฉพาะช่องที่มีการพิมพ์ชื่อจริง ๆ
+            let rawNames = [n1, n2, n3];
+            let activeNames = rawNames.filter(name => name !== "");
+
+            let loggedInUsers = []; // อาร์เรย์สำหรับเก็บรหัสที่จะใช้ในเครื่องนี้
+
+            try {
+                // วนลูปตรวจสอบและสร้างฐานข้อมูลรายคน
+                for (let name of activeNames) {
+                    let docId = `${room.replace("/", "-")}_${name}`; // สร้างรหัสไม่ให้ซ้ำกัน เช่น "ป.1/1_สมชาย"
+                    let userRef = db.collection("users").doc(docId);
+                    let doc = await userRef.get();
+
+                    if (!doc.exists) {
+                        // ถ้าเด็กคนนี้เพิ่งเคยเข้าเว็บครั้งแรก ให้สร้างข้อมูลและแจก 0 หยดน้ำเริ่มต้น
+                        await userRef.set({
+                            room: room,
+                            nickname: name,
+                            avatar: "👤", // 👈 เพิ่มอวตารเริ่มต้นตรงนี้ให้แล้วกั๊บ!
+                            waterDrops: 0, // แต้มหยดน้ำสะสมถาวร
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    }
+                    // บันทึก ID นี้ลงรายการคนล็อกอินสำเร็จ
+                    loggedInUsers.push(docId);
+                }
+
+                // บันทึกข้อมูลกลุ่มนี้ลงในความจำเบราว์เซอร์ชั่วคราว (เพื่อให้หน้าอื่นดึงไปใช้ได้)
+                localStorage.setItem("currentRoom", room);
+                localStorage.setItem("loggedInUsers", JSON.stringify(loggedInUsers));
+
+                // พาเข้าสู่หน้าแรก
+                window.location.href = "index.html";
+
+            } catch (error) {
+                console.error("Error:", error);
+                alert("เกิดข้อผิดพลาด ลองตรวจสอบโค้ด Firebase Config อีกครั้งนะกั๊บ 😢");
+                btn.disabled = false;
+                btn.innerText = "เข้าสู่สวนแสนสุข 🚀";
+            }
+        }
+    </script>
+</body>
+</html>
