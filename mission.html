@@ -468,11 +468,16 @@
         // 4. 🔥 ฟังก์ชันไม้ตาย: ยิงแจ้งเตือนทะลุแท็บแบบ LINE พร้อมเสียง
         function triggerLikeLineNotification(title, bodyText) {
             
-            // 🎶 เล่นเสียงแจ้งเตือนป๊อป! (ช่วยดึงสติเด็กตอนทำ Scratch)
+            // 🎶 1. เล่นเสียงแจ้งเตือนป๊อป! 
             let audio = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
             audio.play().catch(e => { console.log("บราวเซอร์บล็อกเสียงอัตโนมัติ"); });
 
-            // 💻 ถ้าเด็กอนุญาตแจ้งเตือนและใช้ HTTPS จะเด้งมุมจอล่างขวาเหมือน LINE ทันที!
+            // 🟡 2. แสดงกล่องสีเหลืองในหน้าเว็บ "เสมอ" (กันพลาด 100%)
+            document.getElementById("alertTitle").innerText = title;
+            document.getElementById("alertMessage").innerText = bodyText;
+            document.getElementById("customAlertBox").classList.add("show");
+
+            // 💻 3. ลองยิงแจ้งเตือนข้ามแท็บไปที่ Windows
             if ("Notification" in window && Notification.permission === "granted") {
                 const noti = new Notification(title, {
                     body: bodyText,
@@ -480,16 +485,11 @@
                     requireInteraction: true // ให้กล่องค้างไว้จนกว่าเด็กจะกดปิด
                 });
                 
-                // ถ้านักเรียนกดที่แจ้งเตือน (ที่มุมจอ) จะสลับกลับมาหน้าเว็บภารกิจของเราทันที
+                // ถ้านักเรียนกดที่แจ้งเตือน (ที่มุมจอ) จะสลับกลับมาหน้าเว็บภารกิจของเรา
                 noti.onclick = function() {
                     window.focus();
                     this.close();
                 };
-            } else {
-                // 🛠️ แผนสำรอง: ถ้าระบบ OS มีปัญหา จะใช้แบบกล่องสไลด์ในหน้าเว็บแทน
-                document.getElementById("alertTitle").innerText = title;
-                document.getElementById("alertMessage").innerText = bodyText;
-                document.getElementById("customAlertBox").classList.add("show");
             }
         }
 
