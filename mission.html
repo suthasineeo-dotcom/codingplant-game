@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -206,10 +206,10 @@
         .btn-submit-work:hover { background: #34d399; }
         .btn-submit-work:active { transform: translateY(4px); box-shadow: 0 1px 0px #047857; }
 
-        /* 💡 CSS สำหรับแจ้งเตือนในหน้าเว็บ (In-App Notification) */
+        /* 💡 ระบบ In-App (เก็บไว้เป็นแผนสำรองเผื่อเด็กบางคนไปปิดแจ้งเตือนระบบ) */
         #customAlertBox {
             position: fixed;
-            top: -400px; /* 🛠️ แก้ตรงนี้: ดันขึ้นไปซ่อนให้สูงกว่าเดิมจะได้ไม่โผล่มากวนใจ */
+            top: -400px; /* ซ่อนไว้มิดชิด */
             left: 50%;
             transform: translateX(-50%);
             background: #fef08a;
@@ -227,7 +227,7 @@
         }
 
         #customAlertBox.show {
-            top: 20px; /* ตอนแสดงผลก็เด้งลงมาที่เดิม */
+            top: 20px; 
         }
 
         #alertTitle { color: #ca8a04; font-size: 22px; font-weight: 800; margin: 0 0 10px 0; }
@@ -251,16 +251,17 @@
 </head>
 <body>
 
-    <!-- 💡 กล่องแจ้งเตือนในหน้าเว็บ (Custom Alert) -->
+    <!-- แผนสำรอง: แจ้งเตือนหน้าเว็บ -->
     <div id="customAlertBox">
         <h3 id="alertTitle">🧚‍♀️ ข้อความจากนางฟ้า</h3>
         <p id="alertMessage">โหลดข้อความ...</p>
         <button class="btn-close-alert" onclick="closeCustomAlert()">รับทราบกั๊บ! ✌️</button>
     </div>
 
-    <div id="notifyPermissionZone" style="display:none; background: #fef08a; padding: 15px; text-align: center; border-bottom: 3px solid #eab308;">
-        <span style="font-weight: 800; color: #a16207; font-size: 18px;">🔔 เพื่อรับคำแนะนำจากคุณครู กดเปิดแจ้งเตือนนะกั๊บ! </span>
-        <button onclick="requestNotification()" style="background:#eab308; color:white; border:none; padding:8px 20px; font-size:16px; font-weight:bold; font-family:'Kanit'; border-radius:10px; cursor:pointer; margin-left:10px; box-shadow: 0 3px 0px #ca8a04;">เปิดรับเสียงกระซิบ</button>
+    <!-- 💡 ปุ่มขออนุญาตแจ้งเตือน (สำคัญมากสำหรับ HTTPS) -->
+    <div id="notifyPermissionZone" style="display:none; background: #fdf2f8; padding: 15px; text-align: center; border-bottom: 3px solid #ec4899;">
+        <span style="font-weight: 800; color: #be185d; font-size: 18px;">🔔 เพื่อให้ข้อความครูเด้งเตือนตอนหนูทำ Scratch กรุณากดปุ่มอนุญาตนะกั๊บ! </span>
+        <button onclick="requestNotification()" style="background:#ec4899; color:white; border:none; padding:8px 20px; font-size:16px; font-weight:bold; font-family:'Kanit'; border-radius:10px; cursor:pointer; margin-left:10px; box-shadow: 0 3px 0px #9d174d;">เปิดรับแจ้งเตือน</button>
     </div>
 
     <div class="nav-menu">
@@ -402,29 +403,31 @@
         }
 
         // ==========================================
-        // 💡 ระบบโค้ชนางฟ้า (รับแจ้งเตือนชัวร์ 100%)
+        // 💡 ระบบแจ้งเตือนข้ามแท็บ (Native Web Push เหมือนแอป LINE)
         // ==========================================
         
         let isFirstLoadRoom = true;
         let isFirstLoadAll = true;
 
+        // 1. เช็คว่าบราวเซอร์ให้สิทธิ์แจ้งเตือนระดับ OS หรือยัง
         function checkNotificationStatus() {
             if ("Notification" in window) {
                 if (Notification.permission === "default") {
-                    document.getElementById("notifyPermissionZone").style.display = "block";
+                    document.getElementById("notifyPermissionZone").style.display = "block"; // แสดงปุ่มขออนุญาต
                 } else if (Notification.permission === "granted") {
-                    startListeningToCoach();
+                    startListeningToCoach(); // อนุญาตแล้ว เริ่มดักฟังเลย
                 } else {
-                    // ถ้าเด็กกด Block ไว้ ก็ยังให้ฟังฐานข้อมูลอยู่ดี เพื่อใช้เด้ง In-App Alert
-                    startListeningToCoach();
+                    startListeningToCoach(); // โดนบล็อก ก็ดักฟังเพื่อใช้แผนสำรอง (In-App)
                 }
             } else {
-                startListeningToCoach(); // บราวเซอร์ไม่รองรับ ก็ฟังผ่าน In-App ได้
+                startListeningToCoach();
             }
         }
 
+        // 2. ขอกดอนุญาต (นักเรียนจะเห็นป๊อปอัปของ Chrome เด้งมุมซ้ายบน)
         function requestNotification() {
             if (!("Notification" in window)) {
+                alert("บราวเซอร์นี้ไม่รองรับระบบแจ้งเตือนแบบข้ามแท็บกั๊บ");
                 document.getElementById("notifyPermissionZone").style.display = "none";
                 startListeningToCoach();
                 return;
@@ -435,66 +438,67 @@
             });
         }
 
+        // 3. เริ่มดักฟังข้อความจาก Firestore
         function startListeningToCoach() {
             if (!currentRoom) return;
 
             let formattedRoomCode = currentRoom.replace('ป.', 'P').replace('/', '-');
 
-            // 1. ฟังข้อความแบบเฉพาะเจาะจงห้องตัวเอง
             db.collection("coach_messages").doc(formattedRoomCode).onSnapshot(doc => {
                 if (doc.exists) {
                     let data = doc.data();
                     if (!isFirstLoadRoom) { 
-                        showPushNotification("🧚‍♀️ โค้ชนางฟ้ากระซิบว่า...", data.message);
+                        triggerLikeLineNotification("🧚‍♀️ โค้ชนางฟ้ากระซิบว่า...", data.message);
                     }
                 }
                 isFirstLoadRoom = false; 
             });
 
-            // 2. ฟังประกาศรวม (ALL)
             db.collection("coach_messages").doc("ALL").onSnapshot(doc => {
                 if (doc.exists) {
                     let data = doc.data();
                     if (!isFirstLoadAll) {
-                        showPushNotification("📢 ประกาศจากนางฟ้าถึงทุกคน...", data.message);
+                        triggerLikeLineNotification("📢 ประกาศจากนางฟ้าถึงทุกคน...", data.message);
                     }
                 }
                 isFirstLoadAll = false;
             });
         }
 
-        // ฟังก์ชันสั่งเด้งแจ้งเตือน (ควบ 2 ระบบ OS + หน้าเว็บ)
-        function showPushNotification(title, bodyText) {
-            // ระบบ 1: เด้งแจ้งเตือนในหน้าเว็บ (ชัวร์ 100% ไม่โดนบล็อก)
-            document.getElementById("alertTitle").innerText = title;
-            document.getElementById("alertMessage").innerText = bodyText;
-            document.getElementById("customAlertBox").classList.add("show");
+        // 4. 🔥 ฟังก์ชันไม้ตาย: ยิงแจ้งเตือนทะลุแท็บแบบ LINE พร้อมเสียง
+        function triggerLikeLineNotification(title, bodyText) {
             
-            // เล่นเสียงแจ้งเตือนเบาๆ (ถ้าต้องการ)
-            // let audio = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
-            // audio.play().catch(e => {});
+            // 🎶 เล่นเสียงแจ้งเตือนป๊อป! (ช่วยดึงสติเด็กตอนทำ Scratch)
+            let audio = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
+            audio.play().catch(e => { console.log("บราวเซอร์บล็อกเสียงอัตโนมัติ"); });
 
-            // ระบบ 2: เด้งแจ้งเตือนของ Windows/Mac (เผื่อเด็กอยู่หน้าแท็บ Scratch)
+            // 💻 ถ้าเด็กอนุญาตแจ้งเตือนและใช้ HTTPS จะเด้งมุมจอล่างขวาเหมือน LINE ทันที!
             if ("Notification" in window && Notification.permission === "granted") {
                 const noti = new Notification(title, {
                     body: bodyText,
-                    icon: "https://cdn-icons-png.flaticon.com/512/3858/3858348.png"
+                    icon: "https://cdn-icons-png.flaticon.com/512/3858/3858348.png",
+                    requireInteraction: true // ให้กล่องค้างไว้จนกว่าเด็กจะกดปิด
                 });
                 
-                setTimeout(() => noti.close(), 8000);
-                
+                // ถ้านักเรียนกดที่แจ้งเตือน (ที่มุมจอ) จะสลับกลับมาหน้าเว็บภารกิจของเราทันที
                 noti.onclick = function() {
                     window.focus();
                     this.close();
                 };
+            } else {
+                // 🛠️ แผนสำรอง: ถ้าระบบ OS มีปัญหา จะใช้แบบกล่องสไลด์ในหน้าเว็บแทน
+                document.getElementById("alertTitle").innerText = title;
+                document.getElementById("alertMessage").innerText = bodyText;
+                document.getElementById("customAlertBox").classList.add("show");
             }
         }
 
-        // ฟังก์ชันปิดกล่องแจ้งเตือนในหน้าเว็บ
+        // ฟังก์ชันปิดกล่องแผนสำรอง
         function closeCustomAlert() {
             document.getElementById("customAlertBox").classList.remove("show");
         }
 
+        // รันฟังก์ชันตอนโหลดเว็บ
         checkNotificationStatus();
     </script>
 </body>
