@@ -35,6 +35,55 @@
         select { cursor: pointer; font-weight: bold; color: #0f172a; }
         .hint-container { background: #f8fafc; border: 2px dashed #bae6fd; padding: 15px; border-radius: 10px; margin-bottom: 15px; }
         .hint-item { display: flex; gap: 10px; margin-bottom: 10px; }
+        .hint-item-diagnostic {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr auto;
+            gap: 10px;
+            align-items: stretch;
+            margin-bottom: 14px;
+            padding: 14px;
+            background: #ffffff;
+            border: 2px solid #bae6fd;
+            border-radius: 12px;
+            box-shadow: 0 3px 0 #e0f2fe;
+        }
+        .hint-field-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            text-align: left;
+        }
+        .hint-field-label {
+            font-weight: 800;
+            font-size: 14px;
+            color: #0369a1;
+        }
+        .hint-symptom-input,
+        .hint-guidance-input {
+            min-height: 48px;
+        }
+        .hint-guidance-input {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .hint-preview-note {
+            grid-column: 1 / -1;
+            color: #64748b;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.55;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 8px 10px;
+        }
+        @media (max-width: 760px) {
+            .hint-item-diagnostic {
+                grid-template-columns: 1fr;
+            }
+            .hint-item-diagnostic .btn-remove-hint {
+                min-height: 42px;
+            }
+        }
         .btn-add-hint { background: #e0f2fe; color: #0369a1; border: 2px solid #bae6fd; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Kanit'; transition: 0.2s; }
         .btn-remove-hint { background: #fee2e2; color: #b91c1c; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .btn-save { background: #10b981; color: white; border: none; padding: 12px 25px; font-size: 18px; font-weight: bold; border-radius: 10px; cursor: pointer; width: 100%; font-family: 'Kanit'; box-shadow: 0 4px 0px #047857; margin-top: 10px; transition: 0.2s;}
@@ -61,6 +110,202 @@
         .time-stamp { font-size: 12px; color: #64748b; font-weight: bold; margin-bottom: 5px;}
         .btn-grade { background-color: #10b981; color: white; border: none; padding: 12px 15px; border-radius: 10px; cursor: pointer; font-family: 'Kanit'; font-weight: 800; font-size: 16px; width: 100%; box-shadow: 0 4px 0px #047857; transition: 0.1s; }
         .btn-delete-work { background-color: #fee2e2; color: #ef4444; border: 2px solid #f87171; padding: 10px; border-radius: 10px; cursor: pointer; font-family: 'Kanit'; font-weight: 800; font-size: 14px; width: 100%; margin-top: 10px; transition: 0.1s; }
+    
+        /* =========================================================
+        🎁 ระบบกำหนดรางวัลตอนตรวจงาน
+        ========================================================= */
+
+        .reward-setting-box {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 12px;
+            margin-bottom: 12px;
+        }
+
+        .reward-setting-title {
+            color: #475569;
+            font-size: 15px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .reward-input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .reward-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .reward-input-group label {
+            font-size: 13px;
+            font-weight: 800;
+            color: #475569;
+        }
+
+        .reward-number-input {
+            width: 100%;
+            padding: 9px;
+            border: 2px solid #cbd5e1;
+            border-radius: 9px;
+            font-family: 'Kanit', sans-serif;
+            font-size: 16px;
+            font-weight: 800;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .reward-number-input:focus {
+            border-color: #10b981;
+            outline: none;
+        }
+
+        /* =========================================================
+        🎁 กล่องมอบรางวัลพิเศษ
+        ========================================================= */
+
+        .bonus-reward-panel {
+            background: linear-gradient(135deg, #fff7ed, #fef3c7);
+            border: 4px solid #f59e0b;
+            border-radius: 20px;
+            padding: 22px;
+            margin-bottom: 30px;
+            box-shadow: 0 6px 0 #d97706;
+        }
+
+        .bonus-reward-panel h3 {
+            color: #92400e;
+            font-size: 24px;
+            margin: 0 0 8px 0;
+            text-align: center;
+        }
+
+        .bonus-description {
+            color: #78350f;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        .bonus-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .bonus-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            text-align: left;
+        }
+
+        .bonus-form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .bonus-form-group label {
+            color: #78350f;
+            font-weight: 800;
+        }
+
+        .bonus-form-group input,
+        .bonus-form-group select,
+        .bonus-form-group textarea {
+            width: 100%;
+            padding: 11px;
+            border: 2px solid #fbbf24;
+            border-radius: 10px;
+            font-family: 'Kanit', sans-serif;
+            font-size: 16px;
+            box-sizing: border-box;
+            background: white;
+        }
+
+        .btn-special-reward {
+            width: 100%;
+            background: #f59e0b;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 13px 20px;
+            font-family: 'Kanit', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #b45309;
+            margin-top: 15px;
+        }
+
+        .btn-special-reward:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #b45309;
+        }
+
+        .btn-special-reward:disabled {
+            background: #94a3b8;
+            box-shadow: 0 5px 0 #64748b;
+            cursor: not-allowed;
+        }
+
+        .group-wallet-info {
+            background: white;
+            color: #475569;
+            border: 2px solid #fde68a;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: left;
+        }
+
+        @media (max-width: 700px) {
+            .reward-input-row,
+            .bonus-form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bonus-form-group.full-width {
+                grid-column: auto;
+            }
+        }
+
+
+        /* =========================================================
+           💬 ระบบอนุมัติคำตอบกระดานแห่งภูมิปัญญา
+           ========================================================= */
+        .tab-btn.active-purple { background:#8b5cf6; color:white; box-shadow:0 4px 0 #6d28d9; }
+        .answer-admin-toolbar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; align-items:center; }
+        .answer-admin-toolbar input, .answer-admin-toolbar select { flex:1; min-width:190px; }
+        .answer-count-badge { background:#fee2e2; color:#b91c1c; border-radius:999px; padding:2px 8px; font-size:12px; margin-left:5px; }
+        .answer-admin-list { display:grid; gap:18px; }
+        .answer-admin-card { border:3px solid #e9d5ff; border-radius:18px; background:#faf5ff; padding:18px; text-align:left; box-shadow:0 5px 0 #ddd6fe; }
+        .answer-admin-card.approved { border-color:#86efac; background:#f0fdf4; box-shadow:0 5px 0 #bbf7d0; }
+        .answer-admin-card.best { border-color:#facc15; background:#fffbeb; box-shadow:0 5px 0 #fde68a; }
+        .answer-admin-head { display:flex; justify-content:space-between; gap:10px; align-items:flex-start; flex-wrap:wrap; }
+        .answer-admin-question { background:white; border:2px dashed #c4b5fd; border-radius:14px; padding:12px; margin:12px 0; }
+        .answer-admin-text { background:white; border:2px solid #e2e8f0; border-radius:14px; padding:14px; white-space:pre-wrap; font-size:16px; }
+        .answer-admin-meta { color:#64748b; font-size:13px; font-weight:700; margin-top:8px; }
+        .answer-status-pill { display:inline-block; border-radius:999px; padding:5px 10px; font-size:13px; font-weight:800; background:#fef3c7; color:#92400e; }
+        .answer-status-pill.ok { background:#dcfce7; color:#166534; }
+        .answer-status-pill.best { background:#fef08a; color:#854d0e; }
+        .answer-admin-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
+        .btn-approve-answer, .btn-best-answer, .btn-view-question { border:none; border-radius:10px; padding:10px 14px; font-family:'Kanit'; font-weight:800; cursor:pointer; }
+        .btn-approve-answer { background:#10b981; color:white; box-shadow:0 4px 0 #047857; }
+        .btn-best-answer { background:#facc15; color:#713f12; box-shadow:0 4px 0 #ca8a04; }
+        .btn-view-question { background:#e0f2fe; color:#0369a1; box-shadow:0 4px 0 #7dd3fc; }
+        .btn-approve-answer:disabled, .btn-best-answer:disabled { opacity:.55; cursor:not-allowed; box-shadow:none; }
+        .question-media-links { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+        .question-media-links a { text-decoration:none; background:#eff6ff; color:#1d4ed8; border:2px solid #bfdbfe; border-radius:9px; padding:6px 10px; font-weight:800; }
+
     </style>
 </head>
 <body>
@@ -74,6 +319,7 @@
         <button class="tab-btn active" onclick="switchTab('mission-tab', this)">📝 จัดการภารกิจ</button>
         <button class="tab-btn" onclick="switchTab('resource-tab', this)">📚 จัดการสื่อ</button>
         <button class="tab-btn" onclick="switchTab('grading-tab', this, 'active-green')">📥 ตรวจผลงาน</button>
+        <button class="tab-btn" onclick="switchTab('answers-tab', this, 'active-purple')">💬 อนุมัติคำตอบ <span id="pendingAnswerBadge" class="answer-count-badge">0</span></button>
         <button class="tab-btn" onclick="switchTab('coach-tab', this, 'active-orange')">💬 ส่งข้อความโค้ช</button>
     </div>
 
@@ -105,15 +351,73 @@
                 <div class="form-group"><label>รหัสภารกิจ (เช่น mission_1):</label><input type="text" id="m_id" required></div>
                 <div class="form-group"><label>ชื่อหัวข้อภารกิจ:</label><input type="text" id="m_title" required></div>
                 <div class="form-group"><label>รายละเอียดคำสั่ง:</label><textarea id="m_detail" rows="3" required></textarea></div>
-                <label style="font-weight: 800; color: #0369a1;">💡 ตู้จดหมายนางฟ้า (คำใบ้):</label>
+
+                <div class="form-group">
+                    <label>🖼️ ลิงก์ภาพประกอบสถานการณ์หรือภาพโจทย์:</label>
+                    <input
+                        type="url"
+                        id="m_image_link"
+                        placeholder="วางลิงก์แชร์ Google Drive หรือ URL รูปภาพ เช่น https://drive.google.com/file/d/.../view"
+                        oninput="previewMissionImageLink()"
+                    >
+                    <small style="color:#64748b; margin-top:6px; line-height:1.6;">
+                        รองรับลิงก์แชร์จาก Google Drive และลิงก์ภาพโดยตรง เช่น PNG, JPG หรือ WebP<br>
+                        สำหรับ Google Drive ต้องตั้งสิทธิ์ไฟล์เป็น “ทุกคนที่มีลิงก์ดูได้”
+                    </small>
+
+                    <div id="missionImageLinkStatus"
+                         style="display:none; margin-top:8px; padding:9px 12px; border-radius:10px; font-weight:700;">
+                    </div>
+
+                    <div id="missionImagePreviewBox" style="display:none; margin-top:12px; text-align:center;">
+                        <img
+                            id="missionImagePreview"
+                            alt="ตัวอย่างภาพภารกิจ"
+                            style="max-width:100%; max-height:320px; object-fit:contain; border:3px solid #bae6fd; border-radius:14px; background:#f8fafc; padding:6px; box-sizing:border-box;"
+                            onload="handleMissionImageLoaded()"
+                            onerror="handleMissionImageError()"
+                        >
+                        <div style="margin-top:8px;">
+                            <a id="missionImageOpenLink"
+                               href="#"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="btn-action btn-blue"
+                               style="display:inline-block; text-decoration:none;">
+                                🔍 เปิดภาพในแท็บใหม่
+                            </a>
+                            <button type="button"
+                                    class="btn-action btn-red"
+                                    onclick="removeMissionImage()">
+                                🗑️ เอาภาพออก
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>🐱 ลิงก์แชร์โปรเจกต์ Scratch:</label>
+                    <input type="url" id="m_scratch_link" placeholder="เช่น https://scratch.mit.edu/projects/123456789/" oninput="previewMissionScratch()">
+                    <small style="color:#64748b; margin-top:6px;">วางลิงก์หน้าโปรเจกต์ Scratch ระบบจะแสดงตัวอย่างแบบเล่นได้</small>
+                    <div id="missionScratchPreviewBox" style="display:none; margin-top:12px; text-align:center;">
+                        <iframe id="missionScratchPreview" title="ตัวอย่างโปรเจกต์ Scratch" allowtransparency="true" frameborder="0" scrolling="no" allowfullscreen style="width:100%; max-width:520px; height:390px; border:3px solid #38bdf8; border-radius:14px; background:white;"></iframe>
+                    </div>
+                    <div id="missionScratchError" style="display:none; color:#b91c1c; font-weight:700; margin-top:6px;">⚠️ ไม่พบรหัสโปรเจกต์ Scratch ในลิงก์นี้</div>
+                </div>
+
+                <label style="font-weight: 800; color: #0369a1;">💡 คำใบ้ตามอาการ:</label>
+                <div style="background:#fef9c3; border:2px dashed #facc15; color:#854d0e; padding:10px 12px; border-radius:10px; margin:8px 0 12px; font-weight:700; line-height:1.6;">
+                    ช่องแรกจะแสดงให้เด็กเห็นก่อนซื้อ เพื่อช่วยตัดสินใจเลือกคำใบ้ที่ตรงกับปัญหา<br>
+                    ช่องที่สองจะถูกล็อก และจะแสดงหลังจากเด็กใช้เหรียญซื้อแล้ว
+                </div>
                 <div class="hint-container">
                     <div id="hintsList"></div>
-                    <button type="button" class="btn-add-hint" onclick="addHintField()">➕ กดเพื่อเพิ่มคำใบ้อีก</button>
+                    <button type="button" class="btn-add-hint" onclick="addHintField()">➕ เพิ่มคำใบ้ตามอาการอีกข้อ</button>
                 </div>
                 <button type="submit" class="btn-save">💾 บันทึกข้อมูลภารกิจ</button>
             </form>
             <table class="data-table">
-                <thead><tr><th>รหัสภารกิจ</th><th>ชื่อภารกิจ</th><th>รายละเอียด</th><th>จัดการ</th></tr></thead>
+                <thead><tr><th>รหัสภารกิจ</th><th>ชื่อภารกิจ</th><th>รายละเอียดและสื่อ</th><th>จัดการ</th></tr></thead>
                 <tbody id="missionTableBody"><tr><td colspan="4">กำลังโหลดข้อมูล...</td></tr></tbody>
             </table>
         </div>
@@ -141,13 +445,159 @@
             </table>
         </div>
 
-        <div id="grading-tab" class="tab-content">
-            <h2 style="color: #10b981; margin-top: 0; text-align: center; font-size: 28px;">📥 ตรวจผลงาน & รดน้ำต้นไม้</h2>
-            <div id="workContainer">
-                <div style="text-align: center; color: #94a3b8; font-weight: bold; padding: 40px;">⏳ กำลังดึงข้อมูลงานจาก Firebase...</div>
+        <!-- แท็บอนุมัติคำตอบจากกระดานแห่งภูมิปัญญา -->
+        <div id="answers-tab" class="tab-content">
+            <h2 style="color:#7c3aed; margin-top:0; text-align:center;">💬 อนุมัติคำตอบจากกระดานแห่งภูมิปัญญา</h2>
+            <p style="text-align:center;color:#64748b;font-weight:600;">
+                อนุมัติคำตอบที่ดีเพื่อมอบ 5 เหรียญ หรือเลือกเป็นคำตอบดีที่สุดเพื่อให้ผู้ตอบได้รับรวม 10 เหรียญ
+            </p>
+
+            <div class="answer-admin-toolbar">
+                <select id="answerStatusFilter" onchange="renderKnowledgeAnswersAdmin()">
+                    <option value="pending">⏳ รออนุมัติ</option>
+                    <option value="all">📚 ทั้งหมด</option>
+                    <option value="approved">✅ อนุมัติแล้ว</option>
+                    <option value="best">🏆 คำตอบดีที่สุด</option>
+                </select>
+                <select id="answerRoomFilter" onchange="renderKnowledgeAnswersAdmin()">
+                    <option value="ALL">ทุกห้อง</option>
+                    <option value="ป.4/1">ป.4/1</option>
+                    <option value="ป.4/2">ป.4/2</option>
+                    <option value="ป.4/3">ป.4/3</option>
+                </select>
+                <input id="answerSearchInput" type="search" placeholder="🔎 ค้นหาคำถาม ชื่อผู้ตอบ หรือข้อความคำตอบ" oninput="renderKnowledgeAnswersAdmin()">
+            </div>
+
+            <div id="knowledgeAnswerAdminList" class="answer-admin-list">
+                <div style="text-align:center;padding:35px;color:#94a3b8;font-weight:800;">⏳ กำลังโหลดคำตอบ...</div>
             </div>
         </div>
-    </div>
+
+        <div id="grading-tab" class="tab-content">
+            <h2 style="
+                color: #10b981;
+                margin-top: 0;
+                text-align: center;
+                font-size: 28px;
+            ">
+                📥 ตรวจผลงานและมอบรางวัล
+            </h2>
+            <p style="
+                text-align: center;
+                color: #64748b;
+                font-weight: 600;
+                margin-top: -10px;
+                margin-bottom: 25px;
+            ">
+                การส่งงานยังไม่ได้รับรางวัล จนกว่าคุณครูจะตรวจและกดมอบรางวัล
+            </p>
+
+            <!-- =================================================
+                🎁 ระบบมอบรางวัลพิเศษโดยไม่ต้องอ้างอิงผลงาน
+                ================================================= -->
+            <div class="bonus-reward-panel">
+
+                <h3>🎁 มอบรางวัลพิเศษให้กลุ่ม</h3>
+
+                <div class="bonus-description">
+                    ใช้สำหรับกิจกรรมพิเศษ การช่วยเพื่อน งานดีเด่น
+                    หรือคะแนนพฤติกรรมของแต่ละกลุ่ม
+                </div>
+
+                <div class="bonus-form-grid">
+
+                    <div class="bonus-form-group full-width">
+                        <label for="bonusGroupSelect">
+                            👥 เลือกกลุ่ม
+                        </label>
+
+                        <select id="bonusGroupSelect"
+                                onchange="showSelectedGroupInfo()">
+                            <option value="">
+                                ⏳ กำลังโหลดรายชื่อกลุ่ม...
+                            </option>
+                        </select>
+
+                        <div id="selectedGroupInfo"
+                            class="group-wallet-info">
+                            กรุณาเลือกกลุ่มที่ต้องการมอบรางวัล
+                        </div>
+                    </div>
+
+                    <div class="bonus-form-group">
+                        <label for="bonusWater">
+                            💧 เพิ่มหยดน้ำ
+                        </label>
+
+                        <input type="number"
+                            id="bonusWater"
+                            min="0"
+                            max="1000"
+                            step="1"
+                            value="0">
+                    </div>
+
+                    <div class="bonus-form-group">
+                        <label for="bonusCoins">
+                            🪙 เพิ่มเหรียญเวทมนตร์
+                        </label>
+
+                        <input type="number"
+                            id="bonusCoins"
+                            min="0"
+                            max="10000"
+                            step="1"
+                            value="0">
+                    </div>
+
+                    <div class="bonus-form-group full-width">
+                        <label for="bonusReason">
+                            📝 เหตุผลที่มอบรางวัล
+                        </label>
+
+                        <textarea id="bonusReason"
+                                rows="2"
+                                placeholder="เช่น ทำงานร่วมกันดี ช่วยเพื่อน หรือชนะกิจกรรมพิเศษ"></textarea>
+                    </div>
+
+                </div>
+
+                <button type="button"
+                        id="btnSpecialReward"
+                        class="btn-special-reward"
+                        onclick="giveSpecialGroupReward()">
+                    🎁 มอบรางวัลพิเศษ
+                </button>
+
+            </div>
+
+            <hr style="
+                border: none;
+                border-top: 3px dashed #cbd5e1;
+                margin: 30px 0;
+            ">
+
+            <h3 style="
+                color: #047857;
+                text-align: center;
+                font-size: 24px;
+                margin-bottom: 20px;
+            ">
+                ✅ ผลงานที่รอตรวจ
+            </h3>
+
+            <div id="workContainer">
+                <div style="
+                    text-align: center;
+                    color: #94a3b8;
+                    font-weight: bold;
+                    padding: 40px;
+                ">
+                    ⏳ กำลังดึงข้อมูลงานจาก Firebase...
+                </div>
+            </div>
+
+        </div>
 
     <script>
         // ตั้งค่า Firebase
@@ -163,13 +613,14 @@
         const db = firebase.firestore();
         const storage = firebase.storage();
         let missionTitlesMap = {};
+        let allGroupWallets = [];
 
         function switchTab(tabId, btnElement, activeClass = 'active') {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(btn => { btn.classList.remove('active'); btn.classList.remove('active-green'); btn.classList.remove('active-orange'); });
+            document.querySelectorAll('.tab-btn').forEach(btn => { btn.classList.remove('active'); btn.classList.remove('active-green'); btn.classList.remove('active-orange'); btn.classList.remove('active-purple'); });
             document.getElementById(tabId).classList.add('active');
             btnElement.classList.add(activeClass);
-            document.getElementById('mainContainer').style.maxWidth = tabId === 'grading-tab' ? "1100px" : "900px";
+            document.getElementById('mainContainer').style.maxWidth = (tabId === 'grading-tab' || tabId === 'answers-tab') ? "1100px" : "900px";
         }
 
         // 🧚‍♀️ ฟังก์ชันส่งข้อความ
@@ -199,6 +650,386 @@
             });
         }
 
+        // =========================================================
+        // 👥 โหลดกระเป๋าและรายชื่อทุกกลุ่ม
+        // =========================================================
+        function loadGroupWalletsForBonus() {
+            db.collection("group_wallets")
+                .orderBy("createdAt", "asc")
+                .onSnapshot(
+                    snapshot => {
+                        allGroupWallets = [];
+
+                        const select =
+                            document.getElementById(
+                                "bonusGroupSelect"
+                            );
+
+                        if (!select) {
+                            return;
+                        }
+
+                        select.innerHTML = `
+                            <option value="">
+                                -- เลือกกลุ่มที่ต้องการมอบรางวัล --
+                            </option>
+                        `;
+
+                        snapshot.forEach(doc => {
+                            const data = doc.data();
+
+                            const names =
+                                Array.isArray(data.memberNames)
+                                    ? data.memberNames
+                                    : [];
+
+                            const memberIds =
+                                Array.isArray(data.memberIds)
+                                    ? data.memberIds
+                                    : [];
+
+                            const wallet = {
+                                id:
+                                    doc.id,
+
+                                room:
+                                    data.room || "ไม่ระบุห้อง",
+
+                                memberNames:
+                                    names,
+
+                                memberIds:
+                                    memberIds,
+
+                                magicCoins:
+                                    Number(data.magicCoins) || 0
+                            };
+
+                            allGroupWallets.push(wallet);
+
+                            const option =
+                                document.createElement("option");
+
+                            option.value =
+                                doc.id;
+
+                            option.textContent =
+                                `${wallet.room} | ${
+                                    names.length > 0
+                                        ? names.join(", ")
+                                        : "ไม่ระบุสมาชิก"
+                                } | 🪙 ${wallet.magicCoins}`;
+
+                            select.appendChild(option);
+                        });
+
+                        if (snapshot.empty) {
+                            select.innerHTML = `
+                                <option value="">
+                                    ยังไม่มีกลุ่มในระบบ
+                                </option>
+                            `;
+                        }
+
+                        showSelectedGroupInfo();
+                    },
+                    error => {
+                        console.error(
+                            "Load group wallets error:",
+                            error
+                        );
+                    }
+                );
+        }
+
+
+        // =========================================================
+        // 🔍 แสดงข้อมูลกลุ่มที่เลือก
+        // =========================================================
+        function showSelectedGroupInfo() {
+            const select =
+                document.getElementById(
+                    "bonusGroupSelect"
+                );
+
+            const info =
+                document.getElementById(
+                    "selectedGroupInfo"
+                );
+
+            if (!select || !info) {
+                return;
+            }
+
+            const group =
+                allGroupWallets.find(
+                    item => item.id === select.value
+                );
+
+            if (!group) {
+                info.innerHTML =
+                    "กรุณาเลือกกลุ่มที่ต้องการมอบรางวัล";
+                return;
+            }
+
+            info.innerHTML = `
+                <strong>🏫 ห้อง:</strong>
+                ${group.room}
+                <br>
+
+                <strong>👥 สมาชิก:</strong>
+                ${
+                    group.memberNames.length > 0
+                        ? group.memberNames.join(", ")
+                        : "ไม่ระบุสมาชิก"
+                }
+                <br>
+
+                <strong>🪙 เหรียญปัจจุบัน:</strong>
+                ${group.magicCoins} เหรียญ
+            `;
+        }
+
+        // =========================================================
+        // 🎁 มอบรางวัลพิเศษให้กลุ่ม
+        // =========================================================
+        async function giveSpecialGroupReward() {
+            const groupId =
+                document.getElementById(
+                    "bonusGroupSelect"
+                ).value;
+
+            const waterPoints =
+                Math.max(
+                    0,
+                    parseInt(
+                        document.getElementById(
+                            "bonusWater"
+                        ).value || "0",
+                        10
+                    )
+                );
+
+            const coinPoints =
+                Math.max(
+                    0,
+                    parseInt(
+                        document.getElementById(
+                            "bonusCoins"
+                        ).value || "0",
+                        10
+                    )
+                );
+
+            const reason =
+                document.getElementById(
+                    "bonusReason"
+                ).value.trim();
+
+            const button =
+                document.getElementById(
+                    "btnSpecialReward"
+                );
+
+            if (!groupId) {
+                alert(
+                    "กรุณาเลือกกลุ่มที่ต้องการมอบรางวัล"
+                );
+                return;
+            }
+
+            if (waterPoints === 0 && coinPoints === 0) {
+                alert(
+                    "กรุณากำหนดหยดน้ำหรือเหรียญอย่างน้อย 1 รายการ"
+                );
+                return;
+            }
+
+            if (!reason) {
+                alert(
+                    "กรุณาระบุเหตุผลที่มอบรางวัลพิเศษ"
+                );
+                return;
+            }
+
+            const group =
+                allGroupWallets.find(
+                    item => item.id === groupId
+                );
+
+            if (!group) {
+                alert("ไม่พบข้อมูลกลุ่มที่เลือก");
+                return;
+            }
+
+            const confirmMessage =
+                `ยืนยันมอบรางวัลพิเศษหรือไม่?\n\n` +
+                `🏫 ห้อง: ${group.room}\n` +
+                `👥 สมาชิก: ${
+                    group.memberNames.join(", ") ||
+                    "ไม่ระบุ"
+                }\n\n` +
+                `💧 หยดน้ำ: ${waterPoints}\n` +
+                `🪙 เหรียญ: ${coinPoints}\n` +
+                `📝 เหตุผล: ${reason}`;
+
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+
+            button.disabled = true;
+            button.innerText =
+                "⏳ กำลังมอบรางวัลพิเศษ...";
+
+            const walletRef =
+                db.collection("group_wallets")
+                    .doc(groupId);
+
+            try {
+                const result =
+                    await db.runTransaction(
+                        async transaction => {
+                            const walletSnapshot =
+                                await transaction.get(walletRef);
+
+                            if (!walletSnapshot.exists) {
+                                throw new Error(
+                                    "ไม่พบกระเป๋าเหรียญของกลุ่ม"
+                                );
+                            }
+
+                            const wallet =
+                                walletSnapshot.data();
+
+                            const currentCoins =
+                                Number(wallet.magicCoins) || 0;
+
+                            const newCoinBalance =
+                                currentCoins + coinPoints;
+
+                            if (coinPoints > 0) {
+                                transaction.update(
+                                    walletRef,
+                                    {
+                                        magicCoins:
+                                            newCoinBalance,
+
+                                        updatedAt:
+                                            firebase.firestore
+                                                .FieldValue
+                                                .serverTimestamp()
+                                    }
+                                );
+                            }
+
+                            const memberIds =
+                                Array.isArray(wallet.memberIds)
+                                    ? wallet.memberIds
+                                    : [];
+
+                            if (waterPoints > 0) {
+                                for (
+                                    const userId of memberIds
+                                ) {
+                                    const userRef =
+                                        db.collection("users")
+                                            .doc(userId);
+
+                                    transaction.update(
+                                        userRef,
+                                        {
+                                            waterDrops:
+                                                firebase.firestore
+                                                    .FieldValue
+                                                    .increment(
+                                                        waterPoints
+                                                    ),
+
+                                            updatedAt:
+                                                firebase.firestore
+                                                    .FieldValue
+                                                    .serverTimestamp()
+                                        }
+                                    );
+                                }
+                            }
+
+                            const historyRef =
+                                walletRef
+                                    .collection("transactions")
+                                    .doc();
+
+                            transaction.set(
+                                historyRef,
+                                {
+                                    type:
+                                        "BONUS_REWARD",
+
+                                    amount:
+                                        coinPoints,
+
+                                    waterAmount:
+                                        waterPoints,
+
+                                    reason:
+                                        reason,
+
+                                    balanceAfter:
+                                        newCoinBalance,
+
+                                    createdAt:
+                                        firebase.firestore
+                                            .FieldValue
+                                            .serverTimestamp()
+                                }
+                            );
+
+                            return {
+                                newCoinBalance:
+                                    newCoinBalance,
+
+                                memberIds:
+                                    memberIds
+                            };
+                        }
+                    );
+
+                alert(
+                    "🎉 มอบรางวัลพิเศษสำเร็จ!\n\n" +
+                    `💧 เพิ่มน้ำ ${waterPoints} หยดให้สมาชิกแต่ละคน\n` +
+                    `🪙 เพิ่มเหรียญกลุ่ม ${coinPoints} เหรียญ\n` +
+                    `💰 ยอดเหรียญใหม่ ${result.newCoinBalance} เหรียญ`
+                );
+
+                document.getElementById(
+                    "bonusWater"
+                ).value = "0";
+
+                document.getElementById(
+                    "bonusCoins"
+                ).value = "0";
+
+                document.getElementById(
+                    "bonusReason"
+                ).value = "";
+
+            } catch (error) {
+                console.error(
+                    "Special reward error:",
+                    error
+                );
+
+                alert(
+                    "ไม่สามารถมอบรางวัลพิเศษได้ 😢\n\n" +
+                    error.message
+                );
+
+            } finally {
+                button.disabled = false;
+                button.innerText =
+                    "🎁 มอบรางวัลพิเศษ";
+            }
+        }
         db.collection("shared_works").orderBy("timestamp", "desc").onSnapshot(snapshot => {
             const container = document.getElementById('workContainer');
             container.innerHTML = '';
@@ -232,8 +1063,16 @@
                     const roomName = work.roomName || 'ไม่ระบุห้อง';
                     const imageUrl = work.imageUrl || work.image || null;
                     const isGraded = work.isGraded || false;
+                    const groupId = work.groupId || "";
+                    const groupMemberNames =
+                        Array.isArray(work.groupMemberNames)
+                            ? work.groupMemberNames
+                            : [];
+                    const savedWaterReward =
+                        Number(work.waterRewardAmount) || 5;
+                    const savedCoinReward =
+                        Number(work.coinRewardAmount) || 10;
                     let timeStr = work.timestamp && work.timestamp.toDate ? work.timestamp.toDate().toLocaleString('th-TH') : 'ไม่ระบุเวลา';
-
                     const card = document.createElement('div');
                     card.className = `work-card ${isGraded ? 'graded' : ''}`;
                     card.innerHTML = `
@@ -242,10 +1081,118 @@
                         ${imageUrl ? `<a href="${imageUrl}" target="_blank"><img src="${imageUrl}" class="work-img"></a>` : ''}
                         ${work.content ? `<div class="work-content">"${work.content}"</div>` : ''}
                         <div style="margin-top: auto;">
-                            <button class="btn-grade" onclick="giveReward('${docId}', '${studentName}', '${roomName}', 5)" ${isGraded ? 'disabled' : ''}>
-                                ${isGraded ? '✅ ตรวจแล้ว' : '🌟 ตรวจงาน +5 💧'}
+                            ${
+                                isGraded
+                                    ? `
+                                        <div class="reward-setting-box"
+                                            style="
+                                                background:#ecfdf5;
+                                                border-color:#86efac;
+                                                color:#166534;
+                                                font-weight:800;
+                                                text-align:center;
+                                            ">
+                                            ✅ ตรวจแล้ว
+                                            <br>
+                                            💧 ${Number(work.waterRewardAmount) || 0} หยด
+                                            &nbsp; | &nbsp;
+                                            🪙 ${Number(work.coinRewardAmount) || 0} เหรียญ
+                                        </div>
+                                    `
+                                    : `
+                                        <div class="reward-setting-box">
+
+                                            <div class="reward-setting-title">
+                                                🎁 กำหนดรางวัลสำหรับผลงานนี้
+                                            </div>
+
+                                            <div class="reward-input-row">
+
+                                                <div class="reward-input-group">
+                                                    <label for="waterReward_${docId}">
+                                                        💧 หยดน้ำ
+                                                    </label>
+
+                                                    <input type="number"
+                                                        id="waterReward_${docId}"
+                                                        class="reward-number-input"
+                                                        min="0"
+                                                        max="1000"
+                                                        step="1"
+                                                        value="${savedWaterReward}">
+                                                </div>
+
+                                                <div class="reward-input-group">
+                                                    <label for="coinReward_${docId}">
+                                                        🪙 เหรียญกลุ่ม
+                                                    </label>
+
+                                                    <input type="number"
+                                                        id="coinReward_${docId}"
+                                                        class="reward-number-input"
+                                                        min="0"
+                                                        max="10000"
+                                                        step="1"
+                                                        value="${savedCoinReward}"
+                                                        ${groupId ? "" : "disabled"}>
+                                                </div>
+
+                                            </div>
+
+                                            ${
+                                                groupId
+                                                    ? `
+                                                        <div style="
+                                                            color:#166534;
+                                                            font-size:13px;
+                                                            font-weight:800;
+                                                            margin-top:10px;
+                                                            text-align:center;
+                                                        ">
+                                                            👥 กลุ่ม:
+                                                            ${
+                                                                groupMemberNames.length > 0
+                                                                    ? groupMemberNames.join(", ")
+                                                                    : "เชื่อมกระเป๋ากลุ่มแล้ว"
+                                                            }
+                                                        </div>
+                                                    `
+                                                    : `
+                                                        <div style="
+                                                            color:#b91c1c;
+                                                            font-size:13px;
+                                                            font-weight:800;
+                                                            margin-top:10px;
+                                                            text-align:center;
+                                                        ">
+                                                            ⚠️ ผลงานเก่าไม่มี groupId
+                                                            จึงเพิ่มได้เฉพาะหยดน้ำ
+                                                        </div>
+                                                    `
+                                            }
+
+                                        </div>
+                                    `
+                            }
+
+                            <button class="btn-grade"
+                                    id="gradeBtn_${docId}"
+                                    onclick="giveReward('${docId}')"
+                                    ${isGraded ? "disabled" : ""}>
+
+                                ${
+                                    isGraded
+                                        ? "✅ ตรวจและมอบรางวัลแล้ว"
+                                        : "✅ ตรวจผ่านและมอบรางวัล"
+                                }
+
                             </button>
-                            <button class="btn-delete-work" onclick="deleteWork('${docId}')">🗑️ ลบ</button>
+
+                            <button class="btn-delete-work"
+                                    onclick="deleteWork('${docId}')">
+                                🗑️ ลบ
+                            </button>
+
                         </div>
                     `;
                     gridContainer.appendChild(card);
@@ -253,49 +1200,927 @@
             }
         });
 
-        function giveReward(docId, studentName, roomName, points) {
-            let gardenData = JSON.parse(localStorage.getItem('multiRoomGardenData'));
-            if (gardenData && gardenData.rooms && gardenData.rooms[roomName]) {
-                let student = gardenData.rooms[roomName].find(s => s.name === studentName);
-                if (student) {
-                    student.water = (student.water || 0) + points;
-                    if(!gardenData.history[roomName]) gardenData.history[roomName] = [];
-                    gardenData.history[roomName].push({ studentName: student.name, action: 'เพิ่ม', amount: points, newScore: student.water, time: new Date().toLocaleTimeString('th-TH') });
-                    localStorage.setItem('multiRoomGardenData', JSON.stringify(gardenData));
-                    alert(`🎉 ให้คะแนน +${points} 💧 สำเร็จ!`);
+        // =========================================================
+        // ✅ ตรวจงานและมอบรางวัลตามจำนวนที่ครูกำหนด
+        // =========================================================
+        async function giveReward(docId) {
+            const workRef =
+                db.collection("shared_works").doc(docId);
+
+            const button =
+                document.getElementById(`gradeBtn_${docId}`);
+
+            const waterInput =
+                document.getElementById(`waterReward_${docId}`);
+
+            const coinInput =
+                document.getElementById(`coinReward_${docId}`);
+
+            const waterPoints =
+                Math.max(
+                    0,
+                    parseInt(waterInput?.value || "0", 10)
+                );
+
+            const coinPoints =
+                Math.max(
+                    0,
+                    parseInt(coinInput?.value || "0", 10)
+                );
+
+            if (
+                !Number.isFinite(waterPoints) ||
+                !Number.isFinite(coinPoints)
+            ) {
+                alert("กรุณากรอกจำนวนรางวัลเป็นตัวเลขที่ถูกต้อง");
+                return;
+            }
+
+            if (waterPoints === 0 && coinPoints === 0) {
+                const noRewardConfirm = confirm(
+                    "จำนวนหยดน้ำและเหรียญเป็น 0 ทั้งคู่\n\n" +
+                    "ต้องการตรวจผ่านโดยไม่มอบรางวัลใช่หรือไม่?"
+                );
+
+                if (!noRewardConfirm) {
+                    return;
                 }
             }
-            db.collection("shared_works").doc(docId).update({ isGraded: true });
+
+            if (button) {
+                button.disabled = true;
+                button.innerText = "⏳ กำลังตรวจและมอบรางวัล...";
+            }
+
+            try {
+                const workSnapshot = await workRef.get();
+
+                if (!workSnapshot.exists) {
+                    throw new Error("ไม่พบข้อมูลผลงานนี้");
+                }
+
+                const work = workSnapshot.data();
+
+                if (work.isGraded === true) {
+                    alert(
+                        "ผลงานนี้ถูกตรวจแล้ว ✅\n\n" +
+                        "ระบบจะไม่มอบรางวัลซ้ำ"
+                    );
+
+                    return;
+                }
+
+                const studentName =
+                    work.studentName ||
+                    work.name ||
+                    "ไม่ระบุชื่อ";
+
+                const roomName =
+                    work.roomName ||
+                    work.groupRoom ||
+                    "ไม่ระบุห้อง";
+
+                const groupId =
+                    work.groupId || "";
+
+                const memberIds =
+                    Array.isArray(work.groupMemberIds)
+                        ? work.groupMemberIds
+                        : [];
+
+                const memberNames =
+                    Array.isArray(work.groupMemberNames)
+                        ? work.groupMemberNames
+                        : [];
+
+                let confirmText =
+                    `ยืนยันตรวจผลงานของ ${studentName} หรือไม่?\n\n` +
+                    `💧 หยดน้ำ: ${waterPoints}\n`;
+
+                if (groupId) {
+                    confirmText +=
+                        `🪙 เหรียญกลุ่ม: ${coinPoints}\n\n` +
+                        `สมาชิกกลุ่ม: ${
+                            memberNames.length > 0
+                                ? memberNames.join(", ")
+                                : "ไม่ระบุ"
+                        }`;
+                } else {
+                    confirmText +=
+                        "🪙 ผลงานนี้ไม่มีข้อมูลกลุ่ม จึงไม่สามารถเพิ่มเหรียญได้";
+                }
+
+                if (!confirm(confirmText)) {
+                    return;
+                }
+
+                const result =
+                    await db.runTransaction(
+                        async transaction => {
+                            const latestWorkSnapshot =
+                                await transaction.get(workRef);
+
+                            if (!latestWorkSnapshot.exists) {
+                                throw new Error("ไม่พบข้อมูลผลงานนี้");
+                            }
+
+                            const latestWork =
+                                latestWorkSnapshot.data();
+
+                            if (latestWork.isGraded === true) {
+                                return {
+                                    alreadyGraded: true
+                                };
+                            }
+
+                            const latestGroupId =
+                                latestWork.groupId || "";
+
+                            const latestMemberIds =
+                                Array.isArray(
+                                    latestWork.groupMemberIds
+                                )
+                                    ? latestWork.groupMemberIds
+                                    : [];
+
+                            let coinAdded = 0;
+                            let newCoinBalance = null;
+
+                            // =============================================
+                            // 🪙 เพิ่มเหรียญเข้ากระเป๋ากลุ่ม
+                            // =============================================
+                            if (
+                                latestGroupId &&
+                                coinPoints > 0
+                            ) {
+                                const walletRef =
+                                    db.collection("group_wallets")
+                                        .doc(latestGroupId);
+
+                                const walletSnapshot =
+                                    await transaction.get(walletRef);
+
+                                if (!walletSnapshot.exists) {
+                                    throw new Error(
+                                        "ไม่พบกระเป๋าเหรียญของกลุ่ม"
+                                    );
+                                }
+
+                                const currentCoins =
+                                    Number(
+                                        walletSnapshot.data().magicCoins
+                                    ) || 0;
+
+                                newCoinBalance =
+                                    currentCoins + coinPoints;
+
+                                transaction.update(
+                                    walletRef,
+                                    {
+                                        magicCoins:
+                                            newCoinBalance,
+
+                                        updatedAt:
+                                            firebase.firestore
+                                                .FieldValue
+                                                .serverTimestamp()
+                                    }
+                                );
+
+                                const historyRef =
+                                    walletRef
+                                        .collection("transactions")
+                                        .doc();
+
+                                transaction.set(
+                                    historyRef,
+                                    {
+                                        type: "WORK_REWARD",
+
+                                        amount:
+                                            coinPoints,
+
+                                        workId:
+                                            docId,
+
+                                        missionId:
+                                            latestWork.missionId ||
+                                            latestWork.mission ||
+                                            "",
+
+                                        studentName:
+                                            latestWork.studentName ||
+                                            latestWork.name ||
+                                            "",
+
+                                        reason:
+                                            "รางวัลจากการตรวจผลงาน",
+
+                                        balanceAfter:
+                                            newCoinBalance,
+
+                                        createdAt:
+                                            firebase.firestore
+                                                .FieldValue
+                                                .serverTimestamp()
+                                    }
+                                );
+
+                                coinAdded = coinPoints;
+                            }
+
+                            // =============================================
+                            // 💧 เพิ่มหยดน้ำให้นักเรียนทุกคนในกลุ่ม
+                            // =============================================
+                            if (waterPoints > 0) {
+                                for (
+                                    const userId of latestMemberIds
+                                ) {
+                                    const userRef =
+                                        db.collection("users")
+                                            .doc(userId);
+
+                                    transaction.update(
+                                        userRef,
+                                        {
+                                            waterDrops:
+                                                firebase.firestore
+                                                    .FieldValue
+                                                    .increment(
+                                                        waterPoints
+                                                    ),
+
+                                            updatedAt:
+                                                firebase.firestore
+                                                    .FieldValue
+                                                    .serverTimestamp()
+                                        }
+                                    );
+                                }
+                            }
+
+                            transaction.update(
+                                workRef,
+                                {
+                                    isGraded: true,
+
+                                    gradedAt:
+                                        firebase.firestore
+                                            .FieldValue
+                                            .serverTimestamp(),
+
+                                    waterRewarded:
+                                        waterPoints > 0,
+
+                                    waterRewardAmount:
+                                        waterPoints,
+
+                                    coinRewarded:
+                                        coinAdded > 0,
+
+                                    coinRewardAmount:
+                                        coinAdded
+                                }
+                            );
+
+                            return {
+                                alreadyGraded: false,
+
+                                waterAdded:
+                                    waterPoints,
+
+                                coinAdded:
+                                    coinAdded,
+
+                                newCoinBalance:
+                                    newCoinBalance,
+
+                                groupId:
+                                    latestGroupId,
+
+                                memberIds:
+                                    latestMemberIds
+                            };
+                        }
+                    );
+
+                if (result.alreadyGraded) {
+                    alert(
+                        "ผลงานนี้ถูกตรวจจากอีกหน้าต่างแล้ว ✅\n\n" +
+                        "ระบบไม่ได้มอบรางวัลซ้ำ"
+                    );
+
+                    return;
+                }
+
+                /*
+                รองรับระบบสวนเดิมที่เก็บใน localStorage
+                หากชื่อและห้องตรงกันจะเพิ่มน้ำให้ด้วย
+                */
+                addWaterToOldGardenSystem(
+                    roomName,
+                    studentName,
+                    waterPoints,
+                    docId
+                );
+
+                let message =
+                    "✅ ตรวจผลงานเรียบร้อยแล้ว!\n\n";
+
+                message +=
+                    `💧 เพิ่มหยดน้ำ ${result.waterAdded} หยด\n`;
+
+                if (groupId) {
+                    message +=
+                        `🪙 เพิ่มเหรียญกลุ่ม ${result.coinAdded} เหรียญ`;
+
+                    if (result.newCoinBalance !== null) {
+                        message +=
+                            `\n💰 ยอดเหรียญใหม่ ${result.newCoinBalance} เหรียญ`;
+                    }
+                } else {
+                    message +=
+                        "⚠️ ไม่ได้เพิ่มเหรียญ เพราะผลงานไม่มีข้อมูลกลุ่ม";
+                }
+
+                alert(message);
+
+            } catch (error) {
+                console.error("Give reward error:", error);
+
+                alert(
+                    "ไม่สามารถตรวจหรือมอบรางวัลได้ 😢\n\n" +
+                    error.message
+                );
+
+                if (button) {
+                    button.disabled = false;
+                    button.innerText =
+                        "✅ ตรวจผ่านและมอบรางวัล";
+                }
+            }
         }
 
+        // =========================================================
+        // 💧 เพิ่มน้ำในระบบสวนเดิมที่เก็บข้อมูลใน localStorage
+        // =========================================================
+        function addWaterToOldGardenSystem(
+            roomName,
+            studentName,
+            waterPoints,
+            workId = ""
+        ) {
+            if (waterPoints <= 0) {
+                return;
+            }
+
+            try {
+                const gardenData =
+                    JSON.parse(
+                        localStorage.getItem(
+                            "multiRoomGardenData"
+                        ) || "null"
+                    );
+
+                if (
+                    !gardenData ||
+                    !gardenData.rooms ||
+                    !gardenData.rooms[roomName]
+                ) {
+                    return;
+                }
+
+                const student =
+                    gardenData.rooms[roomName].find(
+                        item => item.name === studentName
+                    );
+
+                if (!student) {
+                    return;
+                }
+
+                student.water =
+                    (Number(student.water) || 0) +
+                    waterPoints;
+
+                if (!gardenData.history) {
+                    gardenData.history = {};
+                }
+
+                if (!gardenData.history[roomName]) {
+                    gardenData.history[roomName] = [];
+                }
+
+                gardenData.history[roomName].push({
+                    studentName:
+                        student.name,
+
+                    action:
+                        "รางวัลจากการตรวจงาน",
+
+                    amount:
+                        waterPoints,
+
+                    newScore:
+                        student.water,
+
+                    workId:
+                        workId,
+
+                    time:
+                        new Date().toLocaleString("th-TH")
+                });
+
+                localStorage.setItem(
+                    "multiRoomGardenData",
+                    JSON.stringify(gardenData)
+                );
+
+            } catch (error) {
+                console.warn(
+                    "ไม่สามารถอัปเดตระบบสวนเดิม:",
+                    error
+                );
+            }
+        }
         function deleteWork(docId) { if (confirm('ลบผลงานชิ้นนี้ทิ้ง?')) db.collection("shared_works").doc(docId).delete(); }
+        function escapeAdminAttribute(value) {
+            return String(value ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/"/g, "&quot;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+        }
+
         function addHintField(value = "") {
-            const div = document.createElement("div"); div.className = "hint-item";
-            div.innerHTML = `<input type="text" class="hint-input" value="${value}" placeholder="พิมพ์คำใบ้..."><button type="button" class="btn-remove-hint" onclick="this.parentElement.remove()">ลบ</button>`;
+            /*
+              รองรับข้อมูลเดิม:
+              - ถ้าเป็นข้อความธรรมดา จะนำไปใส่ในช่องแนวทางช่วยคิด
+              - ถ้าเป็น object ใหม่ จะอ่าน symptom และ guidance
+            */
+            let symptom = "";
+            let guidance = "";
+            let price = 10;
+
+            if (typeof value === "string") {
+                guidance = value;
+                symptom = "ใช้เมื่อทดลองแก้แล้ว แต่ยังไม่พบจุดที่ทำให้โปรแกรมผิด";
+            } else if (value && typeof value === "object") {
+                symptom =
+                    value.symptom ||
+                    value.problem ||
+                    value.when ||
+                    value.title ||
+                    "";
+
+                guidance =
+                    value.guidance ||
+                    value.hint ||
+                    value.content ||
+                    value.text ||
+                    "";
+
+                price = Number(value.price) || 10;
+            }
+
+            const div = document.createElement("div");
+            div.className = "hint-item-diagnostic";
+
+            div.innerHTML = `
+                <div class="hint-field-wrap">
+                    <label class="hint-field-label">
+                        🔎 คำใบ้นี้เหมาะเมื่อ...
+                    </label>
+                    <input
+                        type="text"
+                        class="hint-symptom-input"
+                        value="${escapeAdminAttribute(symptom)}"
+                        maxlength="250"
+                        placeholder="เช่น ถ้าตัวละครเดินกลับหัว ให้เลือกคำใบ้นี้"
+                    >
+                </div>
+
+                <div class="hint-field-wrap">
+                    <label class="hint-field-label">
+                        🧠 แนวทางช่วยคิดหลังซื้อ
+                    </label>
+                    <textarea
+                        class="hint-guidance-input"
+                        maxlength="1000"
+                        placeholder="เช่น ลองตรวจรูปแบบการหมุนของตัวละคร และสังเกตว่าควรหันซ้าย–ขวาโดยไม่กลับหัว"
+                    >${String(guidance ?? "")
+                        .replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;")}</textarea>
+                </div>
+
+                <div class="hint-field-wrap" style="min-width:100px;">
+                    <label class="hint-field-label">
+                        🪙 ราคา
+                    </label>
+                    <input
+                        type="number"
+                        class="hint-price-input"
+                        value="${price}"
+                        min="1"
+                        max="100"
+                        step="1"
+                    >
+                    <button
+                        type="button"
+                        class="btn-remove-hint"
+                        onclick="this.closest('.hint-item-diagnostic').remove()"
+                    >
+                        ลบ
+                    </button>
+                </div>
+
+                <div class="hint-preview-note">
+                    ตัวอย่างที่เหมาะสม: บอก “อาการที่พบ” ให้ชัด แต่แนวทางด้านในควรช่วยชี้จุดสังเกต
+                    ไม่ควรใส่คำตอบสำเร็จรูปหรือบอกให้วางบล็อกใดตรงตำแหน่งใดทันที
+                </div>
+            `;
+
             document.getElementById("hintsList").appendChild(div);
         }
-        function saveMission(e) {
-            e.preventDefault(); const id = document.getElementById("m_id").value.trim(); const title = document.getElementById("m_title").value.trim(); const detail = document.getElementById("m_detail").value.trim();
-            const hintsArray = []; document.querySelectorAll(".hint-input").forEach(input => { if(input.value.trim()) hintsArray.push(input.value.trim()); });
-            db.collection("missions").doc(id).set({ title: title, detail: detail, hints: hintsArray, updatedAt: firebase.firestore.FieldValue.serverTimestamp() })
-            .then(() => { alert("🎉 บันทึกภารกิจสำเร็จ!"); document.getElementById("missionForm").reset(); document.getElementById("hintsList").innerHTML = ""; addHintField(); });
+        function extractScratchProjectId(url = "") {
+            const match = String(url).match(/scratch\.mit\.edu\/projects\/(\d+)/i);
+            return match ? match[1] : "";
+        }
+
+        // =========================================================
+        // 🖼️ ระบบลิงก์ภาพ Google Drive / ลิงก์ภาพโดยตรง
+        // =========================================================
+        function extractGoogleDriveFileId(url) {
+            if (!url) return "";
+
+            const text = String(url).trim();
+
+            const patterns = [
+                /drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/i,
+                /drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/i,
+                /drive\.google\.com\/uc\?(?:[^#]*&)?id=([a-zA-Z0-9_-]+)/i,
+                /drive\.google\.com\/thumbnail\?(?:[^#]*&)?id=([a-zA-Z0-9_-]+)/i,
+                /[?&]id=([a-zA-Z0-9_-]+)/i
+            ];
+
+            for (const pattern of patterns) {
+                const match = text.match(pattern);
+                if (match) return match[1];
+            }
+
+            return "";
+        }
+
+        function convertMissionImageUrl(inputUrl) {
+            const value = String(inputUrl || "").trim();
+            if (!value) return "";
+
+            const driveId = extractGoogleDriveFileId(value);
+
+            /*
+             ใช้ endpoint thumbnail ของ Google Drive
+             เพราะเหมาะกับการนำไปแสดงในแท็ก <img> มากกว่าหน้า /view
+            */
+            if (driveId) {
+                return `https://drive.google.com/thumbnail?id=${driveId}&sz=w1600`;
+            }
+
+            // รองรับลิงก์ Dropbox ให้เปิดเป็นไฟล์โดยตรง
+            if (/dropbox\.com/i.test(value)) {
+                try {
+                    const dropboxUrl = new URL(value);
+                    dropboxUrl.searchParams.delete("dl");
+                    dropboxUrl.searchParams.set("raw", "1");
+                    return dropboxUrl.toString();
+                } catch (error) {
+                    return value;
+                }
+            }
+
+            // รองรับลิงก์ GitHub แบบ blob
+            const githubMatch = value.match(
+                /^https:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/(.+)$/i
+            );
+
+            if (githubMatch) {
+                return `https://raw.githubusercontent.com/${githubMatch[1]}/${githubMatch[2]}/${githubMatch[3]}`;
+            }
+
+            return value;
+        }
+
+        function setMissionImageStatus(message, type = "info") {
+            const status = document.getElementById("missionImageLinkStatus");
+            if (!status) return;
+
+            if (!message) {
+                status.style.display = "none";
+                status.innerText = "";
+                return;
+            }
+
+            status.style.display = "block";
+            status.innerText = message;
+
+            if (type === "success") {
+                status.style.background = "#ecfdf5";
+                status.style.color = "#166534";
+                status.style.border = "2px solid #86efac";
+            } else if (type === "error") {
+                status.style.background = "#fef2f2";
+                status.style.color = "#b91c1c";
+                status.style.border = "2px solid #fca5a5";
+            } else {
+                status.style.background = "#eff6ff";
+                status.style.color = "#1d4ed8";
+                status.style.border = "2px solid #93c5fd";
+            }
+        }
+
+        function previewMissionImageLink() {
+            const input = document.getElementById("m_image_link");
+            const preview = document.getElementById("missionImagePreview");
+            const previewBox = document.getElementById("missionImagePreviewBox");
+            const openLink = document.getElementById("missionImageOpenLink");
+
+            const originalUrl = input.value.trim();
+
+            if (!originalUrl) {
+                preview.removeAttribute("src");
+                previewBox.style.display = "none";
+                openLink.href = "#";
+                setMissionImageStatus("");
+                return;
+            }
+
+            let parsedUrl;
+
+            try {
+                parsedUrl = new URL(originalUrl);
+                if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+                    throw new Error("invalid protocol");
+                }
+            } catch (error) {
+                preview.removeAttribute("src");
+                previewBox.style.display = "none";
+                setMissionImageStatus(
+                    "⚠️ กรุณาวางลิงก์ที่ขึ้นต้นด้วย https:// หรือ http://",
+                    "error"
+                );
+                return;
+            }
+
+            const displayUrl = convertMissionImageUrl(originalUrl);
+
+            setMissionImageStatus("⏳ กำลังตรวจสอบและโหลดตัวอย่างภาพ...", "info");
+            previewBox.style.display = "block";
+            preview.src = displayUrl;
+            openLink.href = displayUrl;
+        }
+
+        function handleMissionImageLoaded() {
+            const originalUrl =
+                document.getElementById("m_image_link").value.trim();
+
+            if (!originalUrl) return;
+
+            const driveId = extractGoogleDriveFileId(originalUrl);
+
+            setMissionImageStatus(
+                driveId
+                    ? "✅ แปลงลิงก์ Google Drive และแสดงภาพได้แล้ว"
+                    : "✅ ลิงก์ภาพใช้งานได้",
+                "success"
+            );
+        }
+
+        function handleMissionImageError() {
+            const input = document.getElementById("m_image_link");
+            if (!input || !input.value.trim()) return;
+
+            setMissionImageStatus(
+                "❌ ไม่สามารถแสดงภาพได้ กรุณาตรวจสอบลิงก์และตั้ง Google Drive เป็น “ทุกคนที่มีลิงก์ดูได้”",
+                "error"
+            );
+        }
+
+        function removeMissionImage() {
+            document.getElementById("m_image_link").value = "";
+            document.getElementById("missionImagePreview").removeAttribute("src");
+            document.getElementById("missionImagePreviewBox").style.display = "none";
+            document.getElementById("missionImageOpenLink").href = "#";
+            setMissionImageStatus("");
+        }
+
+        function previewMissionScratch() {
+            const link = document.getElementById("m_scratch_link").value.trim();
+            const projectId = extractScratchProjectId(link);
+            const box = document.getElementById("missionScratchPreviewBox");
+            const frame = document.getElementById("missionScratchPreview");
+            const error = document.getElementById("missionScratchError");
+            if (!link) {
+                frame.src = "";
+                box.style.display = "none";
+                error.style.display = "none";
+                return;
+            }
+            if (!projectId) {
+                frame.src = "";
+                box.style.display = "none";
+                error.style.display = "block";
+                return;
+            }
+            frame.src = `https://scratch.mit.edu/projects/${projectId}/embed`;
+            box.style.display = "block";
+            error.style.display = "none";
+        }
+
+        function resetMissionMediaPreview() {
+            document.getElementById("m_image_link").value = "";
+            document.getElementById("missionImagePreview").removeAttribute("src");
+            document.getElementById("missionImagePreviewBox").style.display = "none";
+            document.getElementById("missionImageOpenLink").href = "#";
+            setMissionImageStatus("");
+            document.getElementById("missionScratchPreview").src = "";
+            document.getElementById("missionScratchPreviewBox").style.display = "none";
+            document.getElementById("missionScratchError").style.display = "none";
+        }
+
+        async function saveMission(e) {
+            e.preventDefault();
+            const id = document.getElementById("m_id").value.trim();
+            const title = document.getElementById("m_title").value.trim();
+            const detail = document.getElementById("m_detail").value.trim();
+            const scratchLink = document.getElementById("m_scratch_link").value.trim();
+            const scratchId = scratchLink ? extractScratchProjectId(scratchLink) : "";
+            const originalImageLink =
+                document.getElementById("m_image_link").value.trim();
+
+            const imageUrl =
+                originalImageLink
+                    ? convertMissionImageUrl(originalImageLink)
+                    : "";
+            const hintsArray = [];
+            const hintRows =
+                document.querySelectorAll(".hint-item-diagnostic");
+
+            for (const row of hintRows) {
+                const symptom =
+                    row.querySelector(".hint-symptom-input")
+                        ?.value.trim() || "";
+
+                const guidance =
+                    row.querySelector(".hint-guidance-input")
+                        ?.value.trim() || "";
+
+                const price =
+                    Number(
+                        row.querySelector(".hint-price-input")?.value
+                    ) || 10;
+
+                /*
+                  ข้ามแถวที่ว่างทั้งสองช่อง
+                */
+                if (!symptom && !guidance) {
+                    continue;
+                }
+
+                /*
+                  ต้องกรอกครบทั้งสองช่อง
+                  เพื่อไม่ให้เด็กซื้อคำใบ้ที่ไม่ทราบว่าเหมาะกับปัญหาใด
+                */
+                if (!symptom || !guidance) {
+                    alert(
+                        "กรุณากรอกคำใบ้ให้ครบทั้ง 2 ช่อง\n\n" +
+                        "1. คำใบ้นี้เหมาะเมื่อ...\n" +
+                        "2. แนวทางช่วยคิดหลังซื้อ"
+                    );
+
+                    const missingInput =
+                        !symptom
+                            ? row.querySelector(".hint-symptom-input")
+                            : row.querySelector(".hint-guidance-input");
+
+                    missingInput?.focus();
+                    return;
+                }
+
+                hintsArray.push({
+                    symptom: symptom,
+                    guidance: guidance,
+                    price: Math.max(1, Math.min(100, price))
+                });
+            }
+
+            if (scratchLink && !scratchId) {
+                alert("ลิงก์ Scratch ไม่ถูกต้อง กรุณาวางลิงก์ที่มีรูปแบบ https://scratch.mit.edu/projects/รหัสโปรเจกต์/");
+                return;
+            }
+
+            const saveButton = e.submitter || document.querySelector('#missionForm button[type="submit"]');
+            const oldText = saveButton ? saveButton.innerText : "";
+            if (saveButton) {
+                saveButton.disabled = true;
+                saveButton.innerText = "⏳ กำลังบันทึกภารกิจ...";
+            }
+
+            try {
+                if (originalImageLink) {
+                    try {
+                        const checkedImageUrl = new URL(imageUrl);
+                        if (!["http:", "https:"].includes(checkedImageUrl.protocol)) {
+                            throw new Error("invalid image protocol");
+                        }
+                    } catch (error) {
+                        alert("ลิงก์ภาพไม่ถูกต้อง กรุณาวางลิงก์ Google Drive หรือลิงก์รูปภาพที่ขึ้นต้นด้วย https://");
+                        return;
+                    }
+                }
+
+                await db.collection("missions").doc(id).set({
+                    title,
+                    detail,
+                    hints: hintsArray,
+                    imageUrl: imageUrl || "",
+                    imageOriginalLink: originalImageLink || "",
+                    scratchLink: scratchLink || "",
+                    scratchId: scratchId || "",
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+
+                alert("🎉 บันทึกภารกิจ สื่อ Scratch และคำใบ้ตามอาการสำเร็จ!");
+                document.getElementById("missionForm").reset();
+                document.getElementById("hintsList").innerHTML = "";
+                resetMissionMediaPreview();
+                addHintField();
+            } catch (error) {
+                console.error("Save mission error:", error);
+                alert("บันทึกภารกิจไม่สำเร็จ\n\n" + error.message);
+            } finally {
+                if (saveButton) {
+                    saveButton.disabled = false;
+                    saveButton.innerText = oldText || "💾 บันทึกข้อมูลภารกิจ";
+                }
+            }
         }
         
         db.collection("missions").orderBy("updatedAt", "asc").onSnapshot((snapshot) => {
-            const tableBody = document.getElementById("missionTableBody"); const resourceSelect = document.getElementById("r_mission_select");
-            tableBody.innerHTML = ""; resourceSelect.innerHTML = '<option value="" disabled selected>-- เลือกภารกิจ --</option>';
-            if (snapshot.empty) return;
+            const tableBody = document.getElementById("missionTableBody");
+            const resourceSelect = document.getElementById("r_mission_select");
+            tableBody.innerHTML = "";
+            resourceSelect.innerHTML = '<option value="" disabled selected>-- เลือกภารกิจ --</option>';
+            if (snapshot.empty) {
+                tableBody.innerHTML = '<tr><td colspan="4">ยังไม่มีข้อมูลภารกิจ</td></tr>';
+                return;
+            }
             snapshot.forEach((doc) => {
-                let m = doc.data(); missionTitlesMap[doc.id] = m.title;
-                tableBody.innerHTML += `<tr><td><strong>${doc.id}</strong></td><td>${m.title}</td><td style="white-space: pre-line;">${m.detail}</td>
-                    <td><button class="btn-action btn-blue" onclick="editMission('${doc.id}', '${encodeURIComponent(m.title)}', '${encodeURIComponent(m.detail)}', '${encodeURIComponent(JSON.stringify(m.hints || []))}')">📝 แก้ไข</button><button class="btn-action btn-red" onclick="deleteMission('${doc.id}')">🗑️</button></td></tr>`;
+                const m = doc.data();
+                missionTitlesMap[doc.id] = m.title;
+                const imageHtml = m.imageUrl
+                    ? `<a href="${m.imageUrl}" target="_blank" rel="noopener"><img src="${m.imageUrl}" alt="ภาพภารกิจ" style="width:110px; height:75px; object-fit:cover; border-radius:9px; border:2px solid #bae6fd; margin-top:8px;"></a>`
+                    : "";
+                const scratchHtml = m.scratchId || m.scratchLink
+                    ? `<div style="margin-top:8px;"><a href="${m.scratchLink || `https://scratch.mit.edu/projects/${m.scratchId}/`}" target="_blank" rel="noopener" style="font-weight:800; color:#0284c7;">🐱 เปิดโปรเจกต์ Scratch</a></div>`
+                    : "";
+                tableBody.innerHTML += `<tr>
+                    <td><strong>${doc.id}</strong></td>
+                    <td>${m.title || "-"}</td>
+                    <td style="white-space: pre-line;">
+                        ${m.detail || "-"}
+                        ${imageHtml}
+                        ${scratchHtml}
+                        <div style="margin-top:8px; color:#7c3aed; font-weight:800;">
+                            💡 คำใบ้ตามอาการ:
+                            ${Array.isArray(m.hints) ? m.hints.length : 0} ข้อ
+                        </div>
+                    </td>
+                    <td>
+                        <button class="btn-action btn-blue" onclick="editMission('${doc.id}', '${encodeURIComponent(m.title || "")}', '${encodeURIComponent(m.detail || "")}', '${encodeURIComponent(JSON.stringify(m.hints || []))}', '${encodeURIComponent(m.imageUrl || "")}', '${encodeURIComponent(m.scratchLink || (m.scratchId ? `https://scratch.mit.edu/projects/${m.scratchId}/` : ""))}')">📝 แก้ไข</button>
+                        <button class="btn-action btn-red" onclick="deleteMission('${doc.id}')">🗑️</button>
+                    </td>
+                </tr>`;
                 resourceSelect.innerHTML += `<option value="${doc.id}">${doc.id} : ${m.title}</option>`;
             });
         });
 
-        function editMission(id, title, detail, hints) {
-            document.getElementById("m_id").value = id; document.getElementById("m_title").value = decodeURIComponent(title); document.getElementById("m_detail").value = decodeURIComponent(detail);
-            document.getElementById("hintsList").innerHTML = ""; JSON.parse(decodeURIComponent(hints)).forEach(hint => addHintField(hint));
+        function editMission(id, title, detail, hints, imageUrl, scratchLink) {
+            document.getElementById("m_id").value = id;
+            document.getElementById("m_title").value = decodeURIComponent(title);
+            document.getElementById("m_detail").value = decodeURIComponent(detail);
+            const decodedImage = decodeURIComponent(imageUrl || "");
+            document.getElementById("m_image_link").value = decodedImage;
+            previewMissionImageLink();
+
+            document.getElementById("m_scratch_link").value = decodeURIComponent(scratchLink || "");
+            previewMissionScratch();
+
+            document.getElementById("hintsList").innerHTML = "";
+            const decodedHints = JSON.parse(decodeURIComponent(hints || "%5B%5D"));
+            if (decodedHints.length) decodedHints.forEach(hint => addHintField(hint));
+            else addHintField();
+
+            document.getElementById("mission-tab").scrollIntoView({ behavior: "smooth", block: "start" });
         }
         function deleteMission(id) { if (confirm(`ลบ ${id}?`)) { db.collection("missions").doc(id).delete(); db.collection("resources").doc(id).delete(); } }
         async function saveResource(e) {
@@ -320,6 +2145,312 @@
         });
         function editResource(id, v, s, n) { document.getElementById("r_mission_select").value = id; document.getElementById("r_video").value = decodeURIComponent(v); document.getElementById("r_slide").value = decodeURIComponent(s); document.getElementById("r_note").value = decodeURIComponent(n); }
         window.onload = () => { addHintField(); };
+
+
+
+        // =========================================================
+        // 💬 ระบบอนุมัติคำตอบจาก knowledge_answers
+        // =========================================================
+        let knowledgeAnswersAdmin = [];
+        let knowledgePostsAdmin = {};
+
+        function escapeAdminHtml(value) {
+            return String(value ?? '')
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#039;');
+        }
+
+        function formatAdminTime(timestamp) {
+            if (!timestamp) return 'ไม่ระบุเวลา';
+            try {
+                const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+                return date.toLocaleString('th-TH');
+            } catch (_) {
+                return 'ไม่ระบุเวลา';
+            }
+        }
+
+        db.collection('knowledge_posts').onSnapshot(snapshot => {
+            knowledgePostsAdmin = {};
+            snapshot.forEach(doc => {
+                knowledgePostsAdmin[doc.id] = { id: doc.id, ...doc.data() };
+            });
+            renderKnowledgeAnswersAdmin();
+        }, error => {
+            console.error('Load knowledge posts error:', error);
+        });
+
+        db.collection('knowledge_answers').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+            knowledgeAnswersAdmin = [];
+            snapshot.forEach(doc => {
+                knowledgeAnswersAdmin.push({ id: doc.id, ...doc.data() });
+            });
+            updatePendingAnswerBadge();
+            renderKnowledgeAnswersAdmin();
+        }, error => {
+            console.error('Load knowledge answers error:', error);
+            const list = document.getElementById('knowledgeAnswerAdminList');
+            if (list) list.innerHTML = '<div style="text-align:center;padding:35px;color:#b91c1c;font-weight:800;">โหลดคำตอบไม่สำเร็จ กรุณาตรวจ Firestore Rules หรือ Index</div>';
+        });
+
+        function updatePendingAnswerBadge() {
+            const pending = knowledgeAnswersAdmin.filter(answer => !answer.isApproved).length;
+            const badge = document.getElementById('pendingAnswerBadge');
+            if (badge) badge.textContent = pending;
+        }
+
+        function renderKnowledgeAnswersAdmin() {
+            const list = document.getElementById('knowledgeAnswerAdminList');
+            if (!list) return;
+
+            const status = document.getElementById('answerStatusFilter')?.value || 'pending';
+            const room = document.getElementById('answerRoomFilter')?.value || 'ALL';
+            const keyword = (document.getElementById('answerSearchInput')?.value || '').trim().toLowerCase();
+
+            const filtered = knowledgeAnswersAdmin.filter(answer => {
+                if (status === 'pending' && answer.isApproved) return false;
+                if (status === 'approved' && (!answer.isApproved || answer.isBest)) return false;
+                if (status === 'best' && !answer.isBest) return false;
+                if (room !== 'ALL' && answer.room !== room) return false;
+
+                const post = knowledgePostsAdmin[answer.postId] || {};
+                const searchText = [
+                    answer.authorName,
+                    answer.room,
+                    answer.text,
+                    post.title,
+                    post.body,
+                    post.authorName
+                ].join(' ').toLowerCase();
+
+                return !keyword || searchText.includes(keyword);
+            });
+
+            if (!filtered.length) {
+                list.innerHTML = '<div style="text-align:center;padding:42px;color:#94a3b8;font-size:18px;font-weight:800;">📭 ไม่พบคำตอบตามตัวกรองนี้</div>';
+                return;
+            }
+
+            list.innerHTML = filtered.map(answer => {
+                const post = knowledgePostsAdmin[answer.postId] || {};
+                const cardClass = answer.isBest ? 'best' : (answer.isApproved ? 'approved' : '');
+                const statusHtml = answer.isBest
+                    ? '<span class="answer-status-pill best">🏆 คำตอบดีที่สุด</span>'
+                    : answer.isApproved
+                        ? '<span class="answer-status-pill ok">✅ อนุมัติแล้ว</span>'
+                        : '<span class="answer-status-pill">⏳ รออนุมัติ</span>';
+
+                const scratchLink = post.scratchId
+                    ? `<a href="https://scratch.mit.edu/projects/${encodeURIComponent(post.scratchId)}/" target="_blank" rel="noopener">🔗 เปิดโปรเจกต์ Scratch</a>`
+                    : '';
+                const imageLink = post.imageData
+                    ? `<a href="${post.imageData}" target="_blank" rel="noopener">📷 เปิดภาพที่แนบ</a>`
+                    : '';
+
+                return `
+                    <div class="answer-admin-card ${cardClass}">
+                        <div class="answer-admin-head">
+                            <div>
+                                <strong style="font-size:19px;color:#4c1d95;">👤 ${escapeAdminHtml(answer.authorName || 'ไม่ระบุชื่อ')}</strong>
+                                <div class="answer-admin-meta">🏫 ${escapeAdminHtml(answer.room || 'ไม่ระบุห้อง')} • ⏰ ${formatAdminTime(answer.createdAt)}</div>
+                            </div>
+                            ${statusHtml}
+                        </div>
+
+                        <div class="answer-admin-question">
+                            <strong style="color:#9d174d;">❓ ${escapeAdminHtml(post.title || 'ไม่พบหัวข้อคำถาม')}</strong>
+                            <div style="margin-top:6px;white-space:pre-wrap;">${escapeAdminHtml(post.body || '')}</div>
+                            <div class="answer-admin-meta">ผู้ถาม: ${escapeAdminHtml(post.authorName || 'ไม่ระบุ')} • ${escapeAdminHtml(post.room || '')}</div>
+                            ${(scratchLink || imageLink) ? `<div class="question-media-links">${scratchLink}${imageLink}</div>` : ''}
+                        </div>
+
+                        <div style="font-weight:800;color:#334155;margin-bottom:6px;">💬 คำตอบของนักเรียน</div>
+                        <div class="answer-admin-text">${escapeAdminHtml(answer.text || '')}</div>
+
+                        <div class="answer-admin-actions">
+                            <button class="btn-approve-answer" onclick="approveKnowledgeAnswerAdmin('${answer.id}')" ${answer.coinRewarded ? 'disabled' : ''}>
+                                ${answer.coinRewarded ? '✅ มอบ 5 เหรียญแล้ว' : '✅ อนุมัติ +5 เหรียญ'}
+                            </button>
+                            <button class="btn-best-answer" onclick="markBestKnowledgeAnswerAdmin('${answer.id}', '${answer.postId}')" ${answer.isBest ? 'disabled' : ''}>
+                                ${answer.isBest ? '🏆 เป็นคำตอบดีที่สุดแล้ว' : '🏆 เลือกดีที่สุด รวม 10 เหรียญ'}
+                            </button>
+                            ${post.id ? `<button class="btn-view-question" onclick="openKnowledgeQuestionAdmin('${post.id}')">👁 ดูคำถามเต็ม</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function approveKnowledgeAnswerAdmin(answerId) {
+            const answerRef = db.collection('knowledge_answers').doc(answerId);
+            try {
+                await db.runTransaction(async transaction => {
+                    const answerSnapshot = await transaction.get(answerRef);
+                    if (!answerSnapshot.exists) throw new Error('ไม่พบคำตอบนี้');
+
+                    const answer = answerSnapshot.data();
+                    if (answer.coinRewarded) return;
+                    if (!answer.authorGroupId) throw new Error('คำตอบนี้ไม่มีข้อมูลกลุ่มของผู้ตอบ');
+
+                    const walletRef = db.collection('group_wallets').doc(answer.authorGroupId);
+                    const walletSnapshot = await transaction.get(walletRef);
+                    const wallet = walletSnapshot.exists ? walletSnapshot.data() : {};
+
+                    const approvedCount = (Number(wallet.helperApprovedCount) || 0) + 1;
+                    const oldCycles = Number(wallet.helperRewardCycles) || 0;
+                    const newCycles = Math.floor(approvedCount / 5);
+                    const waterBonus = newCycles > oldCycles ? 10 : 0;
+                    const newCoins = (Number(wallet.magicCoins) || 0) + 5;
+
+                    transaction.set(walletRef, {
+                        magicCoins: newCoins,
+                        water: (Number(wallet.water) || 0) + waterBonus,
+                        helperApprovedCount: approvedCount,
+                        helperRewardCycles: newCycles,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+
+                    transaction.update(answerRef, {
+                        isApproved: true,
+                        coinRewarded: true,
+                        approvedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    const historyRef = walletRef.collection('transactions').doc();
+                    transaction.set(historyRef, {
+                        type: 'KNOWLEDGE_ANSWER_REWARD',
+                        amount: 5,
+                        waterAmount: waterBonus,
+                        answerId,
+                        postId: answer.postId || '',
+                        reason: 'ครูอนุมัติคำตอบจากกระดานแห่งภูมิปัญญา',
+                        balanceAfter: newCoins,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                });
+
+                alert('✅ อนุมัติคำตอบและมอบ 5 เหรียญแล้ว\n\nหากเป็นคำตอบที่ผ่านการอนุมัติครบครั้งที่ 5 ระบบจะเพิ่มน้ำ 10 หยดให้อัตโนมัติ');
+            } catch (error) {
+                console.error('Approve answer error:', error);
+                alert('อนุมัติคำตอบไม่สำเร็จ\n\n' + error.message);
+            }
+        }
+
+        async function markBestKnowledgeAnswerAdmin(answerId, postId) {
+            if (!confirm('เลือกคำตอบนี้เป็นคำตอบดีที่สุดใช่หรือไม่?\nผู้ตอบจะได้รับรวม 10 เหรียญ')) return;
+
+            const targetRef = db.collection('knowledge_answers').doc(answerId);
+            try {
+                const samePostSnapshot = await db.collection('knowledge_answers')
+                    .where('postId', '==', postId)
+                    .get();
+
+                const batch = db.batch();
+                samePostSnapshot.forEach(doc => {
+                    if (doc.id !== answerId && doc.data().isBest) {
+                        batch.update(doc.ref, { isBest: false });
+                    }
+                });
+                await batch.commit();
+
+                await db.runTransaction(async transaction => {
+                    const answerSnapshot = await transaction.get(targetRef);
+                    if (!answerSnapshot.exists) throw new Error('ไม่พบคำตอบนี้');
+                    const answer = answerSnapshot.data();
+                    if (!answer.authorGroupId) throw new Error('คำตอบนี้ไม่มีข้อมูลกลุ่มของผู้ตอบ');
+
+                    const walletRef = db.collection('group_wallets').doc(answer.authorGroupId);
+                    const walletSnapshot = await transaction.get(walletRef);
+                    const wallet = walletSnapshot.exists ? walletSnapshot.data() : {};
+
+                    let coinAdd = 0;
+                    let approvedCount = Number(wallet.helperApprovedCount) || 0;
+                    let cycles = Number(wallet.helperRewardCycles) || 0;
+                    let waterBonus = 0;
+
+                    if (!answer.coinRewarded) {
+                        coinAdd += 5;
+                        approvedCount += 1;
+                        const nextCycles = Math.floor(approvedCount / 5);
+                        if (nextCycles > cycles) {
+                            waterBonus = 10;
+                            cycles = nextCycles;
+                        }
+                    }
+                    if (!answer.bestBonusRewarded) coinAdd += 5;
+
+                    const newCoins = (Number(wallet.magicCoins) || 0) + coinAdd;
+                    transaction.set(walletRef, {
+                        magicCoins: newCoins,
+                        water: (Number(wallet.water) || 0) + waterBonus,
+                        helperApprovedCount: approvedCount,
+                        helperRewardCycles: cycles,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+
+                    transaction.update(targetRef, {
+                        isApproved: true,
+                        isBest: true,
+                        coinRewarded: true,
+                        bestBonusRewarded: true,
+                        approvedAt: answer.approvedAt || firebase.firestore.FieldValue.serverTimestamp(),
+                        bestAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    if (coinAdd > 0 || waterBonus > 0) {
+                        const historyRef = walletRef.collection('transactions').doc();
+                        transaction.set(historyRef, {
+                            type: 'BEST_KNOWLEDGE_ANSWER_REWARD',
+                            amount: coinAdd,
+                            waterAmount: waterBonus,
+                            answerId,
+                            postId,
+                            reason: 'ครูเลือกเป็นคำตอบดีที่สุด',
+                            balanceAfter: newCoins,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    }
+                });
+
+                alert('🏆 เลือกคำตอบดีที่สุดแล้ว ผู้ตอบได้รับรวม 10 เหรียญ');
+            } catch (error) {
+                console.error('Best answer error:', error);
+                alert('เลือกคำตอบดีที่สุดไม่สำเร็จ\n\n' + error.message);
+            }
+        }
+
+        function openKnowledgeQuestionAdmin(postId) {
+            const post = knowledgePostsAdmin[postId];
+            if (!post) {
+                alert('ไม่พบคำถามนี้');
+                return;
+            }
+            const media = [
+                post.scratchId ? `Scratch: https://scratch.mit.edu/projects/${post.scratchId}/` : '',
+                post.imageData ? 'มีภาพหน้าจอแนบอยู่ สามารถกดเปิดภาพจากการ์ดคำตอบได้' : ''
+            ].filter(Boolean).join('\n');
+
+            alert(
+                `❓ ${post.title || ''}
+
+` +
+                `${post.body || ''}
+
+` +
+                `ผู้ถาม: ${post.authorName || 'ไม่ระบุ'}
+` +
+                `ห้อง: ${post.room || 'ไม่ระบุ'}
+` +
+                (media ? `
+${media}` : '')
+            );
+        }
+
+
+        loadGroupWalletsForBonus();
     </script>
 </body>
 </html>
