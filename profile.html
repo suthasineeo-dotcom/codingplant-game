@@ -1,183 +1,1543 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>👤 โปรไฟล์ | สวนแสนสุข</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>👾 โปรไฟล์มอนสเตอร์ | สวนแสนสุข</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<style>
+.nav-menu {
+    min-height: 80px;
+    background: #a855f7;
+    padding: 14px 170px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 900;
+}
+.learning-menu { display:flex; justify-content:center; align-items:center; gap:12px; flex-wrap:wrap; }
+.nav-menu a.main-link {
+    background:#d8b4fe; color:#4c1d95; text-decoration:none; font-weight:800;
+    font-size:17px; padding:10px 17px; border-radius:18px; border:3px solid #f3e8ff;
+    box-shadow:0 4px 0 #9333ea; white-space:nowrap; transition:.2s;
+}
+.nav-menu a.main-link:hover { background:#c084fc; color:white; transform:translateY(-2px); }
+.nav-menu a.main-link:active { transform:translateY(4px); box-shadow:none; }
+.top-left-menu { position:absolute; left:18px; top:50%; transform:translateY(-50%); z-index:1001; }
+.btn-home-login {
+    width:48px; height:48px; display:flex; justify-content:center; align-items:center;
+    background:white; border:3px solid #f3e8ff; border-radius:50%; font-size:23px;
+    text-decoration:none; box-shadow:0 4px 0 #9333ea; transition:.2s;
+}
+.btn-home-login:hover { background:#fdf4ff; transform:translateY(-2px); }
+.btn-home-login:active { transform:translateY(4px); box-shadow:none; }
+.hamburger-wrapper { position:absolute; right:18px; top:50%; transform:translateY(-50%); z-index:1002; }
+.hamburger-button {
+    width:44px; height:44px; display:flex; justify-content:center; align-items:center;
+    background:white; color:#4c1d95; border:3px solid #f3e8ff; border-radius:14px;
+    font-size:23px; font-weight:800; cursor:pointer; box-shadow:0 4px 0 #9333ea;
+    transition:.2s; font-family:'Kanit',sans-serif;
+}
+.hamburger-button:hover { background:#fdf4ff; transform:translateY(-2px); }
+.hamburger-button:active,.hamburger-button.open { transform:translateY(4px); box-shadow:none; }
+.utility-dropdown {
+    display:none; position:absolute; top:56px; right:0; width:295px; padding:14px;
+    background:white; border:3px solid #e9d5ff; border-radius:20px;
+    box-shadow:0 12px 28px rgba(76,29,149,.24); text-align:left;
+}
+.utility-dropdown.show { display:block; }
+.dropdown-title { color:#4c1d95; font-size:18px; font-weight:800; text-align:center; margin-bottom:10px; }
+.dropdown-coin {
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    background:#fef9c3; color:#854d0e; border:2px solid #fde047; border-radius:14px;
+    padding:10px 12px; margin-bottom:10px; font-weight:800;
+}
+.dropdown-link {
+    display:flex; align-items:center; gap:11px; padding:10px 12px; margin-top:8px;
+    color:#4c1d95; text-decoration:none; background:#faf5ff; border:2px solid #e9d5ff;
+    border-radius:14px; transition:.2s;
+}
+.dropdown-link:hover { background:#f3e8ff; transform:translateX(-2px); }
+.dropdown-link.active-dropdown { background:#ede9fe; border-color:#c4b5fd; }
+.dropdown-icon { width:34px; text-align:center; font-size:24px; flex:0 0 34px; }
+.dropdown-link strong,.dropdown-link small { display:block; }
+.dropdown-link small { margin-top:2px; color:#7c3aed; font-size:12px; font-weight:400; }
+.logout-link { color:#991b1b; background:#fff1f2; border-color:#fecdd3; }
+@media(max-width:1100px){
+    .nav-menu{padding:75px 15px 15px}
+    .top-left-menu{top:14px;left:15px;transform:none}
+    .hamburger-wrapper{top:16px;right:15px;transform:none}
+}
+@media(max-width:650px){
+    .learning-menu{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:10px}
+    .nav-menu a.main-link{width:100%;font-size:16px;padding:10px 8px;text-align:center}
+    .learning-menu a.main-link:last-child{grid-column:1/-1;width:50%;justify-self:center}
+    .utility-dropdown{width:min(295px,calc(100vw - 30px))}
+}
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+*{box-sizing:border-box}
+body{margin:0;padding:0 0 60px;font-family:'Kanit',sans-serif;color:#312e81;text-align:center;
+    background-color:#eff6ff;background-image:radial-gradient(#bfdbfe 3px,transparent 3px);
+    background-size:40px 40px;min-height:100vh}
+button,input{font-family:'Kanit',sans-serif}
+.page-header{max-width:900px;margin:30px auto 18px;padding:0 20px}
+.page-title{margin:0;color:#1d4ed8;font-size:42px;font-weight:800;text-shadow:2px 2px 0 white}
+.page-subtitle{margin:8px 0 0;color:#2563eb;font-size:18px;font-weight:600}
+.profiles-container{width:min(980px,calc(100% - 28px));margin:20px auto;display:grid;gap:24px}
+.profile-card{background:white;border:5px solid #93c5fd;border-radius:28px;box-shadow:0 9px 0 #bfdbfe;
+    padding:20px;display:grid;grid-template-columns:330px 1fr;gap:24px;align-items:start;text-align:left}
+.avatar-side{text-align:center;position:relative;top:auto;align-self:start}
+.avatar-side::after{display:block;margin:10px auto 0;padding:7px 10px;max-width:270px;border-radius:999px;background:#eff6ff;color:#2563eb;font-size:12px;font-weight:700;border:2px solid #bfdbfe}
+.avatar-stage{width:100%;aspect-ratio:360/430;border-radius:24px;overflow:hidden;border:4px solid #dbeafe;background:#eff6ff}
+.avatar-stage svg{width:100%;height:100%;display:block}
+.profile-name-display{font-size:24px;font-weight:800;color:#1d4ed8;margin-top:12px}
+.edit-side{padding:8px}
+.section-label{font-weight:800;color:#2563eb;font-size:18px;margin:8px 0}
+.input-name{width:100%;padding:11px 13px;font-size:18px;border:3px solid #bfdbfe;border-radius:13px;outline:none;font-weight:600}
+.input-name:focus{border-color:#3b82f6}
+.outfit-summary{margin:18px 0;padding:15px;background:#eff6ff;border:3px dashed #93c5fd;border-radius:18px}
+.outfit-summary h3{margin:0 0 10px;color:#1d4ed8}
+.outfit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.outfit-chip{padding:8px 10px;background:white;border:2px solid #dbeafe;border-radius:12px;color:#1e3a8a;font-size:14px}
+.button-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn-save,.btn-dress{padding:12px;border:none;border-radius:15px;font-size:17px;font-weight:800;cursor:pointer;text-decoration:none;text-align:center}
+.btn-save{background:#4ade80;color:#14532d;box-shadow:0 5px 0 #16a34a}
+.btn-dress{background:#a855f7;color:white;box-shadow:0 5px 0 #7e22ce}
+.btn-save:active,.btn-dress:active{transform:translateY(4px);box-shadow:none}
+@media(max-width:780px){
+.profile-card{grid-template-columns:1fr}
+.avatar-side{max-width:380px;margin:auto;width:100%;position:relative;top:auto;z-index:1;background:white;padding:8px 8px 12px;border-radius:22px;box-shadow:0 8px 18px rgba(30,64,175,.13)}
+.avatar-stage{max-height:320px;aspect-ratio:360/390}
+.avatar-side::after{display:none}
+.character-customizer{max-height:55vh}
+}
+@media(max-width:520px){
+.avatar-stage{max-height:270px}
+.character-customizer{max-height:52vh;padding:12px 7px 12px 12px}
+}
 
-    <style>
-        body { 
-            font-family: 'Kanit', sans-serif; background-color: #eff6ff; 
-            background-image: radial-gradient(#dbeafe 3px, transparent 3px); background-size: 40px 40px;
-            text-align: center; color: #333; margin: 0; padding: 0 0 50px 0;
-        }
-        .nav-menu { background: #3b82f6; padding: 15px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
-        .nav-menu a { background: #93c5fd; color: #1e3a8a; text-decoration: none; font-weight: 800; font-size: 18px; padding: 10px 20px; border-radius: 20px; border: 3px solid #eff6ff; box-shadow: 0 4px 0px #2563eb; transition: 0.2s; }
-        .nav-menu a:active { transform: translateY(4px); box-shadow: 0 0px 0px #2563eb; }
-        
-        .page-title { font-size: 36px; font-weight: 800; color: #1d4ed8; margin-top: 30px; text-shadow: 2px 2px 0px white; }
-        
-        .profiles-container { display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px; max-width: 600px; margin: 0 auto; }
-        
-        .profile-card { background: white; border: 5px solid #93c5fd; border-radius: 25px; padding: 20px; width: 100%; box-shadow: 0 8px 0px #bfdbfe; text-align: left; position: relative; }
-        
-        .section-label { font-weight: 800; color: #2563eb; font-size: 18px; margin-bottom: 10px; }
-        
-        .input-name { width: 100%; padding: 10px; font-size: 18px; border: 3px solid #dbeafe; border-radius: 12px; outline: none; font-family: 'Kanit'; font-weight: 600; box-sizing: border-box; margin-bottom: 15px; }
-        .input-name:focus { border-color: #60a5fa; }
-        
-        .avatar-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
-        .avatar-option { font-size: 30px; cursor: pointer; padding: 5px; border-radius: 15px; border: 3px solid transparent; transition: 0.2s; background: #f8fafc; }
-        .avatar-option:hover { background: #e2e8f0; }
-        .avatar-option.selected { border-color: #3b82f6; background: #dbeafe; transform: scale(1.1); box-shadow: 0 4px 0px #93c5fd; }
-        
-        .btn-save { background: #4ade80; color: #14532d; border: none; padding: 10px 20px; font-size: 18px; font-weight: 800; border-radius: 15px; cursor: pointer; box-shadow: 0 4px 0px #16a34a; font-family: 'Kanit'; width: 100%; transition: 0.2s; }
-        .btn-save:active { transform: translateY(4px); box-shadow: 0 0px 0px #16a34a; }
-        .btn-save:disabled { background: #9ca3af; box-shadow: 0 4px 0px #4b5563; cursor: not-allowed; }
-    </style>
+.character-customizer{margin:18px 0;padding:16px 10px 16px 16px;background:#f7fff2;border:3px dashed #b7df82;border-radius:18px;max-height:620px;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+.character-customizer::-webkit-scrollbar{width:12px}
+.character-customizer::-webkit-scrollbar-track{background:#eaf6dc;border-radius:999px}
+.character-customizer::-webkit-scrollbar-thumb{background:#9acb61;border:3px solid #eaf6dc;border-radius:999px}
+.character-customizer::-webkit-scrollbar-thumb:hover{background:#76ad3e}
+.character-customizer{scrollbar-width:thin;scrollbar-color:#9acb61 #eaf6dc}
+.character-customizer h3{margin:0 0 14px;color:#4f7f23}
+.custom-section{margin-bottom:16px}
+.custom-label{font-weight:800;color:#557c2b;margin-bottom:8px}
+.custom-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}
+.custom-option{border:2px solid #d9edc2;background:white;border-radius:15px;padding:9px;text-align:center;cursor:pointer;font-weight:800;color:#557c2b;transition:.2s}
+.custom-option:hover{transform:translateY(-2px)}
+.custom-option.selected{border-color:#84bd3d;background:#f3fae9;box-shadow:0 0 0 3px #d9edc2}
+.custom-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 14px}.btn-random,.btn-reset{flex:1;min-width:140px;border:0;border-radius:14px;padding:10px 14px;font-weight:800;cursor:pointer}.btn-random{background:#fde68a;color:#854d0e;box-shadow:0 4px 0 #f59e0b}.btn-reset{background:#e0e7ff;color:#3730a3;box-shadow:0 4px 0 #818cf8}.btn-random:active,.btn-reset:active{transform:translateY(3px);box-shadow:none}
+.custom-swatch{width:40px;height:40px;border-radius:50%;margin:0 auto 5px;border:3px solid white;box-shadow:0 0 0 2px #cde7ad}
+@keyframes avatarPop{from{transform:scale(.97);opacity:.75}to{transform:scale(1);opacity:1}}
+@media(max-width:900px){.custom-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.custom-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.page-title{font-size:32px}.button-row,.outfit-grid{grid-template-columns:1fr}}
+
+
+/* ===== Reflection และความก้าวหน้ารายบุคคล ===== */
+.learning-profile{
+    grid-column:1/-1;
+    margin-top:8px;
+    padding:18px;
+    border:3px solid #c4b5fd;
+    border-radius:20px;
+    background:#faf5ff;
+}
+.learning-profile h3{
+    margin:0 0 12px;
+    color:#6d28d9;
+    font-size:22px;
+}
+.progress-summary{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin-bottom:14px;
+}
+.progress-stat{
+    background:white;
+    border:2px solid #ddd6fe;
+    border-radius:14px;
+    padding:12px;
+    text-align:center;
+}
+.progress-stat strong{
+    display:block;
+    color:#5b21b6;
+    font-size:24px;
+}
+.progress-stat span{
+    color:#6b7280;
+    font-size:13px;
+    font-weight:700;
+}
+.learning-progress-track{
+    height:18px;
+    background:#ede9fe;
+    border-radius:999px;
+    overflow:hidden;
+    margin:8px 0 16px;
+}
+.learning-progress-bar{
+    height:100%;
+    width:0;
+    background:linear-gradient(90deg,#8b5cf6,#22c55e);
+    transition:.35s;
+}
+.reflection-form{
+    background:white;
+    border:3px dashed #93c5fd;
+    border-radius:18px;
+    padding:15px;
+    margin-top:14px;
+}
+.reflection-form h4{
+    margin:0 0 12px;
+    color:#1d4ed8;
+    font-size:19px;
+}
+.reflection-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:11px;
+}
+.reflection-field{
+    text-align:left;
+}
+.reflection-field.full{
+    grid-column:1/-1;
+}
+.reflection-field label{
+    display:block;
+    color:#1e40af;
+    font-weight:800;
+    margin-bottom:5px;
+}
+.reflection-field select,
+.reflection-field textarea{
+    width:100%;
+    padding:10px 12px;
+    border:2px solid #bfdbfe;
+    border-radius:12px;
+    font-family:'Kanit',sans-serif;
+    font-size:15px;
+    outline:none;
+}
+.reflection-field textarea{
+    min-height:78px;
+    resize:vertical;
+}
+.btn-reflection{
+    margin-top:12px;
+    width:100%;
+    border:none;
+    border-radius:14px;
+    padding:12px;
+    background:#38bdf8;
+    color:#075985;
+    font-size:16px;
+    font-weight:800;
+    box-shadow:0 4px 0 #0284c7;
+    cursor:pointer;
+}
+.btn-reflection:active{
+    transform:translateY(4px);
+    box-shadow:none;
+}
+.progress-report-note{
+    margin-top:14px;
+    padding:11px 13px;
+    background:#eff6ff;
+    border:2px dashed #93c5fd;
+    border-radius:13px;
+    color:#1e3a8a;
+    font-weight:700;
+    line-height:1.6;
+    text-align:center;
+}
+.reflection-list{
+    margin-top:15px;
+    display:grid;
+    gap:10px;
+}
+.reflection-item{
+    background:white;
+    border:2px solid #ddd6fe;
+    border-radius:15px;
+    padding:12px;
+    color:#3730a3;
+    line-height:1.6;
+}
+.reflection-item-head{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    font-weight:800;
+    color:#5b21b6;
+    margin-bottom:5px;
+}
+.reflection-tags{
+    display:flex;
+    gap:7px;
+    flex-wrap:wrap;
+    margin:7px 0;
+}
+.reflection-tag{
+    background:#ede9fe;
+    color:#5b21b6;
+    border-radius:999px;
+    padding:4px 8px;
+    font-size:12px;
+    font-weight:800;
+}
+.empty-reflection{
+    padding:14px;
+    border:2px dashed #c4b5fd;
+    border-radius:14px;
+    color:#6d28d9;
+    text-align:center;
+    font-weight:700;
+}
+@media(max-width:700px){
+    .progress-summary,.reflection-grid{grid-template-columns:1fr}
+    .reflection-field.full{grid-column:auto}
+}
+
+</style>
 </head>
 <body>
 
-    <div class="nav-menu">
-        <a href="index.html" style="background:#fde047; color:#854d0e; border-color:white; box-shadow: 0 4px 0px #ca8a04;">🏡 หน้าแรก</a>
-        <a href="mission.html">⚔️ ภารกิจ</a>
-        <a href="resource.html">📚 แหล่งเรียนรู้</a>
-        <a href="share.html">🤝 แบ่งปัน</a>
-        <a href="monster-hatchery.html">🌱 แปลงปลูกต้นไม้</a>
-        <a href="profile.html" style="background:#60a5fa; color:#1e3a8a; border-color:#bfdbfe; box-shadow: 0 4px 0px #2563eb;">👤 โปรไฟล์</a> </div>
-     </div>
-
-    <h1 class="page-title">เปลี่ยนรูปโปรไฟล์ & ชื่อ ✏️</h1>
-    <p style="color: #64748b; font-weight: 600; margin-bottom: 20px;">เลือกเปลี่ยนข้อมูลของตัวเองได้เลยกั๊บ!</p>
-
-    <div class="profiles-container" id="profilesContainer">
-        <p>กำลังโหลดข้อมูล... ⏳</p>
+<nav class="nav-menu">
+    <div class="top-left-menu">
+        <a href="index.html" class="btn-home-login" title="กลับหน้าแรก" aria-label="กลับหน้าแรก">🏠</a>
     </div>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDfBIp5gujB9cE2twLz483hllYOubgYuks",
-            authDomain: "codingplant-f19fc.firebaseapp.com",
-            projectId: "codingplant-f19fc",
-            storageBucket: "codingplant-f19fc.firebasestorage.app",
-            messagingSenderId: "194545106875",
-            appId: "1:194545106875:web:d4b7ca3dd6b57f46cc8e9e",
-            measurementId: "G-Y6C9LXKJ1H"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+    <div class="learning-menu">
+        <a href="mission.html" class="main-link">⚔️ สถานการณ์ปัญหา</a>
+        <a href="resource.html" class="main-link">📚 แหล่งเรียนรู้</a>
+        <a href="hints.html" class="main-link">💡 ฐานการช่วยเหลือ</a>
+        <a href="share.html" class="main-link">🤝 แลกเปลี่ยนเรียนรู้</a>
+        <a href="coach.html" class="main-link">🧑‍🏫 โค้ช</a>
+    </div>
 
-        // รายการอวตารที่ให้เด็กๆ เลือกได้ (เพิ่มลดได้ตามใจชอบ)
-        const availableAvatars = ["🐶", "🐱", "🐰", "🦊", "🐻", "🐼", "🐯", "🦁", "🐸", "🐧", "🦄", "👽", "🤖", "👻", "💩"];
+    <div class="hamburger-wrapper">
+        <button type="button" id="hamburgerButton" class="hamburger-button"
+                onclick="toggleUtilityMenu()" aria-label="เปิดเมนูเพิ่มเติม"
+                aria-expanded="false" aria-controls="utilityDropdown">☰</button>
 
-        async function loadProfiles() {
-            const loggedInUsers = JSON.parse(localStorage.getItem("loggedInUsers") || "[]");
-            const container = document.getElementById("profilesContainer");
+        <div id="utilityDropdown" class="utility-dropdown">
+            <div class="dropdown-title">เมนูของฉัน</div>
+            <div class="dropdown-coin">
+                <span>🪙 เหรียญเวทมนตร์</span>
+                <strong id="topCoinAmount">--</strong>
+            </div>
 
-            if (loggedInUsers.length === 0) {
-                container.innerHTML = `<p style="color:red; font-weight:bold;">ไม่พบข้อมูลการล็อกอิน กรุณากลับไปหน้าเข้าสู่ระบบครับ</p>`;
+            <a href="monster-hatchery.html" class="dropdown-link">
+                <span class="dropdown-icon">🌱</span>
+                <span><strong>แปลงปลูกต้นไม้</strong><small>ดูคะแนนและการเติบโต</small></span>
+            </a>
+
+            <a href="shop.html" class="dropdown-link ">
+                <span class="dropdown-icon">🛍️</span>
+                <span><strong>ร้านค้า</strong><small>ใช้เหรียญซื้อของแต่งตัว</small></span>
+            </a>
+
+            <a href="dressing-room.html" class="dropdown-link ">
+                <span class="dropdown-icon">👕</span>
+                <span><strong>ห้องแต่งตัว</strong><small>เลือกของที่ซื้อแล้วมาสวม</small></span>
+            </a>
+
+            <a href="profile.html" class="dropdown-link active-dropdown">
+                <span class="dropdown-icon">👤</span>
+                <span><strong>โปรไฟล์</strong><small>ดูตัวละครและเปลี่ยนชื่อ</small></span>
+            </a>
+
+            <a href="login.html" class="dropdown-link logout-link">
+                <span class="dropdown-icon">🚪</span>
+                <span><strong>ออกจากระบบ</strong><small>กลับหน้าเข้าสู่ระบบ</small></span>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<header class="page-header">
+    <h1 class="page-title">👾 ตัวละครของฉัน</h1>
+    <p class="page-subtitle">สร้างมอนสเตอร์ไม่ซ้ำใคร เลือกร่าง สี อวัยวะแฟนตาซี และสีหน้า</p>
+</header>
+<main id="profilesContainer" class="profiles-container">
+    <div style="background:white;padding:25px;border-radius:20px">กำลังโหลดโปรไฟล์... ⏳</div>
+</main>
+<script>
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDfBIp5gujB9cE2twLz483hllYOubgYuks",
+    authDomain: "codingplant-f19fc.firebaseapp.com",
+    projectId: "codingplant-f19fc",
+    storageBucket: "codingplant-f19fc.firebasestorage.app",
+    messagingSenderId: "194545106875",
+    appId: "1:194545106875:web:d4b7ca3dd6b57f46cc8e9e",
+    measurementId: "G-Y6C9LXKJ1H"
+};
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
+const db = firebase.firestore();
+
+
+
+const DEFAULT_CHARACTER = {
+    skin: "skin_purple",
+    hairStyle: "monster_orb",
+    hairColor: "feature_horns",
+    eyes: "eyes_cyclops",
+    shirt: "shirt_blue",
+    pants: "pants_navy",
+    shoes: "shoes_red",
+    hat: null,
+    glasses: null,
+    accessory: null,
+    background: "bg_space"
+};
+
+const DEFAULT_OWNED_ITEMS = [
+    "shirt_blue",
+    "pants_navy",
+    "shoes_red",
+    "bg_garden"
+];
+
+const ITEM_CATALOG = [
+    { id:"hat_red", name:"หมวกแก๊ปดาวแดง", category:"hat", price:30 },
+    { id:"hat_straw", name:"หมวกฟางนักสำรวจ", category:"hat", price:25 },
+    { id:"hat_magic", name:"หมวกนักมายากล", category:"hat", price:45 },
+
+    { id:"glasses_round", name:"แว่นกลม", category:"glasses", price:20 },
+    { id:"glasses_sun", name:"แว่นสุดเท่", category:"glasses", price:30 },
+
+    { id:"shirt_blue", name:"เสื้อดาวสีฟ้า", category:"shirt", price:0, starter:true },
+    { id:"shirt_green", name:"เสื้อผู้พิทักษ์สีเขียว", category:"shirt", price:35 },
+    { id:"shirt_black", name:"แจ็กเก็ตสีดำ", category:"shirt", price:45 },
+    { id:"shirt_pink", name:"เสื้อชมพูสดใส", category:"shirt", price:35 },
+
+    { id:"pants_navy", name:"กางเกงขาสั้นกรมท่า", category:"pants", price:0, starter:true },
+    { id:"pants_black", name:"กางเกงขายาวสีดำ", category:"pants", price:30 },
+    { id:"pants_green", name:"กางเกงนักผจญภัย", category:"pants", price:35 },
+
+    { id:"shoes_red", name:"รองเท้าผ้าใบแดง", category:"shoes", price:0, starter:true },
+    { id:"shoes_black", name:"รองเท้าบูตสีดำ", category:"shoes", price:30 },
+    { id:"shoes_blue", name:"รองเท้าผ้าใบฟ้า", category:"shoes", price:25 },
+
+    { id:"bag_brown", name:"กระเป๋าสะพายผจญภัย", category:"accessory", price:40 },
+    { id:"wings_white", name:"ปีกนางฟ้า", category:"accessory", price:60 },
+
+    { id:"bg_garden", name:"สวนแสนสุข", category:"background", price:0, starter:true },
+    { id:"bg_sky", name:"ท้องฟ้ามหัศจรรย์", category:"background", price:40 },
+    { id:"bg_space", name:"อวกาศนักสำรวจ", category:"background", price:55 }
+];
+
+const CATEGORY_INFO = {
+    all: { label:"ทั้งหมด", icon:"✨" },
+    hat: { label:"หมวก", icon:"🧢" },
+    glasses: { label:"แว่น", icon:"👓" },
+    shirt: { label:"เสื้อ", icon:"👕" },
+    pants: { label:"กางเกง", icon:"👖" },
+    shoes: { label:"รองเท้า", icon:"👟" },
+    accessory: { label:"อุปกรณ์", icon:"🎒" },
+    background: { label:"พื้นหลัง", icon:"🖼️" }
+};
+
+const BASE_OPTION_LABELS = {
+    skin_light: "เขียวมะนาว",
+    skin_warm: "เหลืองน้ำผึ้ง",
+    skin_tan: "ชมพูพีช",
+    skin_deep: "ม่วงลาเวนเดอร์",
+    skin_mint: "เขียวมิ้นต์",
+    skin_sky: "ฟ้าพาสเทล",
+    skin_cream: "ครีมวานิลลา",
+    skin_cocoa: "โกโก้อ่อน",
+    skin_gray: "เทาหมอก",
+    skin_charcoal: "ถ่านนุ่ม",
+    hair_bob: "หยดน้ำสูง",
+    hair_short: "เมล็ดกลม",
+    hair_twin: "สามเหลี่ยมมน",
+    hair_curly: "โมจิเตี้ย",
+    shape_pear: "ลูกแพร์",
+    shape_blob: "ก้อนปุย",
+    hair_brown: "ยอดใบคู่",
+    hair_black: "ยอดใบสามแฉก",
+    hair_blonde: "ยอดใบเดี่ยว",
+    hair_pink: "ดอกไม้",
+    hair_blue: "เถาวัลย์",
+    sprout_clover: "ใบโคลเวอร์",
+    sprout_bud: "ดอกตูม",
+    sprout_curl: "ยอดม้วน",
+    eyes_sparkle: "ตาประกาย",
+    eyes_round: "ตากลม",
+    eyes_happy: "ตายิ้ม",
+    eyes_sleepy: "ง่วงนอน",
+    eyes_wink: "ขยิบตา",
+    eyes_star: "ตาดาว",
+    eyes_shy: "เขินอาย",
+    eyes_surprised: "ตกใจ",
+    shape_bean: "เมล็ดถั่ว",
+    shape_egg: "ไข่นุ่ม",
+    shape_mushroom: "เห็ดจิ๋ว",
+    shape_star: "ฟักทองอสูร",
+    shape_jelly: "เจลลี่",
+    shape_bear: "ตุ๊กตา",
+    skin_orange: "ส้มพีช",
+    skin_red: "แดงเชอร์รี",
+    skin_blue: "น้ำเงินเบอร์รี",
+    skin_purple: "ม่วงองุ่น",
+    skin_white: "ขาวมุก",
+    skin_dark: "ดำบลูเบอร์รี",
+    sprout_sunflower: "ทานตะวัน",
+    sprout_tulip: "ทิวลิป",
+    sprout_mushroom: "เห็ดแดง",
+    sprout_cactus: "กระบองเพชร",
+    sprout_star: "ดาววิ้ง",
+    sprout_bamboo: "ไผ่อ่อน",
+    sprout_palm: "ปาล์มจิ๋ว",
+    sprout_berry: "พวงเบอร์รี",
+};
+
+function mergeCharacter(character) {
+    const merged = { ...DEFAULT_CHARACTER, ...(character || {}) };
+
+    // ป้องกันข้อมูลเก่าที่ยังใช้ตัวเลือกซึ่งถูกนำออกแล้ว
+    const allowedSkins = new Set(["skin_lava","skin_amber","skin_lemon","skin_acid","skin_ocean","skin_purple","skin_candy","skin_neon","skin_aqua","skin_lilac"]);
+    const allowedSpecies = new Set(["monster_orb","monster_slime","monster_bat","monster_crystal","monster_spider","monster_cube","monster_egg","monster_bunny","monster_puff","monster_ghost","monster_drop","monster_cake","monster_golem"]);
+    const allowedFeatures = new Set(["feature_horns","feature_antlers","feature_crown","feature_eye_stalks","feature_spikes","feature_halo","feature_bunnyears","feature_antenna","feature_flowers","feature_bow","feature_cat_ears","feature_leaf_crown","feature_bubbles","feature_sweets","feature_none"]);
+    const allowedEyes = new Set(["eyes_cyclops","eyes_three","eyes_many","eyes_happy","eyes_star","eyes_wink","eyes_shy","eyes_kawaii","eyes_glasses","eyes_heart","eyes_dizzy","eyes_robot"]);
+
+    if (!allowedSkins.has(merged.skin)) merged.skin = "skin_purple";
+    if (!allowedSpecies.has(merged.hairStyle)) merged.hairStyle = "monster_orb";
+    if (!allowedFeatures.has(merged.hairColor)) merged.hairColor = "feature_horns";
+    if (!allowedEyes.has(merged.eyes)) merged.eyes = "eyes_cyclops";
+
+    return merged;
+}
+
+function itemById(id) {
+    return ITEM_CATALOG.find(item => item.id === id);
+}
+
+function colorFor(id, fallback) {
+    const colors = {
+        hair_brown:"#6b3f24",
+        hair_black:"#1f2937",
+        hair_blonde:"#e5b93f",
+        hair_pink:"#f472b6",
+        hair_blue:"#3b82f6",
+        shirt_blue:"#38bdf8",
+        shirt_green:"#22c55e",
+        shirt_black:"#111827",
+        shirt_pink:"#f472b6",
+        pants_navy:"#1e3a8a",
+        pants_black:"#111827",
+        pants_green:"#3f6212",
+        shoes_red:"#ef4444",
+        shoes_black:"#111827",
+        shoes_blue:"#2563eb"
+    };
+    return colors[id] || fallback;
+}
+
+function renderAvatar(container, rawCharacter) {
+    if (!container) return;
+    const c = mergeCharacter(rawCharacter);
+    const uid = "monster" + Math.random().toString(36).slice(2, 9);
+
+    const palettes = {
+        skin_acid:["#eaff7a","#94df43","#3c8f3d"], skin_lava:["#ffd18a","#ff7043","#a52337"],
+        skin_ocean:["#baf4ff","#48b8df","#3157aa"], skin_purple:["#eed2ff","#ab68e6","#6630a5"],
+        skin_shadow:["#8586a4","#41445f","#1c2038"], skin_candy:["#ffd3ed","#ff76b2","#a93686"],
+        skin_gold:["#fff1a8","#eeb947","#a56a22"], skin_frost:["#ffffff","#b9e4f4","#618cb7"],
+        skin_moss:["#d7e68e","#7eac55","#3f663a"], skin_void:["#6975c5","#2f326f","#15162f"],
+        skin_corral:["#ffd0bd","#ed8e78","#a94c55"], skin_neon:["#baffdc","#36e7b0","#148778"],
+        skin_peach:["#ffd9c7","#f3a98f","#a85f55"], skin_lemon:["#fff5a8","#e9d94d","#9b8422"],
+        skin_lilac:["#eadcff","#b89bea","#6c579e"], skin_aqua:["#c8fff5","#67d9cb","#2a8d83"],
+        skin_rose:["#ffd1df","#ef87aa","#a94e70"], skin_ink:["#9aa0c9","#555b91","#292d59"],
+        skin_milk:["#fffdf4","#e7dfcc","#9c927f"], skin_amber:["#ffe0a8","#e89c42","#995927"],
+        skin_mintcream:["#e4fff1","#8ce5bd","#3e9271"], skin_plum:["#f2ceff","#c472d7","#71377f"],
+        skin_sunset:["#ffd0a4","#ff8c69","#ad4350"], skin_cloudblue:["#e5f3ff","#9ec8ed","#507cae"],
+        skin_choco:["#ecc9a4","#b8774d","#6e402c"],
+        skin_light:["#eaff7a","#94df43","#3c8f3d"], skin_warm:["#fff1a8","#eeb947","#a56a22"],
+        skin_tan:["#ffd3ed","#ff76b2","#a93686"], skin_deep:["#eed2ff","#ab68e6","#6630a5"],
+        skin_mint:["#baffdc","#36e7b0","#148778"], skin_sky:["#baf4ff","#48b8df","#3157aa"],
+        skin_cream:["#fff1d4","#e6c59b","#a57855"], skin_cocoa:["#d8ad82","#996743","#5b3929"],
+        skin_gray:["#d7dae4","#969dad","#555c70"], skin_charcoal:["#8586a4","#41445f","#1c2038"],
+        skin_orange:["#ffd18a","#ff8a4c","#b34b34"], skin_red:["#ffb0aa","#eb555f","#9e293e"],
+        skin_blue:["#c1d5ff","#6e8fe8","#3650a4"], skin_white:["#ffffff","#dceaf1","#8da8b6"], skin_dark:["#6975c5","#2f326f","#15162f"]
+    };
+    const [light, mid, dark] = palettes[c.skin] || palettes.skin_purple;
+    const glow = {skin_lava:'#ffdd55',skin_ocean:'#89f5ff',skin_purple:'#f2a6ff',skin_shadow:'#9ca7ff',skin_candy:'#fff0fa',skin_gold:'#fff3a0',skin_frost:'#e9ffff',skin_moss:'#d8ff8c',skin_void:'#897cff',skin_corral:'#ffe0bd',skin_neon:'#9affdd'}[c.skin] || light;
+
+    const bgMap={bg_garden:['#4f7a69','#263d39','#99d36b'],bg_sky:['#5f75c5','#242b62','#b8d9ff'],bg_space:['#17132f','#080718','#5f48a8']};
+    const bg=bgMap[c.background]||bgMap.bg_space;
+
+    const bodies={
+      monster_orb:`<ellipse cx="180" cy="238" rx="105" ry="117"/>`,
+      monster_slime:`<path d="M77 282 C70 177 111 111 180 113 C249 111 290 177 283 282 C280 330 254 360 226 348 Q204 378 180 347 Q151 381 129 348 C99 360 80 330 77 282Z"/>`,
+      monster_dragon:`<path d="M180 89 C226 90 252 123 257 166 C294 184 293 221 268 241 C280 287 257 348 210 365 L180 337 L150 365 C103 348 80 287 92 241 C67 221 66 184 103 166 C108 123 134 90 180 89Z"/>`,
+      monster_mushroom:`<path d="M67 181 Q81 95 180 91 Q279 95 293 181 Q253 162 180 164 Q107 162 67 181Z"/><path d="M119 166 C104 225 105 332 180 363 C255 332 256 225 241 166Z"/>`,
+      monster_pumpkin:`<path d="M180 112 C143 80 100 111 91 177 C54 201 67 260 102 276 C89 329 130 364 180 347 C230 364 271 329 258 276 C293 260 306 201 269 177 C260 111 217 80 180 112Z"/><path d="M180 116 C151 130 139 185 143 240 C147 296 160 330 180 347 C200 330 213 296 217 240 C221 185 209 130 180 116Z" opacity=".18"/>`,
+      monster_bat:`<path d="M180 106 C221 83 254 113 251 156 C294 166 302 207 270 231 C284 292 250 352 180 365 C110 352 76 292 90 231 C58 207 66 166 109 156 C106 113 139 83 180 106Z"/>`,
+      monster_crystal:`<path d="M180 66 L263 151 L247 312 L180 373 L113 312 L97 151Z"/>`,
+      monster_cloud:`<path d="M180 115 C149 82 105 101 105 143 C65 145 51 188 78 215 C54 251 77 295 111 300 C107 343 143 367 180 348 C217 367 253 343 249 300 C283 295 306 251 282 215 C309 188 295 145 255 143 C255 101 211 82 180 115Z"/>`,
+      monster_spider:`<ellipse cx="180" cy="239" rx="91" ry="116"/>`,
+      monster_wisp:`<path d="M180 75 C235 122 271 169 255 227 C243 271 207 281 225 326 C193 320 178 346 180 372 C157 345 137 321 107 327 C124 287 91 268 94 222 C98 162 132 119 180 75Z"/>`,
+      monster_cube:`<path d="M91 125 Q91 96 120 96 H240 Q269 96 269 125 V329 Q269 358 240 358 H120 Q91 358 91 329Z"/>`,
+      monster_axolotl:`<path d="M180 105 C238 105 271 155 263 229 C285 254 268 296 239 303 C226 347 204 365 180 365 C156 365 134 347 121 303 C92 296 75 254 97 229 C89 155 122 105 180 105Z"/>`,
+      monster_moon:`<path d="M214 92 C148 82 99 130 95 218 C91 304 139 362 205 353 C158 324 145 268 157 211 C169 153 188 121 214 92Z"/>`,
+      monster_fish:`<path d="M102 149 C142 107 220 108 260 159 L315 125 L299 210 L317 290 L259 258 C218 315 141 318 99 273 C61 232 62 188 102 149Z"/>`,
+      monster_bunny:`<path d="M134 132 C102 87 110 42 137 39 C161 64 164 98 157 128 C171 119 189 119 203 128 C196 98 199 64 223 39 C250 42 258 87 226 132 C267 160 277 224 258 287 C244 338 216 365 180 365 C144 365 116 338 102 287 C83 224 93 160 134 132Z"/>`,
+      monster_puff:`<path d="M180 108 C211 79 251 99 251 137 C292 134 310 174 287 205 C316 233 298 282 262 288 C269 331 225 365 180 345 C135 365 91 331 98 288 C62 282 44 233 73 205 C50 174 68 134 109 137 C109 99 149 79 180 108Z"/>`,
+      monster_snail:`<path d="M112 272 C93 212 109 147 162 127 C221 105 267 150 262 208 C258 251 224 279 187 273 C163 269 148 251 151 229 C154 209 170 197 188 200 C204 203 211 218 205 230 C199 241 186 243 179 235 C190 242 203 231 198 218 C192 201 166 198 151 212 C125 237 143 285 184 299 C213 309 245 303 269 285 C253 338 221 365 180 365 C142 365 116 337 112 272Z"/>`,
+      monster_egg:`<path d="M180 79 C229 79 264 145 269 228 C274 315 238 370 180 370 C122 370 86 315 91 228 C96 145 131 79 180 79Z"/>`,
+      monster_ghost:`<path d="M180 91 C238 91 272 138 269 211 V347 L238 326 L210 350 L180 326 L150 350 L122 326 L91 347 V211 C88 138 122 91 180 91Z"/>`,
+      monster_drop:`<path d="M180 60 C227 125 271 178 267 249 C263 324 226 368 180 368 C134 368 97 324 93 249 C89 178 133 125 180 60Z"/>`,
+      monster_cake:`<path d="M102 145 Q180 103 258 145 V317 Q258 360 215 360 H145 Q102 360 102 317Z"/><path d="M102 166 Q126 195 150 166 Q174 198 198 166 Q222 194 258 166 V132 Q180 92 102 132Z"/>`,
+      monster_golem:`<path d="M126 111 L180 82 L234 111 L269 172 L252 247 L270 310 L218 365 L142 365 L90 310 L108 247 L91 172Z"/>`
+    };
+
+    const limbs={
+      monster_spider:`<g fill="none" stroke="${dark}" stroke-width="12" stroke-linecap="round"><path d="M103 204L48 170L27 192"/><path d="M95 236L37 231L20 257"/><path d="M103 274L50 306L35 337"/><path d="M257 204L312 170L333 192"/><path d="M265 236L323 231L340 257"/><path d="M257 274L310 306L325 337"/></g>`,
+      monster_bat:`<g fill="${mid}" stroke="${dark}" stroke-width="6"><path d="M103 178 C58 137 35 158 29 204 C49 190 66 201 73 224 C82 205 94 193 113 199Z"/><path d="M257 178 C302 137 325 158 331 204 C311 190 294 201 287 224 C278 205 266 193 247 199Z"/></g>`,
+      monster_dragon:`<g fill="${mid}" stroke="${dark}" stroke-width="6"><path d="M111 195 C61 155 41 196 58 239 C73 220 91 219 112 239Z"/><path d="M249 195 C299 155 319 196 302 239 C287 220 269 219 248 239Z"/></g>`,
+      monster_cloud:`<g fill="${mid}"><ellipse cx="74" cy="255" rx="35" ry="18"/><ellipse cx="286" cy="255" rx="35" ry="18"/></g>`,
+      monster_pumpkin:`<g fill="none" stroke="${dark}" stroke-width="14" stroke-linecap="round"><path d="M99 248Q62 259 48 292"/><path d="M261 248Q298 259 312 292"/></g><path d="M176 119Q176 83 194 62Q207 84 191 122Z" fill="#55763b" stroke="${dark}" stroke-width="6"/>`,
+      monster_ghost:`<g fill="none" stroke="${mid}" stroke-width="14" stroke-linecap="round"><path d="M101 229Q66 237 44 266"/><path d="M259 229Q294 237 316 266"/></g>`,
+      monster_golem:`<g fill="none" stroke="${dark}" stroke-width="18" stroke-linecap="square"><path d="M103 238L48 278"/><path d="M257 238L312 278"/></g>`,
+      default:`<g fill="none" stroke="${dark}" stroke-width="15" stroke-linecap="round"><path d="M104 255Q70 273 56 302"/><path d="M256 255Q290 273 304 302"/></g>`
+    };
+
+    const features={
+      feature_horns:`<g fill="${glow}" stroke="${dark}" stroke-width="5"><path d="M123 137 Q86 83 121 53 Q117 91 149 118Z"/><path d="M237 137 Q274 83 239 53 Q243 91 211 118Z"/></g>`,
+      feature_antlers:`<g fill="none" stroke="${dark}" stroke-width="10" stroke-linecap="round"><path d="M133 128Q98 93 103 49M104 74L78 55M108 88L134 60"/><path d="M227 128Q262 93 257 49M256 74L282 55M252 88L226 60"/></g>`,
+      feature_ears:`<g fill="${mid}" stroke="${dark}" stroke-width="6"><path d="M119 143Q66 114 77 69Q123 83 145 124Z"/><path d="M241 143Q294 114 283 69Q237 83 215 124Z"/></g>`,
+      feature_tentacles:`<g fill="none" stroke="${mid}" stroke-width="13" stroke-linecap="round"><path d="M145 126Q126 81 151 50Q170 29 184 52"/><path d="M183 117Q207 80 225 91Q244 103 226 121"/><path d="M165 119Q173 83 160 67"/></g>`,
+      feature_flame:`<path d="M180 126 C143 98 151 65 177 35 C175 65 208 64 199 24 C241 70 224 112 180 126Z" fill="url(#${uid}flame)" stroke="${dark}" stroke-width="5"/>`,
+      feature_crystals:`<g fill="url(#${uid}crystal)" stroke="${dark}" stroke-width="4"><path d="M139 135L117 81L149 54L163 121Z"/><path d="M180 121L164 52L181 25L198 52Z"/><path d="M221 135L197 121L211 54L243 81Z"/></g>`,
+      feature_crown:`<path d="M123 126L113 61L151 88L180 42L209 88L247 61L237 126Z" fill="${glow}" stroke="${dark}" stroke-width="6"/>`,
+      feature_eye_stalks:`<g stroke="${dark}" stroke-width="8" stroke-linecap="round"><path d="M148 139Q127 82 142 58"/><path d="M212 139Q233 82 218 58"/></g><g fill="white" stroke="${dark}" stroke-width="5"><circle cx="142" cy="52" r="18"/><circle cx="218" cy="52" r="18"/></g><g fill="${dark}"><circle cx="142" cy="52" r="7"/><circle cx="218" cy="52" r="7"/></g>`,
+      feature_mushrooms:`<g><path d="M145 130V84M215 130V72" stroke="#f0d8b4" stroke-width="12"/><path d="M113 85Q145 44 177 85Z" fill="#ef5964" stroke="${dark}" stroke-width="5"/><path d="M184 73Q215 31 246 73Z" fill="#8b72e8" stroke="${dark}" stroke-width="5"/></g>`,
+      feature_spikes:`<g fill="${glow}" stroke="${dark}" stroke-width="4"><path d="M116 147L86 98L137 120Z"/><path d="M149 119L143 55L174 112Z"/><path d="M184 110L210 46L215 121Z"/><path d="M225 126L271 87L246 151Z"/></g>`,
+      feature_halo:`<g fill="none" stroke="${glow}" stroke-width="10"><ellipse cx="180" cy="66" rx="69" ry="22"/></g>`,
+      feature_bunnyears:`<g fill="${mid}" stroke="${dark}" stroke-width="6"><path d="M143 132Q102 74 124 29Q158 54 161 121Z"/><path d="M217 132Q258 74 236 29Q202 54 199 121Z"/></g>`,
+      feature_fins:`<g fill="${glow}" stroke="${dark}" stroke-width="5"><path d="M125 145Q74 116 75 78Q119 87 148 126Z"/><path d="M235 145Q286 116 285 78Q241 87 212 126Z"/></g>`,
+      feature_antenna:`<g fill="none" stroke="${dark}" stroke-width="8" stroke-linecap="round"><path d="M155 132Q135 86 145 48"/><path d="M205 132Q225 86 215 48"/></g><g fill="${glow}" stroke="${dark}" stroke-width="4"><circle cx="145" cy="42" r="13"/><circle cx="215" cy="42" r="13"/></g>`,
+      feature_flowers:`<g stroke="${dark}" stroke-width="4"><path d="M180 128V72"/><g fill="#ff9fc6"><circle cx="180" cy="50" r="12"/><circle cx="162" cy="57" r="12"/><circle cx="198" cy="57" r="12"/><circle cx="168" cy="38" r="12"/><circle cx="192" cy="38" r="12"/></g><circle cx="180" cy="49" r="9" fill="#ffe36f"/></g>`,
+      feature_moon:`<path d="M180 126 C145 105 147 61 179 35 C166 72 193 93 224 74 C219 108 202 126 180 126Z" fill="${glow}" stroke="${dark}" stroke-width="5"/>`,
+      feature_bow:`<g fill="#ff89b4" stroke="${dark}" stroke-width="5"><path d="M177 89Q133 55 126 91Q133 126 177 101Z"/><path d="M183 89Q227 55 234 91Q227 126 183 101Z"/><circle cx="180" cy="95" r="14"/></g>`,
+      feature_cat_ears:`<g fill="${mid}" stroke="${dark}" stroke-width="6"><path d="M122 140L91 66L157 116Z"/><path d="M238 140L269 66L203 116Z"/></g>`,
+      feature_leaf_crown:`<g fill="#73c95b" stroke="${dark}" stroke-width="4"><path d="M180 126Q152 92 158 58Q183 70 184 104Q197 68 226 61Q228 97 190 126Z"/></g>`,
+      feature_bubbles:`<g fill="${glow}" fill-opacity=".65" stroke="${dark}" stroke-width="4"><circle cx="151" cy="72" r="15"/><circle cx="190" cy="48" r="19"/><circle cx="225" cy="79" r="12"/></g>`,
+      feature_feathers:`<g fill="${glow}" stroke="${dark}" stroke-width="4"><path d="M155 128Q117 84 144 47Q166 80 171 120Z"/><path d="M180 119Q164 66 196 35Q209 80 194 124Z"/><path d="M203 126Q207 77 240 59Q241 104 217 137Z"/></g>`,
+      feature_sweets:`<g stroke="${dark}" stroke-width="4"><path d="M180 128V77"/><circle cx="180" cy="57" r="22" fill="#ff93bd"/><path d="M159 57L142 44V70Z" fill="#ffe16c"/><path d="M201 57L218 44V70Z" fill="#86ddff"/></g>`,
+      feature_none:``
+    };
+
+    const faces={
+      eyes_cyclops:`<g><ellipse cx="180" cy="216" rx="37" ry="43" fill="white" stroke="${dark}" stroke-width="7"/><circle cx="180" cy="220" r="17" fill="${dark}"/><circle cx="171" cy="209" r="6" fill="white"/><path d="M151 281Q180 309 209 281" fill="#481f46" stroke="${dark}" stroke-width="6"/></g>`,
+      eyes_three:`<g fill="white" stroke="${dark}" stroke-width="6"><circle cx="137" cy="220" r="22"/><circle cx="180" cy="196" r="22"/><circle cx="223" cy="220" r="22"/></g><g fill="${dark}"><circle cx="137" cy="222" r="9"/><circle cx="180" cy="198" r="9"/><circle cx="223" cy="222" r="9"/></g><path d="M147 276Q180 303 213 276" fill="#5e244e" stroke="${dark}" stroke-width="6"/>`,
+      eyes_many:`<g fill="white" stroke="${dark}" stroke-width="5"><circle cx="130" cy="207" r="17"/><circle cx="165" cy="194" r="17"/><circle cx="200" cy="194" r="17"/><circle cx="232" cy="209" r="17"/></g><g fill="${dark}"><circle cx="130" cy="209" r="7"/><circle cx="165" cy="196" r="7"/><circle cx="200" cy="196" r="7"/><circle cx="232" cy="211" r="7"/></g><path d="M158 267Q180 286 202 267" fill="none" stroke="${dark}" stroke-width="7"/>`,
+      eyes_fangs:`<g><ellipse cx="145" cy="216" rx="19" ry="25" fill="white"/><ellipse cx="215" cy="216" rx="19" ry="25" fill="white"/><circle cx="145" cy="220" r="9" fill="${dark}"/><circle cx="215" cy="220" r="9" fill="${dark}"/><path d="M145 270Q180 312 215 270Z" fill="#632041" stroke="${dark}" stroke-width="6"/><path d="M157 274L168 294L176 273M184 273L192 294L203 274" fill="white"/></g>`,
+      eyes_sleepy:`<g fill="none" stroke="${dark}" stroke-width="8" stroke-linecap="round"><path d="M126 219Q146 235 166 219"/><path d="M194 219Q214 235 234 219"/></g><path d="M165 278Q180 268 195 278" fill="none" stroke="${dark}" stroke-width="6"/>`,
+      eyes_angry:`<g fill="white" stroke="${dark}" stroke-width="6"><path d="M122 211Q145 190 170 216Q145 242 122 211Z"/><path d="M238 211Q215 190 190 216Q215 242 238 211Z"/></g><g fill="${dark}"><circle cx="148" cy="216" r="8"/><circle cx="212" cy="216" r="8"/></g><path d="M151 287Q180 260 209 287" fill="none" stroke="${dark}" stroke-width="7"/>`,
+      eyes_happy:`<g fill="none" stroke="${dark}" stroke-width="8" stroke-linecap="round"><path d="M125 220Q145 196 165 220"/><path d="M195 220Q215 196 235 220"/></g><path d="M146 268Q180 310 214 268" fill="#ff769b" stroke="${dark}" stroke-width="6"/>`,
+      eyes_void:`<g fill="${dark}"><ellipse cx="145" cy="216" rx="25" ry="32"/><ellipse cx="215" cy="216" rx="25" ry="32"/></g><g fill="${glow}"><circle cx="145" cy="216" r="8"/><circle cx="215" cy="216" r="8"/></g><path d="M157 279Q180 291 203 279" fill="none" stroke="${dark}" stroke-width="7"/>`,
+      eyes_sparkle:`<g><ellipse cx="145" cy="218" rx="20" ry="27" fill="white"/><ellipse cx="215" cy="218" rx="20" ry="27" fill="white"/><circle cx="145" cy="221" r="10" fill="${dark}"/><circle cx="215" cy="221" r="10" fill="${dark}"/><path d="M151 276Q180 304 209 276" fill="none" stroke="${dark}" stroke-width="7"/></g>`,
+      eyes_round:`<g><circle cx="145" cy="218" r="19" fill="${dark}"/><circle cx="215" cy="218" r="19" fill="${dark}"/><path d="M159 278Q180 290 201 278" fill="none" stroke="${dark}" stroke-width="7"/></g>`,
+      eyes_wink:`<g><circle cx="145" cy="218" r="19" fill="${dark}"/><path d="M194 220Q215 198 236 220" fill="none" stroke="${dark}" stroke-width="8"/><path d="M151 276Q180 304 209 276" fill="none" stroke="${dark}" stroke-width="7"/></g>`,
+      eyes_star:`<g fill="${dark}"><path d="M145 193l7 15 17 2-13 12 4 17-15-8-15 8 4-17-13-12 17-2Z"/><path d="M215 193l7 15 17 2-13 12 4 17-15-8-15 8 4-17-13-12 17-2Z"/></g><path d="M146 268Q180 310 214 268" fill="#ff769b" stroke="${dark}" stroke-width="6"/>`,
+      eyes_shy:`<g fill="${dark}"><ellipse cx="145" cy="220" rx="15" ry="20"/><ellipse cx="215" cy="220" rx="15" ry="20"/></g><path d="M162 281Q180 270 198 281" fill="none" stroke="${dark}" stroke-width="6"/>`,
+      eyes_surprised:`<g fill="white" stroke="${dark}" stroke-width="6"><circle cx="145" cy="216" r="22"/><circle cx="215" cy="216" r="22"/></g><g fill="${dark}"><circle cx="145" cy="216" r="9"/><circle cx="215" cy="216" r="9"/><ellipse cx="180" cy="281" rx="15" ry="21"/></g>`,
+      eyes_kawaii:`<g fill="${dark}"><ellipse cx="145" cy="216" rx="18" ry="24"/><ellipse cx="215" cy="216" rx="18" ry="24"/></g><g fill="white"><circle cx="139" cy="208" r="6"/><circle cx="209" cy="208" r="6"/></g><path d="M160 276Q180 294 200 276" fill="#ff8fab" stroke="${dark}" stroke-width="6"/>`,
+      eyes_teary:`<g fill="white" stroke="${dark}" stroke-width="6"><ellipse cx="145" cy="216" rx="22" ry="27"/><ellipse cx="215" cy="216" rx="22" ry="27"/></g><g fill="${dark}"><circle cx="145" cy="218" r="9"/><circle cx="215" cy="218" r="9"/></g><g fill="#8ee7ff"><path d="M126 237Q119 253 130 260Q141 252 134 238Z"/><path d="M226 238Q219 253 230 260Q241 252 234 237Z"/></g><path d="M164 282Q180 269 196 282" fill="none" stroke="${dark}" stroke-width="6"/>`,
+      eyes_tongue:`<g fill="${dark}"><circle cx="145" cy="216" r="18"/><circle cx="215" cy="216" r="18"/></g><path d="M147 267Q180 306 213 267Z" fill="#5e244e" stroke="${dark}" stroke-width="6"/><path d="M174 288Q180 309 190 287" fill="#ff7fa0"/>`,
+      eyes_glasses:`<g fill="white" stroke="${dark}" stroke-width="6"><circle cx="145" cy="216" r="25"/><circle cx="215" cy="216" r="25"/><path d="M170 216H190"/></g><g fill="${dark}"><circle cx="145" cy="216" r="8"/><circle cx="215" cy="216" r="8"/></g><path d="M160 278Q180 293 200 278" fill="none" stroke="${dark}" stroke-width="6"/>`,
+      eyes_heart:`<g fill="#ff5f87" stroke="${dark}" stroke-width="4"><path d="M145 238C119 218 125 192 145 201C165 192 171 218 145 238Z"/><path d="M215 238C189 218 195 192 215 201C235 192 241 218 215 238Z"/></g><path d="M148 269Q180 309 212 269" fill="#ff8fab" stroke="${dark}" stroke-width="6"/>`,
+      eyes_dizzy:`<g fill="none" stroke="${dark}" stroke-width="7" stroke-linecap="round"><path d="M125 204L165 232M165 204L125 232M195 204L235 232M235 204L195 232"/></g><path d="M160 282Q180 266 200 282" fill="none" stroke="${dark}" stroke-width="6"/>`,
+      eyes_robot:`<g fill="#b8f4ff" stroke="${dark}" stroke-width="6"><rect x="117" y="196" width="56" height="42" rx="11"/><rect x="187" y="196" width="56" height="42" rx="11"/></g><g fill="${dark}"><rect x="137" y="208" width="16" height="16" rx="4"/><rect x="207" y="208" width="16" height="16" rx="4"/></g><path d="M158 276H202" stroke="${dark}" stroke-width="7" stroke-linecap="round"/>`,
+      eyes_smug:`<g fill="none" stroke="${dark}" stroke-width="8" stroke-linecap="round"><path d="M123 214Q145 202 167 217"/><path d="M193 217Q215 202 237 214"/></g><path d="M157 277Q183 294 207 270" fill="none" stroke="${dark}" stroke-width="7"/>`
+    };
+
+    const body=bodies[c.hairStyle]||bodies.monster_orb;
+    const limb=limbs[c.hairStyle]||limbs.default;
+    const feature=features[c.hairColor] ?? features.feature_horns;
+    const face=faces[c.eyes]||faces.eyes_cyclops;
+    const bodyOffset={monster_pumpkin:8,monster_mushroom:10,monster_wisp:8,monster_crystal:12}[c.hairStyle]||0;
+    const feet=c.hairStyle==='monster_spider'||c.hairStyle==='monster_wisp'||c.hairStyle==='monster_cloud'?'':`<g fill="${dark}"><ellipse cx="139" cy="358" rx="35" ry="17"/><ellipse cx="221" cy="358" rx="35" ry="17"/></g>`;
+
+    container.innerHTML=`<svg viewBox="0 0 360 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="มอนสเตอร์แฟนตาซี">
+      <defs>
+        <linearGradient id="${uid}body" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${light}"/><stop offset=".58" stop-color="${mid}"/><stop offset="1" stop-color="${dark}"/></linearGradient>
+        <linearGradient id="${uid}flame" x1="0" y1="1" x2="0" y2="0"><stop stop-color="#ff4e42"/><stop offset=".55" stop-color="#ffb02e"/><stop offset="1" stop-color="#fff27b"/></linearGradient>
+        <linearGradient id="${uid}crystal"><stop stop-color="${glow}"/><stop offset="1" stop-color="${mid}"/></linearGradient>
+        <radialGradient id="${uid}portal"><stop stop-color="${glow}" stop-opacity=".5"/><stop offset="1" stop-color="${bg[1]}" stop-opacity="0"/></radialGradient>
+        <filter id="${uid}shadow" x="-25%" y="-25%" width="150%" height="160%"><feDropShadow dx="0" dy="5" stdDeviation="6" flood-color="#101225" flood-opacity=".28"/></filter>
+      </defs>
+      <rect width="360" height="430" rx="28" fill="${bg[0]}"/>
+      <rect width="360" height="430" rx="28" fill="url(#${uid}portal)"/>
+      <g fill="#fff" opacity=".75"><circle cx="38" cy="55" r="3"/><circle cx="311" cy="69" r="4"/><circle cx="293" cy="154" r="2"/><circle cx="69" cy="137" r="2"/><path d="M45 206l4 8 8 4-8 4-4 8-4-8-8-4 8-4Z"/><path d="M310 247l4 8 8 4-8 4-4 8-4-8-8-4 8-4Z"/></g>
+      <ellipse cx="180" cy="379" rx="105" ry="21" fill="#080718" opacity=".24"/>
+      <g filter="url(#${uid}shadow)">${limb}<g transform="translate(0 ${bodyOffset})" fill="url(#${uid}body)" stroke="${dark}" stroke-width="7" stroke-linejoin="round">${body}</g><path d="M117 164 C137 126 170 111 207 119 C174 128 147 151 132 188Z" fill="#fff" opacity=".18"/>${feet}${feature}${face}
+      <g fill="#ff8fab" opacity=".9"><ellipse cx="112" cy="267" rx="16" ry="9"/><ellipse cx="248" cy="267" rx="16" ry="9"/></g><g fill="#fff" opacity=".35"><ellipse cx="107" cy="264" rx="5" ry="3"/><ellipse cx="243" cy="264" rx="5" ry="3"/></g>
+      ${c.accessory==='wings_white'?`<g fill="#dff8ff" stroke="${dark}" stroke-width="5" opacity=".9"><path d="M91 212C30 181 28 254 88 288C61 249 91 212 91 212Z"/><path d="M269 212C330 181 332 254 272 288C299 249 269 212 269 212Z"/></g>`:''}
+      </g></svg>`;
+    const svg=container.querySelector('svg'); if(svg) svg.style.animation='avatarPop .22s ease-out';
+}
+
+function toggleUtilityMenu() {
+    const menu = document.getElementById("utilityDropdown");
+    const button = document.getElementById("hamburgerButton");
+    if (!menu || !button) return;
+    const isOpen = menu.classList.toggle("show");
+    button.classList.toggle("open", isOpen);
+    button.setAttribute("aria-expanded", String(isOpen));
+}
+
+document.addEventListener("click", function(event) {
+    const wrapper = document.querySelector(".hamburger-wrapper");
+    const menu = document.getElementById("utilityDropdown");
+    const button = document.getElementById("hamburgerButton");
+    if (!wrapper || !menu || !button) return;
+    if (!wrapper.contains(event.target)) {
+        menu.classList.remove("show");
+        button.classList.remove("open");
+        button.setAttribute("aria-expanded", "false");
+    }
+});
+
+document.addEventListener("keydown", function(event) {
+    if (event.key !== "Escape") return;
+    const menu = document.getElementById("utilityDropdown");
+    const button = document.getElementById("hamburgerButton");
+    if (!menu || !button) return;
+    menu.classList.remove("show");
+    button.classList.remove("open");
+    button.setAttribute("aria-expanded", "false");
+});
+
+function watchMenuCoins() {
+    const coinElement = document.getElementById("topCoinAmount");
+    const groupId = localStorage.getItem("currentGroupId");
+    if (!coinElement) return;
+    if (!groupId) {
+        coinElement.textContent = "0";
+        return;
+    }
+
+    db.collection("group_wallets").doc(groupId).onSnapshot(
+        snapshot => {
+            const data = snapshot.exists ? snapshot.data() : {};
+            coinElement.textContent = Number(data.magicCoins) || 0;
+        },
+        error => {
+            console.error("Load menu coins error:", error);
+            coinElement.textContent = "--";
+        }
+    );
+}
+
+
+
+/* ============================================================
+   จุดลบ/เพิ่มตัวเลือกอยู่ตรงนี้
+   - ลบสี: ลบบรรทัดใน PROFILE_SETUP_OPTIONS.skin และลบสีชื่อเดียวกันใน palettes ด้านบน
+   - ลบสายพันธุ์: ลบบรรทัดใน hairStyle และลบ SVG ชื่อเดียวกันใน bodies (รวม limbs ถ้ามี)
+   - ลบอวัยวะ: ลบบรรทัดใน hairColor และลบ SVG ชื่อเดียวกันใน features
+   - ลบใบหน้า: ลบบรรทัดใน eyes และลบ SVG ชื่อเดียวกันใน faces
+   หลังลบ อย่าลืมลบเครื่องหมายจุลภาคที่เกินหรือเติมจุลภาคให้รายการก่อนหน้า
+   ============================================================ */
+const PROFILE_SETUP_OPTIONS = {
+    // สีไม่เกิน 10 สี เพื่อให้เด็กเลือกง่าย
+    skin: [
+        ["skin_lava","แดงเวท","#ff5f57"],
+        ["skin_amber","ส้มอำพัน","#ff9f43"],
+        ["skin_lemon","เหลืองแสงดาว","#f4dd45"],
+        ["skin_acid","เขียวเวท","#83d943"],
+        ["skin_ocean","ฟ้าสมุทร","#48b8df"],
+        ["skin_purple","ม่วงคำสาป","#a865e5"],
+        ["skin_candy","ชมพูแฟนตาซี","#ff76b2"],
+        ["skin_neon","มิ้นต์เรืองแสง","#36e7b0"],
+        ["skin_aqua","อควาเรืองแสง","#67d9e8"],
+        ["skin_lilac","ไลแลคประกาย","#c19cff"]
+    ],
+    hairStyle: [
+        ["monster_orb","ลูกตาอสูร","🔮"],
+        ["monster_slime","สไลม์หนืด","🫠"],
+        ["monster_bat","ค้างคาวอสูร","🦇"],
+        ["monster_crystal","ผลึกมีชีวิต","💎"],
+        ["monster_spider","แมงมุมเวท","🕷️"],
+        ["monster_cube","กล่องต้องสาป","🧊"],
+        ["monster_egg","ไข่อสูร","🥚"],
+        ["monster_bunny","กระต่ายอสูร","🐰"],
+        ["monster_puff","ปุยเวทมนตร์","🧶"],
+        ["monster_ghost","ผีน้อยลอยฟ้า","👻"],
+        ["monster_drop","หยดเวทมนตร์","💧"],
+        ["monster_cake","เค้กปีศาจ","🧁"],
+        ["monster_golem","โกเลมหิน","🗿"]
+    ],
+    hairColor: [
+        ["feature_horns","เขาปีศาจ","😈"],
+        ["feature_antlers","เขากิ่งไม้","🫎"],
+        ["feature_crown","มงกุฎต้องสาป","👑"],
+        ["feature_eye_stalks","ตาบนก้าน","👀"],
+        ["feature_spikes","หนามกระดูก","🦔"],
+        ["feature_halo","วงแหวนเวท","⭕"],
+        ["feature_bunnyears","หูกระต่ายเวท","🐰"],
+        ["feature_antenna","หนวดเรดาร์","📡"],
+        ["feature_flowers","ช่อดอกเวท","🌸"],
+        ["feature_bow","โบว์ปีศาจน้อย","🎀"],
+        ["feature_cat_ears","หูแมวอสูร","🐱"],
+        ["feature_leaf_crown","มงกุฎใบไม้","🌿"],
+        ["feature_bubbles","ฟองเวท","🫧"],
+        ["feature_sweets","ลูกอมต้องมนตร์","🍬"],
+        ["feature_none","ไม่มีอวัยวะเสริม","➖"]
+    ],
+    eyes: [
+        ["eyes_cyclops","ตาเดียว","👁️"],
+        ["eyes_three","สามตา","🔺"],
+        ["eyes_many","ฝูงดวงตา","👀"],
+        ["eyes_happy","อสูรยิ้ม","😄"],
+        ["eyes_star","ตาดาว","⭐"],
+        ["eyes_wink","ขยิบตา","😉"],
+        ["eyes_shy","อสูรขี้อาย","☺️"],
+        ["eyes_kawaii","ตาคาวาอี้","🥰"],
+        ["eyes_glasses","แว่นกลมจิ๋ว","🤓"],
+        ["eyes_heart","ตาหัวใจ","😍"],
+        ["eyes_dizzy","ตามึนงง","😵"],
+        ["eyes_robot","ตาหุ่นยนต์","🤖"]
+    ]
+};
+
+const profileDraftCharacters = {};
+
+function outfitSummary(character) {
+    const categories = ["hat","glasses","shirt","pants","shoes","accessory","background"];
+    return categories.map(cat => {
+        const id = character[cat];
+        const item = itemById(id);
+        return `<div class="outfit-chip">${CATEGORY_INFO[cat].icon} ${CATEGORY_INFO[cat].label}: <strong>${item ? item.name : "ไม่ได้สวม"}</strong></div>`;
+    }).join("");
+}
+
+function optionCard(userId, key, value, label, visual) {
+    const current = profileDraftCharacters[userId];
+    const selected = current && current[key] === value;
+    const isColor = visual && visual.startsWith("#");
+
+    return `
+        <button type="button"
+                class="custom-option ${selected ? "selected" : ""}"
+                onclick="selectProfileOption('${userId}','${key}','${value}')">
+            ${
+                isColor
+                    ? `<div class="custom-swatch" style="background:${visual}"></div>`
+                    : `<div style="font-size:30px;line-height:1;margin-bottom:5px">${visual}</div>`
+            }
+            ${label}
+        </button>
+    `;
+}
+
+function renderCustomizer(userId) {
+    const current = profileDraftCharacters[userId];
+    if (!current) return;
+
+    document.getElementById(`skin_options_${userId}`).innerHTML =
+        PROFILE_SETUP_OPTIONS.skin.map(o => optionCard(userId, "skin", ...o)).join("");
+
+    document.getElementById(`hair_style_options_${userId}`).innerHTML =
+        PROFILE_SETUP_OPTIONS.hairStyle.map(o => optionCard(userId, "hairStyle", ...o)).join("");
+
+    document.getElementById(`hair_color_options_${userId}`).innerHTML =
+        PROFILE_SETUP_OPTIONS.hairColor.map(o => optionCard(userId, "hairColor", ...o)).join("");
+
+    document.getElementById(`eye_options_${userId}`).innerHTML =
+        PROFILE_SETUP_OPTIONS.eyes.map(o => optionCard(userId, "eyes", ...o)).join("");
+}
+
+function selectProfileOption(userId, key, value) {
+    profileDraftCharacters[userId][key] = value;
+    renderAvatar(
+        document.getElementById(`avatar_${userId}`),
+        profileDraftCharacters[userId]
+    );
+    renderCustomizer(userId);
+}
+
+function randomizeCharacter(userId){
+    const pick=a=>a[Math.floor(Math.random()*a.length)][0];
+    const c=profileDraftCharacters[userId];
+    c.skin=pick(PROFILE_SETUP_OPTIONS.skin);
+    c.hairStyle=pick(PROFILE_SETUP_OPTIONS.hairStyle);
+    c.hairColor=pick(PROFILE_SETUP_OPTIONS.hairColor);
+    c.eyes=pick(PROFILE_SETUP_OPTIONS.eyes);
+    renderAvatar(document.getElementById(`avatar_${userId}`),c);
+    renderCustomizer(userId);
+}
+function resetCharacter(userId){
+    profileDraftCharacters[userId]={...profileDraftCharacters[userId],...DEFAULT_CHARACTER};
+    renderAvatar(document.getElementById(`avatar_${userId}`),profileDraftCharacters[userId]);
+    renderCustomizer(userId);
+}
+
+async function ensureProfileDefaults(userId, data) {
+    const updates = {};
+
+    if (!data.character || typeof data.character !== "object") {
+        updates.character = { ...DEFAULT_CHARACTER };
+    }
+
+    if (!Array.isArray(data.ownedItems)) {
+        updates.ownedItems = [...DEFAULT_OWNED_ITEMS];
+    }
+
+    if (Object.keys(updates).length) {
+        updates.updatedAt =
+            firebase.firestore.FieldValue.serverTimestamp();
+
+        await db.collection("users")
+            .doc(userId)
+            .set(updates, { merge:true });
+    }
+}
+
+async function loadProfiles() {
+    const container =
+        document.getElementById("profilesContainer");
+
+    const users =
+        JSON.parse(
+            localStorage.getItem("loggedInUsers") || "[]"
+        );
+
+    if (!users.length) {
+        container.innerHTML =
+            `<div style="background:white;padding:25px;border-radius:20px;color:#dc2626;font-weight:800">
+                ไม่พบข้อมูลการเข้าสู่ระบบ
+             </div>`;
+        return;
+    }
+
+    container.innerHTML = "";
+
+    for (const userId of users) {
+        const doc =
+            await db.collection("users")
+                .doc(userId)
+                .get();
+
+        if (!doc.exists) continue;
+
+        const data = doc.data() || {};
+
+        await ensureProfileDefaults(userId, data);
+
+        const character =
+            mergeCharacter(data.character);
+
+        profileDraftCharacters[userId] =
+            mergeCharacter(character);
+
+        const card =
+            document.createElement("article");
+
+        card.className = "profile-card";
+
+        card.innerHTML = `
+            <div class="avatar-side">
+                <div id="avatar_${userId}"
+                     class="avatar-stage"></div>
+
+                <div class="profile-name-display">
+                    ${data.nickname || "ผู้พิทักษ์"}
+                </div>
+            </div>
+
+            <div class="edit-side">
+                <div class="section-label">
+                    ✏️ ชื่อเล่น
+                </div>
+
+                <input id="name_${userId}"
+                       class="input-name"
+                       value="${(data.nickname || "").replace(/"/g,"&quot;")}">
+
+                <div class="character-customizer">
+                    <h3>👾 สร้างมอนสเตอร์แฟนตาซีของคุณ</h3>
+                    <div class="custom-toolbar"><button type="button" class="btn-random" onclick="randomizeCharacter('${userId}')">🎲 สุ่มตัวละคร</button><button type="button" class="btn-reset" onclick="resetCharacter('${userId}')">↩️ ค่าเริ่มต้น</button></div>
+
+                    <div class="custom-section">
+                        <div class="custom-label">🎨 สีพลังเวท</div>
+                        <div id="skin_options_${userId}"
+                             class="custom-grid"></div>
+                    </div>
+
+                    <div class="custom-section">
+                        <div class="custom-label">👹 สายพันธุ์มอนสเตอร์</div>
+                        <div id="hair_style_options_${userId}"
+                             class="custom-grid"></div>
+                    </div>
+
+                    <div class="custom-section">
+                        <div class="custom-label">🦄 อวัยวะแฟนตาซี</div>
+                        <div id="hair_color_options_${userId}"
+                             class="custom-grid"></div>
+                    </div>
+
+                    <div class="custom-section">
+                        <div class="custom-label">👁️ ดวงตาและอารมณ์</div>
+                        <div id="eye_options_${userId}"
+                             class="custom-grid"></div>
+                    </div>
+                </div>
+
+                <div class="outfit-summary">
+                    <h3>🎒 ของตกแต่งที่กำลังใช้</h3>
+                    <div class="outfit-grid">
+                        ${outfitSummary(character)}
+                    </div>
+                </div>
+
+                <div class="button-row">
+                    <button id="save_${userId}"
+                            class="btn-save"
+                            onclick="saveProfile('${userId}')">
+                        💾 บันทึกโปรไฟล์
+                    </button>
+
+                    <a class="btn-dress"
+                       href="dressing-room.html">
+                        ✨ ไปแต่งมอนสเตอร์
+                    </a>
+                </div>
+            </div>
+
+            <section class="learning-profile">
+                <h3>📈 รายงานผลความก้าวหน้าของฉัน</h3>
+
+                <div class="progress-summary">
+                    <div class="progress-stat">
+                        <strong id="completedCount_${userId}">0</strong>
+                        <span>ภารกิจที่สะท้อนผลแล้ว</span>
+                    </div>
+                    <div class="progress-stat">
+                        <strong id="totalMissionCount_${userId}">0</strong>
+                        <span>ภารกิจทั้งหมด</span>
+                    </div>
+                    <div class="progress-stat">
+                        <strong id="progressPercent_${userId}">0%</strong>
+                        <span>ความก้าวหน้า</span>
+                    </div>
+                </div>
+
+                <div class="learning-progress-track">
+                    <div id="progressBar_${userId}"
+                         class="learning-progress-bar"></div>
+                </div>
+                <div class="progress-report-note">
+                    ข้อมูลความก้าวหน้าจะอัปเดตจาก Reflection ที่บันทึกทันทีหลังส่งผลงาน
+                </div>
+
+                <div id="reflectionList_${userId}"
+                     class="reflection-list">
+                    <div class="empty-reflection">
+                        กำลังโหลดข้อมูล Reflection...
+                    </div>
+                </div>
+            </section>
+        `;
+
+        container.appendChild(card);
+
+        renderAvatar(
+            document.getElementById(`avatar_${userId}`),
+            profileDraftCharacters[userId]
+        );
+
+        renderCustomizer(userId);
+        await loadUserLearningProfile(userId);
+    }
+}
+
+
+let cachedMissions = null;
+
+function safeReflectionDocId(groupId, userId, missionId) {
+    return [
+        groupId || "nogroup",
+        userId || "nouser",
+        missionId || "nomission"
+    ].map(v => encodeURIComponent(String(v))).join("__");
+}
+
+function escapeLearningHtml(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+async function getAllMissionsForProfile() {
+    if (cachedMissions) return cachedMissions;
+
+    try {
+        const snap = await db.collection("missions").get();
+        const rows = [];
+
+        snap.forEach(doc => {
+            const d = doc.data() || {};
+            rows.push({
+                id: doc.id,
+                title:
+                    d.title ||
+                    d.missionTitle ||
+                    d.name ||
+                    ("ภารกิจ " + doc.id),
+                order:
+                    Number(
+                        d.order ||
+                        d.missionNumber ||
+                        d.number ||
+                        9999
+                    )
+            });
+        });
+
+        rows.sort((a, b) =>
+            a.order - b.order ||
+            a.title.localeCompare(b.title, "th")
+        );
+
+        cachedMissions = rows;
+        return rows;
+
+    } catch (error) {
+        console.error("โหลดภารกิจไม่สำเร็จ", error);
+        cachedMissions = [];
+        return [];
+    }
+}
+
+async function loadUserLearningProfile(userId) {
+    const missions =
+        await getAllMissionsForProfile();
+
+    const missionSelect =
+        document.getElementById(
+            `reflectionMission_${userId}`
+        );
+
+    if (missionSelect) {
+        missionSelect.innerHTML =
+            '<option value="">-- เลือกภารกิจ --</option>';
+
+        missions.forEach(mission => {
+            const option =
+                document.createElement("option");
+
+            option.value = mission.id;
+            option.textContent = mission.title;
+            option.dataset.title = mission.title;
+
+            missionSelect.appendChild(option);
+        });
+    }
+
+    const groupId =
+        localStorage.getItem("currentGroupId") || "";
+
+    try {
+        const snapshot =
+            await db.collection("reflections")
+                .where("userId", "==", userId)
+                .get();
+
+        const reflections = [];
+
+        snapshot.forEach(doc => {
+            const d = doc.data() || {};
+
+            /*
+              ป้องกันข้อมูลของกลุ่มอื่นปะปน
+              แต่ยังรองรับข้อมูลเก่าที่ไม่มี groupId
+            */
+            if (
+                d.groupId &&
+                groupId &&
+                d.groupId !== groupId
+            ) {
                 return;
             }
 
-            container.innerHTML = ""; // ล้างข้อความกำลังโหลด
+            reflections.push({
+                id: doc.id,
+                ...d
+            });
+        });
 
-            for (let docId of loggedInUsers) {
-                try {
-                    let doc = await db.collection("users").doc(docId).get();
-                    if (doc.exists) {
-                        let data = doc.data();
-                        let currentAvatar = data.avatar || "👤";
-                        let currentName = data.nickname || "";
+        reflections.sort((a, b) => {
+            const ta =
+                a.updatedAt?.toMillis?.() ||
+                a.createdAt?.toMillis?.() ||
+                0;
 
-                        // สร้างการ์ดโปรไฟล์สำหรับแต่ละคน
-                        let card = document.createElement("div");
-                        card.className = "profile-card";
-                        
-                        let avatarHtml = availableAvatars.map(emoji => 
-                            `<div class="avatar-option ${emoji === currentAvatar ? 'selected' : ''}" 
-                                  onclick="selectAvatar(this, '${docId}', '${emoji}')">${emoji}</div>`
-                        ).join('');
+            const tb =
+                b.updatedAt?.toMillis?.() ||
+                b.createdAt?.toMillis?.() ||
+                0;
 
-                        card.innerHTML = `
-                            <div class="section-label">🧑‍🎓 ชื่อเล่นปัจจุบัน</div>
-                            <input type="text" id="name_${docId}" class="input-name" value="${currentName}">
-                            
-                            <div class="section-label">🎨 เลือกอวตารใหม่</div>
-                            <div class="avatar-grid" id="grid_${docId}">
-                                ${avatarHtml}
-                            </div>
-                            
-                            <input type="hidden" id="avatar_${docId}" value="${currentAvatar}">
-                            
-                            <button class="btn-save" id="btn_${docId}" onclick="saveProfile('${docId}')">💾 บันทึกการเปลี่ยนแปลง</button>
-                        `;
-                        container.appendChild(card);
-                    }
-                } catch (error) {
-                    console.error("Error loading user:", error);
-                }
-            }
+            return tb - ta;
+        });
+
+        renderLearningProgress(
+            userId,
+            missions,
+            reflections
+        );
+
+    } catch (error) {
+        console.error(error);
+
+        const list =
+            document.getElementById(
+                `reflectionList_${userId}`
+            );
+
+        if (list) {
+            list.innerHTML =
+                `<div class="empty-reflection" style="color:#b91c1c">
+                    โหลด Reflection ไม่สำเร็จ<br>
+                    กรุณาตรวจ Firestore Rules ของ collection reflections
+                 </div>`;
         }
+    }
+}
 
-        // ฟังก์ชันเมื่อคลิกเลือกอวตาร
-        function selectAvatar(element, docId, emoji) {
-            // ลบ class selected ออกจากทุกคนในกลุ่มเดียวกัน
-            let grid = document.getElementById(`grid_${docId}`);
-            let options = grid.getElementsByClassName("avatar-option");
-            for(let opt of options) {
-                opt.classList.remove("selected");
-            }
-            // เพิ่ม class selected ให้ตัวที่โดนคลิก
-            element.classList.add("selected");
-            // อัปเดตค่า input ที่ซ่อนไว้
-            document.getElementById(`avatar_${docId}`).value = emoji;
-        }
+function renderLearningProgress(
+    userId,
+    missions,
+    reflections
+) {
+    const completedMissionIds =
+        new Set(
+            reflections
+                .filter(r => r.status === "completed")
+                .map(r => r.missionId)
+        );
 
-        // ฟังก์ชันบันทึกข้อมูลลง Firestore
-        async function saveProfile(docId) {
-            let newName = document.getElementById(`name_${docId}`).value.trim();
-            let newAvatar = document.getElementById(`avatar_${docId}`).value;
-            let btn = document.getElementById(`btn_${docId}`);
+    const total = missions.length;
+    const completed = completedMissionIds.size;
+    const percent =
+        total > 0
+            ? Math.min(
+                100,
+                Math.round(completed / total * 100)
+            )
+            : 0;
 
-            if (newName === "") {
-                alert("ชื่อเล่นห้ามว่างนะกั๊บ! 📝");
-                return;
-            }
+    const completedEl =
+        document.getElementById(
+            `completedCount_${userId}`
+        );
 
-            btn.disabled = true;
-            btn.innerText = "กำลังบันทึก... ⏳";
+    const totalEl =
+        document.getElementById(
+            `totalMissionCount_${userId}`
+        );
 
-            try {
-                await db.collection("users").doc(docId).update({
-                    nickname: newName,
-                    avatar: newAvatar
-                });
-                btn.innerText = "✅ บันทึกสำเร็จ!";
-                btn.style.background = "#34d399";
-                btn.style.boxShadow = "0 4px 0px #059669";
-                
-                // รีเซ็ตปุ่มกลับเป็นเหมือนเดิมหลังจาก 2 วินาที
-                setTimeout(() => {
-                    btn.disabled = false;
-                    btn.innerText = "💾 บันทึกการเปลี่ยนแปลง";
-                    btn.style.background = "#4ade80";
-                    btn.style.boxShadow = "0 4px 0px #16a34a";
-                }, 2000);
+    const percentEl =
+        document.getElementById(
+            `progressPercent_${userId}`
+        );
 
-            } catch (error) {
-                console.error("Error updating profile:", error);
-                alert("เกิดข้อผิดพลาดในการบันทึก ลองใหม่อีกครั้งนะกั๊บ 😢");
-                btn.disabled = false;
-                btn.innerText = "💾 บันทึกการเปลี่ยนแปลง";
-            }
-        }
+    const bar =
+        document.getElementById(
+            `progressBar_${userId}`
+        );
 
-        // โหลดข้อมูลทันทีเมื่อเปิดหน้า
-        loadProfiles();
-    </script>
+    if (completedEl) completedEl.textContent = completed;
+    if (totalEl) totalEl.textContent = total;
+    if (percentEl) percentEl.textContent = percent + "%";
+    if (bar) bar.style.width = percent + "%";
+
+    const list =
+        document.getElementById(
+            `reflectionList_${userId}`
+        );
+
+    if (!list) return;
+
+    if (!reflections.length) {
+        list.innerHTML =
+            `<div class="empty-reflection">
+                ยังไม่มีข้อมูลความก้าวหน้า<br>
+                เมื่อส่งงานและทำ Reflection แล้ว ผลจะแสดงที่นี่
+             </div>`;
+        return;
+    }
+
+    list.innerHTML =
+        reflections.map(item => {
+            const statusText =
+                item.status === "completed"
+                    ? "✅ สำเร็จแล้ว"
+                    : "🔄 ทดลองต่อ";
+
+            return `
+                <article class="reflection-item">
+                    <div class="reflection-item-head">
+                        <span>
+                            ⚔️ ${escapeLearningHtml(
+                                item.missionTitle ||
+                                item.missionId ||
+                                "ภารกิจ"
+                            )}
+                        </span>
+                        <span>${statusText}</span>
+                    </div>
+
+                    <div class="reflection-tags">
+                        <span class="reflection-tag">
+                            📊 ${escapeLearningHtml(
+                                item.difficulty || "-"
+                            )}
+                        </span>
+
+                        <span class="reflection-tag">
+                            🤝 ${escapeLearningHtml(
+                                item.helpSource || "-"
+                            )}
+                        </span>
+                    </div>
+
+                    <div>
+                        <strong>ผลการเรียนรู้:</strong>
+                        ${item.status === "completed"
+                            ? "บันทึกการทำภารกิจสำเร็จแล้ว"
+                            : "ยังต้องทดลองและแก้ไขเพิ่มเติม"}
+                    </div>
+                </article>
+            `;
+        }).join("");
+}
+
+async function saveReflection(userId) {
+    const missionSelect =
+        document.getElementById(
+            `reflectionMission_${userId}`
+        );
+
+    const difficulty =
+        document.getElementById(
+            `reflectionDifficulty_${userId}`
+        )?.value || "พอดี";
+
+    const helpSource =
+        document.getElementById(
+            `reflectionHelp_${userId}`
+        )?.value || "ทำด้วยตนเอง";
+
+    const status =
+        document.getElementById(
+            `reflectionStatus_${userId}`
+        )?.value || "completed";
+
+    const learned =
+        document.getElementById(
+            `reflectionLearned_${userId}`
+        )?.value.trim() || "";
+
+    const nextPlan =
+        document.getElementById(
+            `reflectionNext_${userId}`
+        )?.value.trim() || "";
+
+    if (!missionSelect?.value) {
+        alert("กรุณาเลือกภารกิจก่อน");
+        return;
+    }
+
+    if (learned.length < 5) {
+        alert(
+            "กรุณาเขียนสิ่งที่เข้าใจหรือค้นพบอย่างน้อย 5 ตัวอักษร"
+        );
+        return;
+    }
+
+    if (nextPlan.length < 5) {
+        alert(
+            "กรุณาเขียนสิ่งที่จะปรับปรุงครั้งหน้าอย่างน้อย 5 ตัวอักษร"
+        );
+        return;
+    }
+
+    const groupId =
+        localStorage.getItem("currentGroupId") || "";
+
+    const room =
+        localStorage.getItem("currentRoom") || "";
+
+    const missionId =
+        missionSelect.value;
+
+    const missionTitle =
+        missionSelect.options[
+            missionSelect.selectedIndex
+        ]?.text || missionId;
+
+    const button =
+        document.getElementById(
+            `reflectionSave_${userId}`
+        );
+
+    button.disabled = true;
+    button.textContent = "กำลังบันทึก...";
+
+    try {
+        const userDoc =
+            await db.collection("users")
+                .doc(userId)
+                .get();
+
+        const userData =
+            userDoc.exists
+                ? userDoc.data() || {}
+                : {};
+
+        const reflectionId =
+            safeReflectionDocId(
+                groupId,
+                userId,
+                missionId
+            );
+
+        await db.collection("reflections")
+            .doc(reflectionId)
+            .set({
+                groupId,
+                room,
+                userId,
+                nickname:
+                    userData.nickname ||
+                    "ผู้เรียน",
+                missionId,
+                missionTitle,
+                difficulty,
+                helpSource,
+                status,
+                learned,
+                nextPlan,
+                updatedAt:
+                    firebase.firestore.FieldValue
+                        .serverTimestamp(),
+                createdAt:
+                    firebase.firestore.FieldValue
+                        .serverTimestamp()
+            }, {
+                merge:true
+            });
+
+        document.getElementById(
+            `reflectionLearned_${userId}`
+        ).value = "";
+
+        document.getElementById(
+            `reflectionNext_${userId}`
+        ).value = "";
+
+        button.textContent = "✅ บันทึกแล้ว";
+
+        await loadUserLearningProfile(userId);
+
+        setTimeout(() => {
+            button.disabled = false;
+            button.textContent =
+                "📝 บันทึก Reflection";
+        }, 1200);
+
+    } catch (error) {
+        console.error(error);
+
+        alert(
+            "บันทึก Reflection ไม่สำเร็จ\n\n" +
+            "กรุณาตรวจ Firestore Rules ของ collection reflections"
+        );
+
+        button.disabled = false;
+        button.textContent =
+            "📝 บันทึก Reflection";
+    }
+}
+
+async function saveProfile(userId) {
+    const input =
+        document.getElementById(`name_${userId}`);
+
+    const btn =
+        document.getElementById(`save_${userId}`);
+
+    const name = input.value.trim();
+
+    if (!name) {
+        alert("ชื่อเล่นห้ามว่าง");
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "กำลังบันทึก...";
+
+    try {
+        await db.collection("users")
+            .doc(userId)
+            .set({
+                nickname: name,
+                character:
+                    profileDraftCharacters[userId],
+                characterSetupComplete: true,
+                ownedItems:
+                    firebase.firestore.FieldValue
+                        .arrayUnion(...DEFAULT_OWNED_ITEMS),
+                updatedAt:
+                    firebase.firestore.FieldValue
+                        .serverTimestamp()
+            }, {
+                merge:true
+            });
+
+        btn.textContent = "✅ บันทึกแล้ว";
+
+        setTimeout(() => {
+            btn.disabled = false;
+            btn.textContent = "💾 บันทึกโปรไฟล์";
+        }, 1500);
+
+    } catch (error) {
+        console.error(error);
+        alert("บันทึกโปรไฟล์ไม่สำเร็จ");
+        btn.disabled = false;
+        btn.textContent = "💾 บันทึกโปรไฟล์";
+    }
+}
+
+watchMenuCoins();
+loadProfiles();
+
+
+</script>
 </body>
 </html>
