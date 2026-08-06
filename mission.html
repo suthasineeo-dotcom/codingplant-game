@@ -1,15 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚔️ ภารกิจ | สวนแสนสุข</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800&display=swap" rel="stylesheet">
-
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>⚔️ ภารกิจ | สวนแสนสุข</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800&amp;display=swap" rel="stylesheet"/>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<style>
         body {
             font-family: 'Kanit', sans-serif;
             background-color: #fafaf9;
@@ -173,22 +172,6 @@
 
         .camera-text { color: #ef4444; font-weight: 800; font-size: 16px; margin: 0 0 25px 0; }
 
-        .scaffolding-zone {
-            background: #fefce8;
-            border: 3px dashed #fde047; 
-            border-radius: 15px;
-            padding: 20px;
-            text-align: left;
-            margin-bottom: 25px;
-        }
-
-        .scaffolding-title { color: #ca8a04; margin-top: 0; text-align: center; font-size: 22px; font-weight: 800; }
-
-        details { background: white; border: 2px solid #fef08a; border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
-        summary { background: #fef9c3; padding: 15px; font-weight: 800; color: #a16207; cursor: pointer; font-size: 18px; list-style: none; }
-        summary::-webkit-details-marker { display: none; }
-        .hint-text { padding: 15px; font-size: 18px; color: #451a03; border-top: 2px dashed #fef08a; background: #fff; }
-
         .btn-submit-work {
             background: #10b981;
             color: white;
@@ -247,48 +230,423 @@
         }
         .btn-close-alert:active { transform: translateY(3px); box-shadow: 0 1px 0px #ca8a04; }
 
-    </style>
-</head>
+        /* =========================================================
+        💡 กล่องเชื่อมไปหน้าเมนูคำใบ้
+        ========================================================= */
+
+        .hint-link-zone {
+            background: #faf5ff;
+            border: 3px dashed #c084fc;
+            border-radius: 18px;
+            padding: 18px;
+            margin: 10px auto 25px auto;
+            width: 85%;
+            box-sizing: border-box;
+        }
+
+        .hint-link-message {
+            color: #6b21a8;
+            font-size: 17px;
+            font-weight: 700;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .btn-go-hint {
+            background: #d8b4fe;
+            color: #4c1d95;
+            border: 3px solid #f3e8ff;
+            padding: 12px 25px;
+            font-size: 18px;
+            font-weight: 800;
+            font-family: 'Kanit', sans-serif;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 5px 0px #9333ea;
+            transition: 0.2s;
+            width: 85%;
+        }
+
+        .btn-go-hint:hover {
+            background: #c084fc;
+            color: white;
+        }
+
+        .btn-go-hint:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0px #9333ea;
+        }
+
+        .hint-price-note {
+            color: #a16207;
+            background: #fef9c3;
+            border: 2px solid #fde047;
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: 800;
+            margin: 15px auto 0 auto;
+            width: fit-content;
+        }
+
+        @media (max-width: 768px) {
+            .hint-link-zone {
+                width: 100%;
+            }
+
+            .btn-go-hint {
+                width: 100%;
+            }
+        }
+    
+        /* =========================================================
+        🖼️ สื่อประกอบภารกิจจากหน้า Admin
+        ========================================================= */
+        .mission-media-zone {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+            margin: 0 0 22px 0;
+            align-items: start;
+        }
+
+        .mission-media-card {
+            background: #ffffff;
+            border: 3px solid #fecaca;
+            border-radius: 18px;
+            padding: 12px;
+            box-shadow: 0 5px 0 #fee2e2;
+            overflow: hidden;
+        }
+
+        .mission-media-label {
+            color: #991b1b;
+            font-size: 17px;
+            font-weight: 800;
+            margin: 2px 0 10px 0;
+        }
+
+        .mission-image {
+            display: block;
+            width: 100%;
+            max-height: 430px;
+            object-fit: contain;
+            background: #fff7ed;
+            border-radius: 12px;
+            cursor: zoom-in;
+        }
+
+        .mission-scratch-frame {
+            width: 100%;
+            height: 360px;
+            border: 0;
+            border-radius: 12px;
+            background: #f8fafc;
+        }
+
+        .mission-scratch-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 11px;
+        }
+
+        .btn-open-shared-scratch {
+            display: inline-block;
+            background: #f59e0b;
+            color: white;
+            text-decoration: none;
+            padding: 9px 16px;
+            border-radius: 11px;
+            border: 2px solid #fcd34d;
+            box-shadow: 0 4px 0 #b45309;
+            font-weight: 800;
+        }
+
+        .btn-open-shared-scratch:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #b45309;
+        }
+
+        .media-empty-note {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0 0 15px 0;
+        }
+
+        /* Modal ขยายภาพภารกิจ */
+        .mission-image-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 12000;
+            padding: 25px;
+            background: rgba(15, 23, 42, 0.88);
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        .mission-image-modal.show {
+            display: flex;
+        }
+
+        .mission-image-modal img {
+            max-width: 94vw;
+            max-height: 88vh;
+            object-fit: contain;
+            border: 5px solid white;
+            border-radius: 18px;
+            box-shadow: 0 18px 50px rgba(0,0,0,0.35);
+        }
+
+        .mission-image-modal-close {
+            position: fixed;
+            top: 14px;
+            right: 22px;
+            width: 48px;
+            height: 48px;
+            border: none;
+            border-radius: 50%;
+            background: white;
+            color: #991b1b;
+            font-size: 31px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        @media (max-width: 650px) {
+            .mission-media-zone {
+                grid-template-columns: 1fr;
+            }
+
+            .mission-scratch-frame {
+                height: 300px;
+            }
+        }
+
+</style>
+<style>
+/* =========================================================
+   👑 เมนูหลักมาตรฐาน + เมนูสามขีด
+   ========================================================= */
+.nav-menu {
+    min-height: 80px;
+    background: #a855f7;
+    padding: 14px 170px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 900;
+}
+.learning-menu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.nav-menu a.main-link {
+    background: #d8b4fe;
+    color: #4c1d95;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 17px;
+    padding: 10px 17px;
+    border-radius: 18px;
+    border: 3px solid #f3e8ff;
+    box-shadow: 0 4px 0 #9333ea;
+    white-space: nowrap;
+    transition: 0.2s;
+}
+.nav-menu a.main-link:hover {
+    background: #c084fc;
+    color: white;
+    transform: translateY(-2px);
+}
+.nav-menu a.main-link:active {
+    transform: translateY(4px);
+    box-shadow: none;
+}
+.nav-menu a.main-link.active-menu {
+    background: #fde047;
+    color: #854d0e;
+    border-color: white;
+    box-shadow: 0 4px 0 #ca8a04;
+}
+.top-left-menu {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1001;
+}
+.btn-home-login {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    border: 3px solid #f3e8ff;
+    border-radius: 50%;
+    font-size: 23px;
+    text-decoration: none;
+    box-shadow: 0 4px 0 #9333ea;
+    transition: 0.2s;
+}
+.btn-home-login:hover { background: #fdf4ff; transform: translateY(-2px); }
+.btn-home-login:active { transform: translateY(4px); box-shadow: none; }
+.hamburger-wrapper {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1002;
+}
+.hamburger-button {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    color: #4c1d95;
+    border: 3px solid #f3e8ff;
+    border-radius: 14px;
+    font-size: 23px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #9333ea;
+    transition: 0.2s;
+    font-family: 'Kanit', sans-serif;
+}
+.hamburger-button:hover { background: #fdf4ff; transform: translateY(-2px); }
+.hamburger-button:active,
+.hamburger-button.open { transform: translateY(4px); box-shadow: none; }
+.utility-dropdown {
+    display: none;
+    position: absolute;
+    top: 56px;
+    right: 0;
+    width: 285px;
+    padding: 14px;
+    background: white;
+    border: 3px solid #e9d5ff;
+    border-radius: 20px;
+    box-shadow: 0 12px 28px rgba(76, 29, 149, 0.24);
+    text-align: left;
+}
+.utility-dropdown.show { display: block; }
+.dropdown-title {
+    color: #4c1d95;
+    font-size: 18px;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 10px;
+}
+.dropdown-coin {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    background: #fef9c3;
+    color: #854d0e;
+    border: 2px solid #fde047;
+    border-radius: 14px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    font-weight: 800;
+}
+.dropdown-link {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 10px 12px;
+    margin-top: 8px;
+    color: #4c1d95;
+    text-decoration: none;
+    background: #faf5ff;
+    border: 2px solid #e9d5ff;
+    border-radius: 14px;
+    transition: 0.2s;
+}
+.dropdown-link:hover { background: #f3e8ff; transform: translateX(-2px); }
+.dropdown-icon { width: 34px; text-align: center; font-size: 24px; flex: 0 0 34px; }
+.dropdown-link strong,
+.dropdown-link small { display: block; }
+.dropdown-link small { margin-top: 2px; color: #7c3aed; font-size: 12px; font-weight: 400; }
+.logout-link { color: #991b1b; background: #fff1f2; border-color: #fecdd3; }
+.logout-link small { color: #be123c; }
+@media (max-width: 1100px) {
+    .nav-menu { padding: 75px 15px 15px 15px; }
+    .top-left-menu { top: 14px; left: 15px; transform: none; }
+    .hamburger-wrapper { top: 16px; right: 15px; transform: none; }
+}
+@media (max-width: 650px) {
+    .learning-menu { display: grid; grid-template-columns: 1fr 1fr; width: 100%; gap: 10px; }
+    .nav-menu a.main-link { width: 100%; font-size: 16px; padding: 10px 8px; text-align: center; }
+    .learning-menu a.main-link:last-child { grid-column: 1 / -1; width: 50%; justify-self: center; }
+    .utility-dropdown { width: min(285px, calc(100vw - 30px)); }
+}
+</style></head>
 <body>
+<!-- แผนสำรอง: แจ้งเตือนหน้าเว็บ -->
+<div id="customAlertBox">
+<h3 id="alertTitle">🧚‍♀️ ข้อความจากนางฟ้า</h3>
+<p id="alertMessage">โหลดข้อความ...</p>
+<button class="btn-close-alert" onclick="closeCustomAlert()">รับทราบกั๊บ! ✌️</button>
+</div>
 
-    <!-- แผนสำรอง: แจ้งเตือนหน้าเว็บ -->
-    <div id="customAlertBox">
-        <h3 id="alertTitle">🧚‍♀️ ข้อความจากนางฟ้า</h3>
-        <p id="alertMessage">โหลดข้อความ...</p>
-        <button class="btn-close-alert" onclick="closeCustomAlert()">รับทราบกั๊บ! ✌️</button>
-    </div>
+<!-- Modal สำหรับขยายภาพประกอบภารกิจ -->
+<div id="missionImageModal" class="mission-image-modal" onclick="closeMissionImage(event)">
+    <button type="button" class="mission-image-modal-close" onclick="closeMissionImage(event)" aria-label="ปิดภาพ">&times;</button>
+    <img id="missionImageModalContent" src="" alt="ภาพประกอบภารกิจขนาดใหญ่">
+</div>
 
-    <!-- 💡 ปุ่มขออนุญาตแจ้งเตือน (สำคัญมากสำหรับ HTTPS) -->
-    <div id="notifyPermissionZone" style="display:none; background: #fdf2f8; padding: 15px; text-align: center; border-bottom: 3px solid #ec4899;">
-        <span style="font-weight: 800; color: #be185d; font-size: 18px;">🔔 เพื่อให้ข้อความครูเด้งเตือนตอนหนูทำ Scratch กรุณากดปุ่มอนุญาตนะกั๊บ! </span>
-        <button onclick="requestNotification()" style="background:#ec4899; color:white; border:none; padding:8px 20px; font-size:16px; font-weight:bold; font-family:'Kanit'; border-radius:10px; cursor:pointer; margin-left:10px; box-shadow: 0 3px 0px #9d174d;">เปิดรับแจ้งเตือน</button>
-    </div>
-
-    <div class="nav-menu">
-        <div class="top-left-menu">
-            <a href="login.html" class="btn-home-login" title="กลับหน้าเข้าสู่ระบบ">🏠</a>
-        </div>
-
-        <a href="index.html" class="main-link">🏡 หน้าแรก</a>
-        <a href="mission.html" class="main-link" style="background:#fde047; color:#854d0e; border-color:white; box-shadow: 0 4px 0px #ca8a04;">⚔️ ภารกิจ</a>
-        <a href="resource.html" class="main-link">📚 แหล่งเรียนรู้</a>
-        <a href="share.html" class="main-link">🤝 แบ่งปัน</a>
-        <a href="monster-hatchery.html" class="main-link">🌱 แปลงปลูกต้นไม้</a>
-        <a href="profile.html" class="main-link" style="background:#60a5fa; color:#1e3a8a; border-color:#bfdbfe; box-shadow: 0 4px 0px #2563eb;">👤 โปรไฟล์</a> 
-    </div>
-
-    <div class="select-zone">
-        <h2 style="margin-top:0; color: #7e22ce;">🎯 เลือกภารกิจที่หนูต้องการทำ</h2>
-        <select id="missionFilter" onchange="applyFilter()">
-            <option value="ALL">🌟 แสดงภารกิจทั้งหมด</option>
-        </select>
-    </div>
-
-    <div id="missionsContainer">
-        <p style="color: #78716c; font-weight: bold; font-size: 20px;">กำลังดึงข้อมูลภารกิจเวทมนตร์... ⏳</p>
-    </div>
-
-    <script>
+<!-- 💡 ปุ่มขออนุญาตแจ้งเตือน (สำคัญมากสำหรับ HTTPS) -->
+<div id="notifyPermissionZone" style="display:none; background: #fdf2f8; padding: 15px; text-align: center; border-bottom: 3px solid #ec4899;">
+<span style="font-weight: 800; color: #be185d; font-size: 18px;">🔔 เพื่อให้ข้อความครูเด้งเตือนตอนหนูทำ Scratch กรุณากดปุ่มอนุญาตนะกั๊บ! </span>
+<button onclick="requestNotification()" style="background:#ec4899; color:white; border:none; padding:8px 20px; font-size:16px; font-weight:bold; font-family:'Kanit'; border-radius:10px; cursor:pointer; margin-left:10px; box-shadow: 0 3px 0px #9d174d;">เปิดรับแจ้งเตือน</button>
+</div>
+<nav class="nav-menu">
+<div class="top-left-menu"><a aria-label="กลับหน้าแรก" class="btn-home-login" href="index.html" title="กลับหน้าแรก">🏠</a></div>
+<div class="learning-menu"><a class="main-link active-menu" href="mission.html">⚔️ สถานการณ์ปัญหา</a>
+<a class="main-link" href="resource.html">📚 แหล่งเรียนรู้</a>
+<a class="main-link" href="hints.html">💡 ฐานการช่วยเหลือ</a>
+<a class="main-link" href="share.html">🤝 แลกเปลี่ยนเรียนรู้</a>
+<a class="main-link" href="coach.html">🧑‍🏫 โค้ช</a></div>
+<div class="hamburger-wrapper">
+<button aria-controls="utilityDropdown" aria-expanded="false" aria-label="เปิดเมนูเพิ่มเติม" class="hamburger-button" id="hamburgerButton" onclick="toggleUtilityMenu()" type="button">☰</button>
+<div class="utility-dropdown" id="utilityDropdown">
+<div class="dropdown-title">เมนูของฉัน</div>
+<div class="dropdown-coin"><span>🪙 เหรียญเวทมนตร์</span><strong id="topCoinAmount">--</strong></div>
+<a class="dropdown-link" href="monster-hatchery.html"><span class="dropdown-icon">🌱</span><span><strong>แปลงปลูกต้นไม้</strong><small>ดูคะแนนและการเติบโต</small></span></a>
+<a class="dropdown-link" href="profile.html"><span class="dropdown-icon">👤</span><span><strong>โปรไฟล์</strong><small>เปลี่ยนชื่อและอวตาร</small></span></a>
+<a class="dropdown-link logout-link" href="login.html"><span class="dropdown-icon">🚪</span><span><strong>ออกจากระบบ</strong><small>กลับหน้าเข้าสู่ระบบ</small></span></a>
+</div></div></nav>
+<div class="select-zone">
+<h2 style="margin-top:0; color: #7e22ce;">🎯 เลือกภารกิจที่หนูต้องการทำ</h2>
+<select id="missionFilter" onchange="applyFilter()">
+<option value="ALL">🌟 แสดงภารกิจทั้งหมด</option>
+</select>
+<div id="missionRealtimeStatus"
+     style="
+        margin-top:12px;
+        color:#15803d;
+        font-size:14px;
+        font-weight:800;
+     ">
+    🟡 กำลังเชื่อมต่อข้อมูลภารกิจ...
+</div>
+</div>
+<div id="missionsContainer">
+<p style="color: #78716c; font-weight: bold; font-size: 20px;">กำลังดึงข้อมูลภารกิจเวทมนตร์... ⏳</p>
+</div>
+<script>
         const firebaseConfig = {
             apiKey: "AIzaSyDfBIp5gujB9cE2twLz483hllYOubgYuks",
             authDomain: "codingplant-f19fc.firebaseapp.com",
@@ -312,89 +670,408 @@
 
         let allMissionsData = [];
 
-        db.collection("missions").orderBy("updatedAt", "asc").onSnapshot((snapshot) => {
-            const filterDropdown = document.getElementById("missionFilter");
-            allMissionsData = [];
+        // =========================================================
+        // 🔄 โหลดภารกิจแบบเรียลไทม์
+        // ไม่ใช้ orderBy ในคำสั่ง Firestore เพื่อป้องกันเอกสารเก่า
+        // ที่ไม่มี updatedAt ถูกซ่อน และจัดเรียงในหน้าเว็บแทน
+        // =========================================================
+        db.collection("missions").onSnapshot(
+            (snapshot) => {
+                const filterDropdown =
+                    document.getElementById("missionFilter");
 
-            filterDropdown.innerHTML = '<option value="ALL">🌟 แสดงภารกิจทั้งหมด</option>';
+                const previousSelected =
+                    filterDropdown.value ||
+                    localStorage.getItem("currentMissionFilter") ||
+                    "ALL";
 
-            if(snapshot.empty) {
-                document.getElementById("missionsContainer").innerHTML = '<p style="color: #ef4444; font-weight: bold; font-size: 20px;">ยังไม่มีภารกิจใหม่จากคุณครูเลยกั๊บ 📭</p>';
+                allMissionsData = [];
+
+                snapshot.forEach((docSnapshot) => {
+                    const missionData = docSnapshot.data() || {};
+
+                    allMissionsData.push({
+                        ...missionData,
+                        id: docSnapshot.id
+                    });
+                });
+
+                // เรียงตาม updatedAt จากเก่าไปใหม่
+                // เอกสารที่ยังไม่มี updatedAt จะยังแสดง ไม่ถูกซ่อน
+                allMissionsData.sort((a, b) => {
+                    const aTime =
+                        a.updatedAt && typeof a.updatedAt.toMillis === "function"
+                            ? a.updatedAt.toMillis()
+                            : 0;
+
+                    const bTime =
+                        b.updatedAt && typeof b.updatedAt.toMillis === "function"
+                            ? b.updatedAt.toMillis()
+                            : 0;
+
+                    return aTime - bTime;
+                });
+
+                filterDropdown.innerHTML =
+                    '<option value="ALL">🌟 แสดงภารกิจทั้งหมด</option>';
+
+                allMissionsData.forEach((mission) => {
+                    const option = document.createElement("option");
+                    option.value = mission.id;
+                    option.textContent =
+                        `${mission.id} : ${mission.title || "ไม่มีชื่อภารกิจ"}`;
+                    filterDropdown.appendChild(option);
+                });
+
+                if (allMissionsData.length === 0) {
+                    document.getElementById("missionsContainer").innerHTML = `
+                        <p style="
+                            color:#ef4444;
+                            font-weight:bold;
+                            font-size:20px;
+                        ">
+                            ยังไม่มีภารกิจใหม่จากคุณครูเลยกั๊บ 📭
+                        </p>
+                    `;
+
+                    filterDropdown.value = "ALL";
+                    localStorage.setItem("currentMissionFilter", "ALL");
+                    return;
+                }
+
+                const selectedStillExists =
+                    previousSelected === "ALL" ||
+                    allMissionsData.some(
+                        mission => mission.id === previousSelected
+                    );
+
+                /*
+                หากค่าที่เคยเลือกไม่มีอยู่แล้ว ให้กลับไปแสดงทั้งหมด
+                ป้องกันหน้าเว็บว่างหรือค้างอยู่ที่ภารกิจเดิม
+                */
+                const filterToUse =
+                    selectedStillExists
+                        ? previousSelected
+                        : "ALL";
+
+                filterDropdown.value = filterToUse;
+                localStorage.setItem(
+                    "currentMissionFilter",
+                    filterToUse
+                );
+
+                renderMissions(filterToUse);
+
+                const status =
+                    document.getElementById("missionRealtimeStatus");
+
+                if (status) {
+                    status.innerHTML =
+                        `🟢 อัปเดตล่าสุด ${new Date().toLocaleTimeString("th-TH")} · ` +
+                        `${allMissionsData.length} ภารกิจ`;
+                }
+            },
+            (error) => {
+                console.error("Load missions error:", error);
+
+                document.getElementById("missionsContainer").innerHTML = `
+                    <div class="mission-outer-wrapper">
+                        <h2 class="mission-title">
+                            ⚠️ โหลดภารกิจไม่สำเร็จ
+                        </h2>
+
+                        <p style="
+                            color:#b91c1c;
+                            font-size:17px;
+                            font-weight:700;
+                            line-height:1.7;
+                        ">
+                            ${escapeHtml(error.message || "ไม่สามารถเชื่อมต่อ Firebase ได้")}
+                        </p>
+
+                        <button
+                            type="button"
+                            class="btn-go-hint"
+                            onclick="window.location.reload()"
+                        >
+                            🔄 โหลดหน้าใหม่
+                        </button>
+                    </div>
+                `;
+            }
+        );
+
+
+        // =========================================================
+        // 🛡️ ป้องกันข้อความจากฐานข้อมูลแทรก HTML
+        // =========================================================
+        function escapeHtml(value) {
+            return String(value ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function extractScratchProjectId(value) {
+            if (!value) return "";
+            const text = String(value).trim();
+
+            // รองรับกรณีหน้า Admin บันทึกมาเป็นเลข project ID โดยตรง
+            if (/^\d+$/.test(text)) return text;
+
+            const match = text.match(/scratch\.mit\.edu\/projects\/(\d+)/i)
+                || text.match(/projects\/(\d+)/i);
+
+            return match ? match[1] : "";
+        }
+
+        function buildMissionMediaHtml(mission) {
+            const imageUrl = String(mission.imageUrl || "").trim();
+            const scratchId = extractScratchProjectId(
+                mission.scratchId || mission.scratchLink || ""
+            );
+
+            const mediaCards = [];
+
+            if (imageUrl) {
+                const safeImageUrl = escapeHtml(imageUrl);
+                mediaCards.push(`
+                    <div class="mission-media-card">
+                        <div class="mission-media-label">🖼️ ภาพประกอบภารกิจ</div>
+                        <img
+                            class="mission-image"
+                            src="${safeImageUrl}"
+                            alt="ภาพประกอบ ${escapeHtml(mission.title || mission.id || "ภารกิจ")}"
+                            loading="lazy"
+                            onclick="openMissionImage('${encodeURIComponent(imageUrl)}')"
+                            onerror="this.closest('.mission-media-card').style.display='none'"
+                        >
+                        <div style="font-size:13px; color:#64748b; font-weight:700; margin-top:8px;">
+                            🔍 แตะภาพเพื่อขยาย
+                        </div>
+                    </div>
+                `);
+            }
+
+            if (scratchId) {
+                const projectUrl = `https://scratch.mit.edu/projects/${scratchId}/`;
+                mediaCards.push(`
+                    <div class="mission-media-card">
+                        <div class="mission-media-label">🐱 โปรเจกต์ Scratch ตัวอย่างจากคุณครู</div>
+                        <iframe
+                            class="mission-scratch-frame"
+                            src="https://scratch.mit.edu/projects/${scratchId}/embed"
+                            allowtransparency="true"
+                            frameborder="0"
+                            scrolling="no"
+                            allowfullscreen
+                            title="โปรเจกต์ Scratch ประกอบภารกิจ"
+                        ></iframe>
+                        <div class="mission-scratch-actions">
+                            <a
+                                class="btn-open-shared-scratch"
+                                href="${projectUrl}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                🔗 เปิดโปรเจกต์เต็มหน้า
+                            </a>
+                        </div>
+                    </div>
+                `);
+            }
+
+            if (mediaCards.length === 0) return "";
+
+            return `
+                <div class="mission-media-zone">
+                    ${mediaCards.join("")}
+                </div>
+            `;
+        }
+
+        function openMissionImage(encodedUrl) {
+            const modal = document.getElementById("missionImageModal");
+            const image = document.getElementById("missionImageModalContent");
+            if (!modal || !image) return;
+
+            image.src = decodeURIComponent(encodedUrl);
+            modal.classList.add("show");
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeMissionImage(event) {
+            if (
+                event &&
+                event.target &&
+                event.target.id !== "missionImageModal" &&
+                !event.target.classList.contains("mission-image-modal-close")
+            ) {
                 return;
             }
 
-            snapshot.forEach((doc) => {
-                let m = doc.data();
-                m.id = doc.id;
-                allMissionsData.push(m);
-                filterDropdown.innerHTML += `<option value="${m.id}">${m.id} : ${m.title}</option>`;
-            });
+            const modal = document.getElementById("missionImageModal");
+            const image = document.getElementById("missionImageModalContent");
+            if (modal) modal.classList.remove("show");
+            if (image) image.src = "";
+            document.body.style.overflow = "";
+        }
 
-            let savedFilter = localStorage.getItem("currentMissionFilter") || "ALL";
-            filterDropdown.value = savedFilter;
-            renderMissions(savedFilter);
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") closeMissionImage();
         });
 
+        // =========================================================
+        // 🎯 แสดงการ์ดภารกิจ โดยไม่เปิดเผยคำใบ้ในหน้านี้
+        // =========================================================
         function renderMissions(filterId) {
             const container = document.getElementById("missionsContainer");
-            container.innerHTML = ""; 
+
+            // ล้างข้อมูลเดิมก่อนสร้างใหม่
+            container.innerHTML = "";
 
             let missionsToShow = allMissionsData;
+
+            // ถ้าเลือกภารกิจใดภารกิจหนึ่ง ให้แสดงเฉพาะภารกิจนั้น
             if (filterId !== "ALL") {
-                missionsToShow = allMissionsData.filter(m => m.id === filterId);
+                missionsToShow = allMissionsData.filter(
+                    mission => mission.id === filterId
+                );
             }
 
-            missionsToShow.forEach((mData) => {
-                let hintsHTML = "";
-                if (mData.hints && mData.hints.length > 0) {
-                    mData.hints.forEach((hintText, index) => {
-                        hintsHTML += `
-                            <details>
-                                <summary>🔍 คำใบ้ที่ ${index + 1}</summary>
-                                <div class="hint-text">${hintText}</div>
-                            </details>
-                        `;
-                    });
-                } else {
-                    hintsHTML = `<div style="text-align:center; padding: 15px; color: #a16207; font-weight:bold;">ภารกิจนี้ไม่มีคำใบ้ หนูทำได้ด้วยตัวเองแน่นอน สู้ๆ! ✌️</div>`;
-                }
+            // กรณีค้นหาแล้วไม่พบภารกิจ
+            if (missionsToShow.length === 0) {
+                container.innerHTML = `
+                    <div class="mission-outer-wrapper">
+                        <h2 class="mission-title">📭 ไม่พบภารกิจ</h2>
+                        <p style="font-size:18px; font-weight:600; color:#64748b;">
+                            กรุณาเลือกภารกิจใหม่อีกครั้งนะกั๊บ
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+
+            missionsToShow.forEach(mData => {
+                /*
+                ป้องกันกรณีรายละเอียดภารกิจว่าง
+                และเปลี่ยนการขึ้นบรรทัดใหม่ให้แสดงใน HTML ได้
+                */
+                const safeDetail = mData.detail
+                    ? escapeHtml(mData.detail).replace(/\n/g, "<br>")
+                    : "คุณครูยังไม่ได้เพิ่มรายละเอียดภารกิจ";
+
+                const missionMediaHtml = buildMissionMediaHtml(mData);
 
                 container.innerHTML += `
                     <div class="mission-outer-wrapper">
-                        <h2 class="mission-title">${mData.title}</h2>
-                        
+
+                        <h2 class="mission-title">
+                            ${escapeHtml(mData.title || mData.id)}
+                        </h2>
+
                         <div class="mission-instruction-box">
-                            <div class="mission-detail">${mData.detail.replace(/\n/g, "<br>")}</div>
+                            <div class="mission-detail">
+                                ${safeDetail}
+                            </div>
                         </div>
 
-                        <a href="https://scratch.mit.edu/projects/editor/" target="_blank" class="btn-scratch">
-                            🚀 เปิดประตูมิติไปเขียนโปรแกรม Scratch (แท็บใหม่)
+                        ${missionMediaHtml}
+
+                        <a href="https://scratch.mit.edu/projects/editor/"
+                        target="_blank"
+                        class="btn-scratch">
+                            🚀 เปิดประตูมิติไปเขียนโปรแกรม Scratch
+                            <span style="font-size:14px;">(เปิดแท็บใหม่)</span>
                         </a>
+
                         <br>
-                        
-                        <a href="resource.html" class="btn-library">📚 ไม่รู้วิธีสั่งพี่แมว? ไปค้นคว้าที่ห้องสมุดเวทมนตร์เลย!</a>
-                        <p class="camera-text">📸 ทำเสร็จแล้ว แคปหน้าจอไปส่งที่หน้า "แบ่งปัน" เพื่อรับหยดน้ำนะกั๊บ!</p>
-                        
-                        <div class="scaffolding-zone">
-                            <h2 class="scaffolding-title">💡 ตู้จดหมายนางฟ้า (ขอคำใบ้)</h2>
-                            <p style="font-size:16px; font-weight:600; color:#ca8a04; margin-top:0; text-align:center;">
-                                ถ้ารู้สึกว่ายากไป ลองจิ้มเปิดดูคำใบ้ทีละข้อได้เลยนะ!
-                            </p>
-                            ${hintsHTML}
+
+                        <a href="resource.html"
+                        class="btn-library"
+                        onclick="saveSelectedMission('${escapeHtml(mData.id)}')">
+                            📚 ไปค้นคว้าที่ห้องสมุดเวทมนตร์
+                        </a>
+
+                        <!--
+                            ไม่แสดงเนื้อหาคำใบ้ในหน้าภารกิจ
+                            ปุ่มนี้ทำหน้าที่พาไปหน้า hints.html เท่านั้น
+                        -->
+                        <div class="hint-link-zone">
+                            <div class="hint-link-message">
+                                🧠 ลองคิดและลงมือทำด้วยตัวเองก่อนนะกั๊บ
+                                <br>
+                                หากติดจริง ๆ สามารถใช้เหรียญเวทมนตร์เปิดคำใบ้ได้
+                            </div>
+
+                            <button type="button"
+                                    class="btn-go-hint"
+                                    onclick="goToHints('${escapeHtml(mData.id)}')">
+                                💡 ไปยังเมนูคำใบ้
+                            </button>
+
+                            <div class="hint-price-note">
+                                🪙 เปิดคำใบ้ใหม่ครั้งละ 10 เหรียญ
+                            </div>
                         </div>
 
-                        <button class="btn-submit-work" onclick="goToShare('${mData.id}')">
-                            🚀 ส่งผลงาน "${mData.title}" ตรงนี้เลย
+                        <p class="camera-text">
+                            📸 ทำเสร็จแล้วไปส่งที่หน้า “แบ่งปัน”
+                            เพื่อรับรางวัลจากคุณครูนะกั๊บ!
+                        </p>
+
+                        <button class="btn-submit-work"
+                                onclick="goToShare('${escapeHtml(mData.id)}')">
+                            🚀 ส่งผลงาน “${escapeHtml(mData.title || mData.id)}”
                         </button>
+
                     </div>
                 `;
             });
         }
-
         function applyFilter() {
-            const selectedId = document.getElementById("missionFilter").value;
-            localStorage.setItem("currentMissionFilter", selectedId); 
+            const selectedId =
+                document.getElementById("missionFilter").value || "ALL";
+
+            localStorage.setItem(
+                "currentMissionFilter",
+                selectedId
+            );
+
             renderMissions(selectedId);
+
+            /*
+            เลื่อนขึ้นไปยังภารกิจ เพื่อให้เห็นผลทันทีหลังเปลี่ยนตัวเลือก
+            */
+            document.getElementById("missionsContainer")
+                ?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+        }
+        // =========================================================
+        // 💡 บันทึกภารกิจที่เลือกและพาไปหน้าเมนูคำใบ้
+        // =========================================================
+        function goToHints(missionId) {
+            /*
+            เก็บรหัสภารกิจไว้ใน localStorage
+            เพื่อให้ hints.html รู้ว่าต้องเปิดภารกิจใด
+            */
+            localStorage.setItem("currentMissionId", missionId);
+
+            // พาไปหน้าเมนูคำใบ้
+            window.location.href = "hints.html";
+        }
+
+
+        // =========================================================
+        // 📚 บันทึกภารกิจที่เลือกก่อนเข้าหน้าแหล่งเรียนรู้
+        // =========================================================
+        function saveSelectedMission(missionId) {
+            localStorage.setItem("currentMissionId", missionId);
+            localStorage.setItem("currentMissionFilter", missionId);
         }
 
         function goToShare(missionId) {
@@ -501,5 +1178,66 @@
         // รันฟังก์ชันตอนโหลดเว็บ
         checkNotificationStatus();
     </script>
-</body>
+<script>
+(function () {
+    window.toggleUtilityMenu = function () {
+        const menu = document.getElementById('utilityDropdown');
+        const button = document.getElementById('hamburgerButton');
+        if (!menu || !button) return;
+        const isOpen = menu.classList.toggle('show');
+        button.classList.toggle('open', isOpen);
+        button.setAttribute('aria-expanded', String(isOpen));
+    };
+
+    document.addEventListener('click', function (event) {
+        const wrapper = document.querySelector('.hamburger-wrapper');
+        const menu = document.getElementById('utilityDropdown');
+        const button = document.getElementById('hamburgerButton');
+        if (!wrapper || !menu || !button) return;
+        if (!wrapper.contains(event.target)) {
+            menu.classList.remove('show');
+            button.classList.remove('open');
+            button.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key !== 'Escape') return;
+        const menu = document.getElementById('utilityDropdown');
+        const button = document.getElementById('hamburgerButton');
+        if (!menu || !button) return;
+        menu.classList.remove('show');
+        button.classList.remove('open');
+        button.setAttribute('aria-expanded', 'false');
+    });
+
+    function loadTopMenuCoinsSafe() {
+        const coinElement = document.getElementById('topCoinAmount');
+        if (!coinElement) return;
+        const currentGroupId = localStorage.getItem('currentGroupId');
+        if (!currentGroupId) { coinElement.innerText = '0'; return; }
+        if (typeof db === 'undefined' || !db || !db.collection) {
+            coinElement.innerText = '--';
+            return;
+        }
+        db.collection('group_wallets').doc(currentGroupId).onSnapshot(
+            function (snapshot) {
+                if (!snapshot.exists) { coinElement.innerText = '0'; return; }
+                const data = snapshot.data() || {};
+                coinElement.innerText = Number(data.magicCoins) || 0;
+            },
+            function (error) {
+                console.error('Load menu coins error:', error);
+                coinElement.innerText = '--';
+            }
+        );
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadTopMenuCoinsSafe);
+    } else {
+        loadTopMenuCoinsSafe();
+    }
+})();
+</script></body>
 </html>
