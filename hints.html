@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💡 คำใบ้ตามอาการ | สวนแสนสุข</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<style>
+:root{
+  --purple:#a855f7;--purple-dark:#4c1d95;--purple-soft:#f3e8ff;
+  --yellow:#fde047;--yellow-dark:#ca8a04;--green:#22c55e;
+  --blue:#38bdf8;--red:#ef4444;--ink:#312e81
+}
+*{box-sizing:border-box}
+body{
+  margin:0;padding:0 0 70px;font-family:'Kanit',sans-serif;color:#333;text-align:center;
+  background-color:#faf5ff;background-image:radial-gradient(#e9d5ff 3px,transparent 3px);
+  background-size:40px 40px;min-height:100vh
+}
+button,select,a{font-family:'Kanit',sans-serif}
+button{cursor:pointer}
+.nav-menu{
+  min-height:80px;background:var(--purple);padding:14px 170px;display:flex;
+  justify-content:center;align-items:center;position:relative;z-index:900
+}
+.learning-menu{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap}
+.nav-menu a.main-link{
+  background:#d8b4fe;color:var(--purple-dark);text-decoration:none;font-weight:800;
+  font-size:17px;padding:10px 17px;border-radius:18px;border:3px solid var(--purple-soft);
+  box-shadow:0 4px 0 #9333ea;white-space:nowrap;transition:.2s
+}
+.nav-menu a.main-link:hover{background:#c084fc;color:white;transform:translateY(-2px)}
+.nav-menu a.main-link:active{transform:translateY(4px);box-shadow:none}
+.nav-menu a.active-menu{background:var(--yellow);color:#854d0e;border-color:white;box-shadow:0 4px 0 var(--yellow-dark)}
+.top-left-menu{position:absolute;left:18px;top:50%;transform:translateY(-50%);z-index:1001}
+.btn-home-login{
+  width:48px;height:48px;display:flex;justify-content:center;align-items:center;background:white;
+  border:3px solid var(--purple-soft);border-radius:50%;font-size:23px;text-decoration:none;
+  box-shadow:0 4px 0 #9333ea;transition:.2s
+}
+.btn-home-login:active{transform:translateY(4px);box-shadow:none}
+.hamburger-wrapper{position:absolute;right:18px;top:50%;transform:translateY(-50%);z-index:1002}
+.hamburger-button{
+  width:44px;height:44px;display:flex;justify-content:center;align-items:center;background:white;
+  color:var(--purple-dark);border:3px solid var(--purple-soft);border-radius:14px;font-size:23px;
+  font-weight:800;box-shadow:0 4px 0 #9333ea
+}
+.hamburger-button.open,.hamburger-button:active{transform:translateY(4px);box-shadow:none}
+.utility-dropdown{
+  display:none;position:absolute;top:56px;right:0;width:295px;padding:14px;background:white;
+  border:3px solid #e9d5ff;border-radius:20px;box-shadow:0 12px 28px rgba(76,29,149,.24);text-align:left
+}
+.utility-dropdown.show{display:block}
+.dropdown-title{color:var(--purple-dark);font-size:18px;font-weight:800;text-align:center;margin-bottom:10px}
+.dropdown-coin{display:flex;justify-content:space-between;gap:10px;background:#fef9c3;color:#854d0e;border:2px solid var(--yellow);border-radius:14px;padding:10px 12px;margin-bottom:10px;font-weight:800}
+.dropdown-link{display:flex;align-items:center;gap:11px;padding:10px 12px;margin-top:8px;color:var(--purple-dark);text-decoration:none;background:#faf5ff;border:2px solid #e9d5ff;border-radius:14px}
+.dropdown-icon{width:34px;text-align:center;font-size:24px}
+.dropdown-link strong,.dropdown-link small{display:block}
+.dropdown-link small{color:#7c3aed;font-size:12px;font-weight:400}
+.logout-link{color:#991b1b;background:#fff1f2}
+
+.page-header{max-width:950px;margin:30px auto 15px;padding:0 18px}
+.page-title{font-size:40px;color:#7e22ce;margin:0 0 8px;font-weight:800;text-shadow:2px 2px white}
+.page-subtitle{color:#6b21a8;font-size:18px;line-height:1.7;font-weight:600;margin:0}
+.wallet-card{
+  max-width:680px;margin:20px auto;background:linear-gradient(135deg,#fef9c3,#fde68a);
+  border:5px solid #facc15;border-radius:25px;box-shadow:0 8px 0 #ca8a04;padding:18px
+}
+.wallet-label{color:#854d0e;font-size:17px;font-weight:800}
+.wallet-amount{color:#713f12;font-size:42px;font-weight:800}
+.wallet-note{color:#92400e;font-weight:600}
+.main-wrap{max-width:960px;margin:0 auto;padding:0 18px}
+.select-card{
+  background:white;border:4px solid #c084fc;border-radius:22px;box-shadow:0 7px 0 #e9d5ff;
+  padding:20px;margin:22px auto
+}
+.select-card h2{color:#6b21a8;margin:0 0 13px}
+select{
+  width:100%;max-width:650px;border:3px solid #a855f7;border-radius:14px;padding:12px 15px;
+  color:#4c1d95;font-size:17px;font-weight:800;background:white;outline:none
+}
+.try-first{
+  background:#eff6ff;border:3px dashed #93c5fd;border-radius:17px;padding:14px;
+  color:#1e3a8a;font-weight:700;line-height:1.65;margin-bottom:18px
+}
+.mission-card{
+  background:rgba(255,255,255,.97);border:4px solid #c084fc;border-radius:25px;
+  box-shadow:0 8px 0 #e9d5ff;padding:23px;text-align:left
+}
+.mission-title{color:#6b21a8;font-size:27px;margin:0;text-align:center}
+.mission-id{text-align:center;color:#7c3aed;font-weight:700;margin:6px 0 18px}
+.hints-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:17px}
+.hint-card{
+  border:3px solid #e9d5ff;border-radius:20px;padding:17px;background:#fff;
+  display:flex;flex-direction:column;min-height:250px;transition:.2s
+}
+.hint-card:hover{transform:translateY(-2px);box-shadow:0 6px 0 #f3e8ff}
+.hint-card.opened{border-color:#86efac;background:#f0fdf4}
+.hint-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.hint-number{color:#6b21a8;font-weight:800}
+.status{
+  border-radius:999px;padding:5px 9px;font-size:13px;font-weight:800;white-space:nowrap
+}
+.status.locked{background:#fee2e2;color:#991b1b}
+.status.opened{background:#dcfce7;color:#166534}
+.symptom-box{
+  margin:13px 0;background:#fef9c3;border:3px solid #fde047;border-radius:15px;
+  padding:13px;color:#854d0e;font-weight:800;line-height:1.55
+}
+.symptom-label{display:block;font-size:13px;color:#a16207;margin-bottom:4px}
+.locked-body{
+  flex:1;display:flex;flex-direction:column;justify-content:space-between;text-align:center
+}
+.lock-icon{font-size:42px;margin:3px 0}
+.locked-note{color:#64748b;line-height:1.55;font-weight:600}
+.price-line{color:#854d0e;font-weight:800;margin:10px 0}
+.buy-btn{
+  border:none;border-radius:14px;padding:12px;font-size:16px;font-weight:800;
+  background:#fde047;color:#713f12;box-shadow:0 5px 0 #ca8a04;width:100%
+}
+.buy-btn:active{transform:translateY(4px);box-shadow:none}
+.buy-btn:disabled{background:#cbd5e1;color:#64748b;box-shadow:none;cursor:not-allowed}
+.opened-content{
+  background:white;border:3px solid #86efac;border-radius:15px;padding:14px;
+  color:#166534;line-height:1.75;font-weight:700;white-space:pre-wrap
+}
+.opened-title{font-weight:800;color:#15803d;margin-bottom:6px}
+.empty,.error{
+  background:white;border:3px dashed #c4b5fd;border-radius:18px;padding:30px;
+  color:#6b21a8;font-weight:700;text-align:center
+}
+.error{border-color:#fecaca;color:#991b1b}
+.modal{
+  display:none;position:fixed;inset:0;background:rgba(30,41,59,.58);
+  align-items:center;justify-content:center;padding:18px;z-index:2000
+}
+.modal.show{display:flex}
+.confirm-box{
+  width:min(470px,100%);background:white;border:5px solid #facc15;border-radius:25px;
+  box-shadow:0 12px 0 rgba(202,138,4,.35);padding:24px;text-align:center
+}
+.confirm-icon{font-size:55px}
+.confirm-title{font-size:24px;color:#854d0e;font-weight:800;margin:7px 0}
+.confirm-symptom{
+  background:#fef9c3;border:2px solid #fde047;border-radius:14px;padding:12px;
+  color:#854d0e;font-weight:800;line-height:1.5;margin:12px 0
+}
+.confirm-message{color:#475569;line-height:1.65;font-weight:600}
+.confirm-buttons{display:flex;gap:12px;margin-top:17px}
+.cancel-btn,.confirm-btn{flex:1;border:none;border-radius:13px;padding:12px;font-weight:800;font-size:16px}
+.cancel-btn{background:#e2e8f0;color:#475569}
+.confirm-btn{background:#22c55e;color:#14532d;box-shadow:0 4px 0 #16a34a}
+@media(max-width:1100px){
+  .nav-menu{padding:75px 15px 15px}
+  .top-left-menu{top:14px;left:15px;transform:none}
+  .hamburger-wrapper{top:16px;right:15px;transform:none}
+}
+@media(max-width:720px){
+  .learning-menu{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:10px}
+  .nav-menu a.main-link{width:100%;font-size:15px;padding:9px 6px;text-align:center}
+  .learning-menu a.main-link:last-child{grid-column:1/-1;width:55%;justify-self:center}
+  .utility-dropdown{width:min(295px,calc(100vw - 30px))}
+  .hints-grid{grid-template-columns:1fr}
+  .page-title{font-size:31px}
+  .confirm-buttons{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<nav class="nav-menu">
+  <div class="top-left-menu"><a href="index.html" class="btn-home-login" title="กลับหน้าแรก">🏠</a></div>
+  <div class="learning-menu">
+    <a href="mission.html" class="main-link">⚔️ สถานการณ์ปัญหา</a>
+    <a href="resource.html" class="main-link">📚 แหล่งเรียนรู้</a>
+    <a href="hints.html" class="main-link active-menu">💡 ฐานการช่วยเหลือ</a>
+    <a href="share.html" class="main-link">🤝 แลกเปลี่ยนเรียนรู้</a>
+    <a href="coach.html" class="main-link">🧑‍🏫 โค้ช</a>
+  </div>
+  <div class="hamburger-wrapper">
+    <button type="button" id="hamburgerButton" class="hamburger-button" onclick="toggleUtilityMenu()">☰</button>
+    <div id="utilityDropdown" class="utility-dropdown">
+      <div class="dropdown-title">เมนูของฉัน</div>
+      <div class="dropdown-coin"><span>🪙 เหรียญเวทมนตร์</span><strong id="topCoinAmount">--</strong></div>
+      <a href="monster-hatchery.html" class="dropdown-link"><span class="dropdown-icon">🌱</span><span><strong>แปลงปลูกต้นไม้</strong><small>ดูคะแนนและการเติบโต</small></span></a>
+      <a href="profile.html" class="dropdown-link"><span class="dropdown-icon">👤</span><span><strong>โปรไฟล์</strong><small>ดูความก้าวหน้า</small></span></a>
+      <a href="login.html" class="dropdown-link logout-link"><span class="dropdown-icon">🚪</span><span><strong>ออกจากระบบ</strong><small>กลับหน้าเข้าสู่ระบบ</small></span></a>
+    </div>
+  </div>
+</nav>
+
+<header class="page-header">
+  <h1 class="page-title">💡 คำใบ้ตามอาการ</h1>
+  <p class="page-subtitle">อ่านหัวข้อก่อนซื้อ แล้วเลือกเฉพาะคำใบ้ที่ตรงกับปัญหาของกลุ่ม<br>เนื้อหาด้านในจะช่วยชี้แนวคิด โดยไม่เฉลยคำตอบสำเร็จรูป</p>
+</header>
+
+<section class="wallet-card">
+  <div class="wallet-label">เหรียญของกลุ่มที่เหลือ</div>
+  <div class="wallet-amount"><span id="coinAmount">--</span> 🪙</div>
+  <div class="wallet-note">คำใบ้ละ <span id="priceText">10</span> เหรียญ และซื้อแล้วเปิดดูซ้ำได้โดยไม่เสียเพิ่ม</div>
+</section>
+
+<main class="main-wrap">
+  <section class="select-card">
+    <h2>เลือกภารกิจ</h2>
+    <select id="missionFilter" onchange="changeMission()"><option value="">กำลังโหลดภารกิจ...</option></select>
+  </section>
+  <div id="hintsContainer"><div class="empty">กำลังโหลดคำใบ้...</div></div>
+</main>
+
+<div class="modal" id="confirmModal" onclick="closeOutside(event)">
+  <div class="confirm-box">
+    <div class="confirm-icon">🪙💡</div>
+    <div class="confirm-title">ยืนยันการเปิดคำใบ้</div>
+    <div class="confirm-symptom" id="confirmSymptom"></div>
+    <div class="confirm-message" id="confirmMessage"></div>
+    <div class="confirm-buttons">
+      <button class="cancel-btn" type="button" onclick="closeModal()">ยังไม่เปิด</button>
+      <button class="confirm-btn" id="confirmBuyButton" type="button" onclick="confirmBuyHint()">ใช้เหรียญเปิดคำใบ้</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const firebaseConfig={
+  apiKey:"AIzaSyDfBIp5gujB9cE2twLz483hllYOubgYuks",
+  authDomain:"codingplant-f19fc.firebaseapp.com",
+  projectId:"codingplant-f19fc",
+  storageBucket:"codingplant-f19fc.firebasestorage.app",
+  messagingSenderId:"194545106875",
+  appId:"1:194545106875:web:d4b7ca3dd6b57f46cc8e9e",
+  measurementId:"G-Y6C9LXKJ1H"
+};
+if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+const db=firebase.firestore();
+
+const HINT_PRICE=10;
+document.getElementById("priceText").textContent=HINT_PRICE;
+
+const currentRoom=localStorage.getItem("currentRoom");
+let loggedInUsers=[];
+try{loggedInUsers=JSON.parse(localStorage.getItem("loggedInUsers")||localStorage.getItem("currentGroupNames")||"[]")}catch(e){}
+const currentGroupId=localStorage.getItem("currentGroupId");
+
+let missions=[];
+let wallet={magicCoins:0,purchasedHints:[]};
+let pending=null;
+let buying=false;
+
+if(!currentRoom||!currentGroupId){
+  alert("ไม่พบข้อมูลกลุ่ม กรุณาเข้าสู่ระบบใหม่");
+  window.location.href="login.html";
+}
+
+function toggleUtilityMenu(){
+  const menu=document.getElementById("utilityDropdown");
+  const button=document.getElementById("hamburgerButton");
+  const open=menu.classList.toggle("show");
+  button.classList.toggle("open",open);
+}
+document.addEventListener("click",e=>{
+  const wrapper=document.querySelector(".hamburger-wrapper");
+  if(wrapper&&!wrapper.contains(e.target)){
+    document.getElementById("utilityDropdown")?.classList.remove("show");
+    document.getElementById("hamburgerButton")?.classList.remove("open");
+  }
+});
+function escapeHTML(v){
+  return String(v??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[ch]));
+}
+function hintKey(missionId,index){return missionId+"__hint_"+index}
+
+function normalizeHint(raw,index){
+  if(typeof raw==="string"){
+    return{
+      symptom:"คำใบ้ทั่วไปข้อที่ "+(index+1)+" — ใช้เมื่อทดลองแล้วแต่ยังหาจุดผิดไม่พบ",
+      guidance:raw,
+      category:"general",
+      price:HINT_PRICE
+    };
+  }
+  raw=raw||{};
+  return{
+    symptom:raw.symptom||raw.problem||raw.when||raw.title||("ใช้เมื่อพบปัญหาในคำใบ้ข้อที่ "+(index+1)),
+    guidance:raw.guidance||raw.hint||raw.content||raw.text||"",
+    category:raw.category||"general",
+    price:Number(raw.price)||HINT_PRICE
+  };
+}
+
+function listenWallet(){
+  const ref=db.collection("group_wallets").doc(currentGroupId);
+  ref.onSnapshot(doc=>{
+    if(!doc.exists){showError("ไม่พบกระเป๋าเหรียญของกลุ่ม");return}
+    const d=doc.data()||{};
+    wallet={
+      magicCoins:Number(d.magicCoins)||0,
+      purchasedHints:Array.isArray(d.purchasedHints)?d.purchasedHints:[]
+    };
+    document.getElementById("coinAmount").textContent=wallet.magicCoins;
+    document.getElementById("topCoinAmount").textContent=wallet.magicCoins;
+    render();
+  },error=>showError(error.message));
+}
+
+function loadMissions(){
+  db.collection("missions").orderBy("updatedAt","asc").onSnapshot(snapshot=>{
+    missions=[];
+    snapshot.forEach(doc=>{
+      const d=doc.data()||{};
+      missions.push({
+        id:doc.id,
+        title:d.title||doc.id,
+        hints:Array.isArray(d.hints)?d.hints.map(normalizeHint):[]
+      });
+    });
+    const select=document.getElementById("missionFilter");
+    select.innerHTML="";
+    if(!missions.length){
+      select.innerHTML='<option value="">ยังไม่มีภารกิจ</option>';
+      document.getElementById("hintsContainer").innerHTML='<div class="empty">คุณครูยังไม่ได้เพิ่มภารกิจ</div>';
+      return;
+    }
+    missions.forEach(m=>{
+      const op=document.createElement("option");
+      op.value=m.id;op.textContent=m.id+" : "+m.title;select.appendChild(op);
+    });
+    const saved=localStorage.getItem("currentMissionId");
+    select.value=missions.some(m=>m.id===saved)?saved:missions[0].id;
+    localStorage.setItem("currentMissionId",select.value);
+    render();
+  },error=>showError(error.message));
+}
+
+function changeMission(){
+  localStorage.setItem("currentMissionId",document.getElementById("missionFilter").value);
+  render();
+}
+
+function render(){
+  const select=document.getElementById("missionFilter");
+  if(!select||!select.value||!missions.length)return;
+  const mission=missions.find(m=>m.id===select.value);
+  if(!mission)return;
+
+  let cards="";
+  if(!mission.hints.length){
+    cards='<div class="empty">ภารกิจนี้ยังไม่มีคำใบ้ ลองใช้โค้ชหรือพูดคุยกับเพื่อนก่อนนะ</div>';
+  }else{
+    mission.hints.forEach((hint,index)=>{
+      const key=hintKey(mission.id,index);
+      const opened=wallet.purchasedHints.includes(key);
+      const price=hint.price||HINT_PRICE;
+      const enough=wallet.magicCoins>=price;
+      if(opened){
+        cards+=`
+          <article class="hint-card opened">
+            <div class="hint-top">
+              <span class="hint-number">💡 คำใบ้ที่ ${index+1}</span>
+              <span class="status opened">🔓 เปิดแล้ว</span>
+            </div>
+            <div class="symptom-box">
+              <span class="symptom-label">คำใบ้นี้เหมาะเมื่อ</span>
+              ${escapeHTML(hint.symptom)}
+            </div>
+            <div class="opened-content">
+              <div class="opened-title">🧚 แนวทางช่วยคิด</div>
+              ${escapeHTML(hint.guidance)}
+            </div>
+          </article>`;
+      }else{
+        cards+=`
+          <article class="hint-card">
+            <div class="hint-top">
+              <span class="hint-number">💡 คำใบ้ที่ ${index+1}</span>
+              <span class="status locked">🔒 ยังไม่เปิด</span>
+            </div>
+            <div class="symptom-box">
+              <span class="symptom-label">คำใบ้นี้เหมาะเมื่อ</span>
+              ${escapeHTML(hint.symptom)}
+            </div>
+            <div class="locked-body">
+              <div>
+                <div class="lock-icon">🔐</div>
+                <div class="locked-note">อ่านอาการให้ตรงกับปัญหาก่อนตัดสินใจซื้อ<br>เนื้อหาช่วยคิดยังถูกล็อกอยู่</div>
+                <div class="price-line">ราคา ${price} เหรียญ</div>
+              </div>
+              <button class="buy-btn" ${enough?"":"disabled"}
+                onclick="openModal('${escapeAttr(mission.id)}',${index})">
+                ${enough?"🪙 เลือกซื้อคำใบ้นี้":"เหรียญไม่พอ"}
+              </button>
+            </div>
+          </article>`;
+      }
+    });
+  }
+
+  document.getElementById("hintsContainer").innerHTML=`
+    <section class="mission-card">
+      <h2 class="mission-title">${escapeHTML(mission.title)}</h2>
+      <div class="mission-id">รหัสภารกิจ: ${escapeHTML(mission.id)}</div>
+      <div class="try-first">🧠 ก่อนซื้อ ให้กลุ่มทดลองแก้ปัญหาอย่างน้อยหนึ่งครั้ง แล้วเลือกเฉพาะคำใบ้ที่อธิบายอาการตรงกับสิ่งที่พบ</div>
+      <div class="hints-grid">${cards}</div>
+    </section>`;
+}
+
+function openModal(missionId,index){
+  if(buying)return;
+  const mission=missions.find(m=>m.id===missionId);
+  if(!mission||!mission.hints[index])return;
+  const hint=mission.hints[index];
+  const key=hintKey(missionId,index);
+  if(wallet.purchasedHints.includes(key)){render();return}
+  const price=hint.price||HINT_PRICE;
+  if(wallet.magicCoins<price){alert("เหรียญไม่เพียงพอ");return}
+  pending={missionId,index,key,price,symptom:hint.symptom};
+  document.getElementById("confirmSymptom").textContent="คำใบ้นี้เหมาะเมื่อ: "+hint.symptom;
+  document.getElementById("confirmMessage").innerHTML=
+    "ใช้ <strong>"+price+" เหรียญ</strong> และจะเหลือประมาณ <strong>"+(wallet.magicCoins-price)+" เหรียญ</strong><br>ยืนยันเปิดคำใบ้นี้หรือไม่?";
+  document.getElementById("confirmModal").classList.add("show");
+}
+function closeModal(){
+  if(buying)return;
+  document.getElementById("confirmModal").classList.remove("show");
+  pending=null;
+}
+function closeOutside(e){if(e.target.id==="confirmModal")closeModal()}
+
+async function confirmBuyHint(){
+  if(!pending||buying)return;
+  buying=true;
+  const btn=document.getElementById("confirmBuyButton");
+  btn.disabled=true;btn.textContent="กำลังเปิด...";
+  const data={...pending};
+  const walletRef=db.collection("group_wallets").doc(currentGroupId);
+  try{
+    await db.runTransaction(async tx=>{
+      const snap=await tx.get(walletRef);
+      if(!snap.exists)throw new Error("ไม่พบกระเป๋าเหรียญ");
+      const w=snap.data()||{};
+      const coins=Number(w.magicCoins)||0;
+      const purchased=Array.isArray(w.purchasedHints)?w.purchasedHints:[];
+      if(purchased.includes(data.key))return;
+      if(coins<data.price)throw new Error("เหรียญไม่เพียงพอ");
+      const after=coins-data.price;
+      tx.update(walletRef,{
+        magicCoins:after,
+        purchasedHints:firebase.firestore.FieldValue.arrayUnion(data.key),
+        updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+      });
+      const logRef=walletRef.collection("transactions").doc();
+      tx.set(logRef,{
+        type:"BUY_HINT",
+        amount:-data.price,
+        missionId:data.missionId,
+        hintIndex:data.index,
+        hintKey:data.key,
+        symptom:data.symptom,
+        balanceAfter:after,
+        createdAt:firebase.firestore.FieldValue.serverTimestamp()
+      });
+    });
+    closeModal();
+  }catch(error){
+    console.error(error);
+    alert("เปิดคำใบ้ไม่สำเร็จ\n\n"+error.message);
+  }finally{
+    buying=false;btn.disabled=false;btn.textContent="ใช้เหรียญเปิดคำใบ้";
+  }
+}
+
+function showError(message){
+  document.getElementById("hintsContainer").innerHTML='<div class="error">เกิดข้อผิดพลาด<br>'+escapeHTML(message)+'</div>';
+}
+function escapeAttr(v){return String(v).replace(/\\/g,"\\\\").replace(/'/g,"\\'")}
+
+listenWallet();
+loadMissions();
+</script>
+</body>
+</html>

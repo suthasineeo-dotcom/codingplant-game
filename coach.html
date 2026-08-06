@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧑‍🏫 โค้ชช่วยคิด | สวนแสนสุข</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<style>
+:root{
+  --purple:#a855f7; --purple-dark:#4c1d95; --purple-soft:#f3e8ff;
+  --yellow:#fde047; --yellow-dark:#ca8a04; --green:#22c55e;
+  --blue:#38bdf8; --red:#ef4444; --ink:#312e81;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; padding:0 0 70px; font-family:'Kanit',sans-serif; color:#333;
+  background-color:#faf5ff;
+  background-image:radial-gradient(#e9d5ff 3px,transparent 3px);
+  background-size:40px 40px; min-height:100vh;
+}
+button,input,textarea,select,a{font-family:'Kanit',sans-serif}
+button{cursor:pointer}
+.nav-menu{
+  min-height:80px; background:var(--purple); padding:14px 170px;
+  display:flex; justify-content:center; align-items:center; position:relative; z-index:900;
+}
+.learning-menu{display:flex; justify-content:center; align-items:center; gap:12px; flex-wrap:wrap}
+.nav-menu a.main-link{
+  background:#d8b4fe; color:var(--purple-dark); text-decoration:none; font-weight:800;
+  font-size:17px; padding:10px 17px; border-radius:18px; border:3px solid var(--purple-soft);
+  box-shadow:0 4px 0 #9333ea; white-space:nowrap; transition:.2s;
+}
+.nav-menu a.main-link:hover{background:#c084fc;color:white;transform:translateY(-2px)}
+.nav-menu a.main-link:active{transform:translateY(4px);box-shadow:none}
+.nav-menu a.active-menu{background:var(--yellow);color:#854d0e;border-color:white;box-shadow:0 4px 0 var(--yellow-dark)}
+.top-left-menu{position:absolute;left:18px;top:50%;transform:translateY(-50%);z-index:1001}
+.btn-home-login{
+  width:48px;height:48px;display:flex;justify-content:center;align-items:center;background:white;
+  border:3px solid var(--purple-soft);border-radius:50%;font-size:23px;text-decoration:none;
+  box-shadow:0 4px 0 #9333ea;transition:.2s
+}
+.btn-home-login:active{transform:translateY(4px);box-shadow:none}
+.hamburger-wrapper{position:absolute;right:18px;top:50%;transform:translateY(-50%);z-index:1002}
+.hamburger-button{
+  width:44px;height:44px;display:flex;justify-content:center;align-items:center;background:white;
+  color:var(--purple-dark);border:3px solid var(--purple-soft);border-radius:14px;font-size:23px;
+  font-weight:800;box-shadow:0 4px 0 #9333ea
+}
+.hamburger-button.open,.hamburger-button:active{transform:translateY(4px);box-shadow:none}
+.utility-dropdown{
+  display:none;position:absolute;top:56px;right:0;width:295px;padding:14px;background:white;
+  border:3px solid #e9d5ff;border-radius:20px;box-shadow:0 12px 28px rgba(76,29,149,.24);text-align:left
+}
+.utility-dropdown.show{display:block}
+.dropdown-title{color:var(--purple-dark);font-size:18px;font-weight:800;text-align:center;margin-bottom:10px}
+.dropdown-coin{display:flex;justify-content:space-between;gap:10px;background:#fef9c3;color:#854d0e;border:2px solid var(--yellow);border-radius:14px;padding:10px 12px;margin-bottom:10px;font-weight:800}
+.dropdown-link{display:flex;align-items:center;gap:11px;padding:10px 12px;margin-top:8px;color:var(--purple-dark);text-decoration:none;background:#faf5ff;border:2px solid #e9d5ff;border-radius:14px}
+.dropdown-icon{width:34px;text-align:center;font-size:24px}
+.dropdown-link strong,.dropdown-link small{display:block}
+.dropdown-link small{color:#7c3aed;font-size:12px;font-weight:400}
+.logout-link{color:#991b1b;background:#fff1f2}
+
+.page-header{max-width:980px;margin:30px auto 18px;padding:0 18px;text-align:center}
+.page-title{font-size:40px;color:#7e22ce;margin:0 0 8px;font-weight:800;text-shadow:2px 2px white}
+.page-subtitle{color:#6b21a8;font-size:18px;line-height:1.7;font-weight:600;margin:0}
+.notice{
+  max-width:900px;margin:18px auto;padding:15px 18px;background:#fef9c3;border:3px solid var(--yellow);
+  border-radius:18px;color:#854d0e;font-weight:700;text-align:center;box-shadow:0 5px 0 #fde68a
+}
+.main-wrap{max-width:1000px;margin:0 auto;padding:0 18px}
+.card{
+  background:rgba(255,255,255,.97);border:4px solid #c084fc;border-radius:24px;
+  box-shadow:0 8px 0 #e9d5ff;padding:22px;margin-top:22px
+}
+.card h2{margin:0 0 15px;color:#6b21a8;font-size:24px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.form-group{text-align:left}
+.form-group.full{grid-column:1/-1}
+label{display:block;color:#4c1d95;font-weight:800;margin:0 0 7px}
+select,textarea,input{
+  width:100%;border:3px solid #ddd6fe;border-radius:14px;padding:12px 14px;font-size:16px;
+  color:#312e81;background:white;outline:none
+}
+textarea{min-height:95px;resize:vertical;line-height:1.6}
+select:focus,textarea:focus,input:focus{border-color:#8b5cf6;box-shadow:0 0 0 4px #ede9fe}
+.issue-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.issue-option{position:relative}
+.issue-option input{position:absolute;opacity:0;pointer-events:none}
+.issue-option label{
+  min-height:105px;margin:0;padding:13px;border:3px solid #e9d5ff;border-radius:16px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  background:#faf5ff;transition:.2s;cursor:pointer;color:#5b21b6
+}
+.issue-option label span{font-size:28px;margin-bottom:5px}
+.issue-option input:checked+label{background:#fef9c3;border-color:#facc15;color:#854d0e;transform:translateY(-2px);box-shadow:0 5px 0 #fde68a}
+.primary-btn,.secondary-btn,.danger-btn{
+  border:none;border-radius:14px;padding:13px 20px;font-size:17px;font-weight:800;transition:.2s
+}
+.primary-btn{background:#22c55e;color:#14532d;box-shadow:0 5px 0 #16a34a}
+.secondary-btn{background:#8b5cf6;color:white;box-shadow:0 5px 0 #6d28d9}
+.danger-btn{background:#fee2e2;color:#991b1b;box-shadow:0 5px 0 #fecaca}
+.primary-btn:active,.secondary-btn:active,.danger-btn:active{transform:translateY(4px);box-shadow:none}
+.primary-btn:disabled,.secondary-btn:disabled{background:#cbd5e1;color:#64748b;box-shadow:none;cursor:not-allowed}
+.center{text-align:center}
+.hidden{display:none!important}
+
+.coach-head{
+  display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#f3e8ff,#ede9fe);
+  border:3px solid #c4b5fd;border-radius:18px;padding:15px;margin-bottom:16px
+}
+.coach-avatar{font-size:52px}
+.coach-bubble{text-align:left;color:#4c1d95;font-weight:700;line-height:1.6}
+.steps{display:flex;flex-direction:column;gap:15px}
+.step-card{
+  border:3px solid #e9d5ff;border-radius:20px;padding:17px;background:#fff;opacity:.45;
+  pointer-events:none;transition:.25s
+}
+.step-card.active{opacity:1;pointer-events:auto;border-color:#c084fc;box-shadow:0 5px 0 #f3e8ff}
+.step-card.done{opacity:1;pointer-events:auto;border-color:#86efac;background:#f0fdf4}
+.step-title{display:flex;align-items:center;gap:10px;color:#5b21b6;font-weight:800;font-size:19px;margin-bottom:8px}
+.step-number{
+  width:36px;height:36px;border-radius:50%;display:flex;justify-content:center;align-items:center;
+  background:#8b5cf6;color:white;flex:0 0 36px
+}
+.step-card.done .step-number{background:#22c55e}
+.prompt-box{background:#faf5ff;border-left:6px solid #a855f7;border-radius:12px;padding:13px 15px;line-height:1.7;margin:10px 0 13px;color:#4c1d95}
+.micro-hint{font-size:14px;color:#64748b;margin-top:7px}
+.step-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:12px;flex-wrap:wrap}
+.summary-box{background:#eff6ff;border:3px solid #93c5fd;border-radius:18px;padding:18px;line-height:1.7;color:#1e3a8a;text-align:left}
+.summary-list{margin:8px 0 0;padding-left:22px}
+.next-links{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:15px}
+.next-link{text-decoration:none;padding:14px;border-radius:16px;font-weight:800;text-align:center;border:3px solid}
+.next-link.resource{background:#e0f2fe;color:#075985;border-color:#7dd3fc}
+.next-link.hint{background:#fef9c3;color:#854d0e;border-color:#fde047}
+.next-link.mission{background:#dcfce7;color:#166534;border-color:#86efac}
+.status{margin-top:12px;font-weight:700}
+.status.ok{color:#15803d}.status.error{color:#b91c1c}
+@media(max-width:1100px){
+  .nav-menu{padding:75px 15px 15px}
+  .top-left-menu{top:14px;left:15px;transform:none}
+  .hamburger-wrapper{top:16px;right:15px;transform:none}
+}
+@media(max-width:720px){
+  .learning-menu{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:10px}
+  .nav-menu a.main-link{width:100%;font-size:15px;padding:9px 6px;text-align:center}
+  .learning-menu a.main-link:last-child{grid-column:1/-1;width:55%;justify-self:center}
+  .utility-dropdown{width:min(295px,calc(100vw - 30px))}
+  .form-grid,.issue-grid,.next-links{grid-template-columns:1fr}
+  .page-title{font-size:31px}
+  .card{padding:16px}
+}
+</style>
+</head>
+<body>
+<nav class="nav-menu">
+  <div class="top-left-menu"><a href="index.html" class="btn-home-login" title="กลับหน้าแรก">🏠</a></div>
+  <div class="learning-menu">
+    <a href="mission.html" class="main-link">⚔️ สถานการณ์ปัญหา</a>
+    <a href="resource.html" class="main-link">📚 แหล่งเรียนรู้</a>
+    <a href="hints.html" class="main-link">💡 ฐานการช่วยเหลือ</a>
+    <a href="share.html" class="main-link">🤝 แลกเปลี่ยนเรียนรู้</a>
+    <a href="coach.html" class="main-link active-menu">🧑‍🏫 โค้ช</a>
+  </div>
+  <div class="hamburger-wrapper">
+    <button type="button" id="hamburgerButton" class="hamburger-button" onclick="toggleUtilityMenu()" aria-expanded="false">☰</button>
+    <div id="utilityDropdown" class="utility-dropdown">
+      <div class="dropdown-title">เมนูของฉัน</div>
+      <div class="dropdown-coin"><span>🪙 เหรียญเวทมนตร์</span><strong id="topCoinAmount">--</strong></div>
+      <a href="monster-hatchery.html" class="dropdown-link"><span class="dropdown-icon">🌱</span><span><strong>แปลงปลูกต้นไม้</strong><small>ดูคะแนนและการเติบโต</small></span></a>
+      <a href="profile.html" class="dropdown-link"><span class="dropdown-icon">👤</span><span><strong>โปรไฟล์</strong><small>ดูความก้าวหน้าของฉัน</small></span></a>
+      <a href="login.html" class="dropdown-link logout-link"><span class="dropdown-icon">🚪</span><span><strong>ออกจากระบบ</strong><small>กลับหน้าเข้าสู่ระบบ</small></span></a>
+    </div>
+  </div>
+</nav>
+
+<header class="page-header">
+  <h1 class="page-title">🧑‍🏫 โค้ชช่วยคิด</h1>
+  <p class="page-subtitle">โค้ชจะถามคำถามทีละขั้น เพื่อช่วยให้หนูค้นพบวิธีแก้ปัญหาด้วยตนเอง<br>โค้ชจะไม่บอกคำตอบหรือบล็อกคำสั่งสำเร็จรูป</p>
+</header>
+
+<div class="notice">🧠 ก่อนใช้โค้ช ลองอ่านโจทย์ ทดลองโปรแกรม และพูดคุยกับเพื่อนอย่างน้อย 1 ครั้ง</div>
+
+<main class="main-wrap">
+  <section class="card" id="setupCard">
+    <h2>1. บอกโค้ชว่ากำลังติดปัญหาอะไร</h2>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label for="missionSelect">⚔️ ภารกิจที่กำลังทำ</label>
+        <select id="missionSelect"><option value="">กำลังโหลดภารกิจ...</option></select>
+      </div>
+      <div class="form-group full">
+        <label>🔎 เลือกอาการที่ใกล้เคียงที่สุด</label>
+        <div class="issue-grid">
+          <div class="issue-option"><input type="radio" name="issue" id="issue-understand" value="understand"><label for="issue-understand"><span>📖</span>ยังไม่เข้าใจว่าโจทย์ต้องการอะไร</label></div>
+          <div class="issue-option"><input type="radio" name="issue" id="issue-start" value="start"><label for="issue-start"><span>🚦</span>โปรแกรมไม่เริ่มทำงาน</label></div>
+          <div class="issue-option"><input type="radio" name="issue" id="issue-direction" value="direction"><label for="issue-direction"><span>🧭</span>ตัวละครเดินหรือหันผิดทิศ</label></div>
+          <div class="issue-option"><input type="radio" name="issue" id="issue-loop" value="loop"><label for="issue-loop"><span>🔁</span>คำสั่งซ้ำไม่เป็นไปตามที่คิด</label></div>
+          <div class="issue-option"><input type="radio" name="issue" id="issue-condition" value="condition"><label for="issue-condition"><span>🚧</span>ชนสิ่งกีดขวางหรือเงื่อนไขไม่ทำงาน</label></div>
+          <div class="issue-option"><input type="radio" name="issue" id="issue-other" value="other"><label for="issue-other"><span>🧩</span>ปัญหาอื่น ๆ หรือยังหาสาเหตุไม่พบ</label></div>
+        </div>
+      </div>
+      <div class="form-group full">
+        <label for="observedProblem">👀 เมื่อกดธงเขียว เกิดอะไรขึ้นจริง ๆ</label>
+        <textarea id="observedProblem" maxlength="500" placeholder="เช่น ตัวละครเดินไปทางซ้าย ทั้งที่อยากให้เดินไปทางขวา"></textarea>
+      </div>
+      <div class="form-group full">
+        <label for="expectedResult">🎯 หนูอยากให้โปรแกรมทำอะไร</label>
+        <textarea id="expectedResult" maxlength="500" placeholder="บอกผลลัพธ์ที่ต้องการ โดยยังไม่ต้องบอกคำตอบ"></textarea>
+      </div>
+    </div>
+    <div class="center"><button class="primary-btn" id="startCoachBtn" onclick="startCoach()">เริ่มคุยกับโค้ช</button></div>
+    <div id="setupStatus" class="status"></div>
+  </section>
+
+  <section class="card hidden" id="coachCard">
+    <div class="coach-head">
+      <div class="coach-avatar">🧑‍🏫</div>
+      <div class="coach-bubble" id="coachIntro">โค้ชพร้อมช่วยแล้ว เราจะค่อย ๆ คิดไปด้วยกันทีละขั้นนะ</div>
+    </div>
+
+    <div class="steps">
+      <article class="step-card active" id="step1">
+        <div class="step-title"><span class="step-number">1</span>ทำความเข้าใจเป้าหมาย</div>
+        <div class="prompt-box" id="prompt1"></div>
+        <label for="answer1">คำตอบของกลุ่ม</label>
+        <textarea id="answer1" maxlength="600" placeholder="เขียนด้วยภาษาของหนูเอง"></textarea>
+        <div class="micro-hint">ลองแยกเป็น “จุดเริ่มต้น – สิ่งที่ต้องทำ – ผลลัพธ์สุดท้าย”</div>
+        <div class="step-actions"><button class="secondary-btn" onclick="completeStep(1)">คิดเสร็จแล้ว ไปขั้นต่อไป</button></div>
+      </article>
+
+      <article class="step-card" id="step2">
+        <div class="step-title"><span class="step-number">2</span>ตรวจสิ่งที่เกิดขึ้นจริง</div>
+        <div class="prompt-box" id="prompt2"></div>
+        <label for="answer2">สิ่งที่กลุ่มสังเกตพบ</label>
+        <textarea id="answer2" maxlength="600" placeholder="บอกว่าบล็อกหรือพฤติกรรมใดน่าสงสัย"></textarea>
+        <div class="micro-hint">เปลี่ยนเพียง 1 จุดแล้วทดลองใหม่ จะรู้ว่าสาเหตุมาจากจุดนั้นหรือไม่</div>
+        <div class="step-actions"><button class="secondary-btn" onclick="completeStep(2)">บันทึกสิ่งที่สังเกต</button></div>
+      </article>
+
+      <article class="step-card" id="step3">
+        <div class="step-title"><span class="step-number">3</span>ตั้งสมมติฐาน</div>
+        <div class="prompt-box" id="prompt3"></div>
+        <label for="answer3">กลุ่มคิดว่าสาเหตุน่าจะเป็นอะไร</label>
+        <textarea id="answer3" maxlength="600" placeholder="เช่น อาจเกิดจากทิศทางเริ่มต้นไม่ตรงกับที่คิด เพราะ..."></textarea>
+        <div class="micro-hint">ใช้คำว่า “ถ้า...แล้ว...” เพื่อสร้างสมมติฐานที่ตรวจสอบได้</div>
+        <div class="step-actions"><button class="secondary-btn" onclick="completeStep(3)">ตั้งสมมติฐานแล้ว</button></div>
+      </article>
+
+      <article class="step-card" id="step4">
+        <div class="step-title"><span class="step-number">4</span>วางแผนทดลองแก้ทีละจุด</div>
+        <div class="prompt-box" id="prompt4"></div>
+        <label for="answer4">แผนทดลองของกลุ่ม</label>
+        <textarea id="answer4" maxlength="600" placeholder="ระบุว่าจะเปลี่ยนอะไร 1 จุด แล้วจะดูผลจากอะไร"></textarea>
+        <div class="micro-hint">อย่าเปลี่ยนหลายบล็อกพร้อมกัน เพราะจะไม่รู้ว่าจุดใดทำให้ดีขึ้น</div>
+        <div class="step-actions"><button class="secondary-btn" onclick="completeStep(4)">พร้อมกลับไปทดลอง</button></div>
+      </article>
+
+      <article class="step-card" id="step5">
+        <div class="step-title"><span class="step-number">5</span>สะท้อนผลหลังทดลอง</div>
+        <div class="prompt-box">หลังทดลองตามแผนแล้ว ผลเปลี่ยนไปอย่างไร และกลุ่มได้เรียนรู้อะไรจากความผิดพลาดครั้งนี้</div>
+        <label for="answer5">ผลการทดลองและสิ่งที่เรียนรู้</label>
+        <textarea id="answer5" maxlength="800" placeholder="ถ้ายังไม่สำเร็จ ให้บอกสิ่งที่ตัดออกได้และสิ่งที่จะลองต่อไป"></textarea>
+        <div class="step-actions">
+          <button class="primary-btn" onclick="finishCoach()">บันทึกกระบวนการคิด</button>
+          <button class="danger-btn" onclick="resetCoach()">เริ่มวิเคราะห์ใหม่</button>
+        </div>
+      </article>
+    </div>
+
+    <div id="finishArea" class="hidden">
+      <div class="summary-box" id="summaryBox"></div>
+      <div class="next-links">
+        <a class="next-link mission" href="mission.html">⚔️ กลับไปทดลองภารกิจ</a>
+        <a class="next-link resource" href="resource.html">📚 ค้นคว้าแหล่งเรียนรู้</a>
+        <a class="next-link hint" href="hints.html">💡 เลือกซื้อคำใบ้ตามอาการ</a>
+      </div>
+    </div>
+    <div id="coachStatus" class="status"></div>
+  </section>
+</main>
+
+<script>
+const firebaseConfig={
+  apiKey:"AIzaSyDfBIp5gujB9cE2twLz483hllYOubgYuks",
+  authDomain:"codingplant-f19fc.firebaseapp.com",
+  projectId:"codingplant-f19fc",
+  storageBucket:"codingplant-f19fc.firebasestorage.app",
+  messagingSenderId:"194545106875",
+  appId:"1:194545106875:web:d4b7ca3dd6b57f46cc8e9e",
+  measurementId:"G-Y6C9LXKJ1H"
+};
+if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+const db=firebase.firestore();
+
+const issueTexts={
+  understand:"ยังไม่เข้าใจว่าโจทย์ต้องการอะไร",
+  start:"โปรแกรมไม่เริ่มทำงาน",
+  direction:"ตัวละครเดินหรือหันผิดทิศ",
+  loop:"คำสั่งซ้ำไม่เป็นไปตามที่คิด",
+  condition:"ชนสิ่งกีดขวางหรือเงื่อนไขไม่ทำงาน",
+  other:"ปัญหาอื่น ๆ หรือยังหาสาเหตุไม่พบ"
+};
+const prompts={
+  understand:[
+    "ลองเล่าโจทย์ใหม่ด้วยคำพูดของกลุ่ม โดยบอกว่าเริ่มจากอะไร ต้องทำอะไร และเมื่อสำเร็จจะเห็นอะไร",
+    "มีคำหรือเงื่อนไขใดในโจทย์ที่กลุ่มยังไม่แน่ใจ ลองวงหรือจดออกมาเพียงหนึ่งจุด",
+    "ถ้าความเข้าใจของกลุ่มถูกต้อง เมื่อโปรแกรมทำงานควรเห็นเหตุการณ์ใดเป็นลำดับแรก",
+    "เลือกตรวจสอบความเข้าใจเพียงหนึ่งข้อ เช่น ตำแหน่งเริ่มต้น เป้าหมาย หรือเงื่อนไขจบ แล้วทดลองยืนยัน"
+  ],
+  start:[
+    "โปรแกรมควรเริ่มเมื่อเกิดเหตุการณ์ใด และตอนนี้มีสิ่งใดเป็นตัวสั่งให้เริ่ม",
+    "เมื่อกดเริ่ม มีบล็อกใดสว่างหรือทำงานบ้าง และมีชุดคำสั่งใดไม่ถูกเรียก",
+    "ถ้าชุดคำสั่งไม่ได้เริ่ม สาเหตุอาจเกี่ยวกับเหตุการณ์เริ่มต้นหรือการเชื่อมต่อของบล็อกหรือไม่ เพราะอะไร",
+    "ทดลองเปลี่ยนหรือตรวจเพียงจุดเริ่มต้นหนึ่งจุด แล้วสังเกตว่าชุดคำสั่งเริ่มทำงานหรือไม่"
+  ],
+  direction:[
+    "ก่อนเคลื่อนที่ ตัวละครกำลังหันหน้าไปทางใด และทิศที่โจทย์ต้องการคือทิศใด",
+    "ดูค่าทิศทางหรือการหมุนก่อนคำสั่งเคลื่อนที่ จุดใดเกิดก่อนและจุดใดเกิดหลัง",
+    "ถ้าปรับทิศทางก่อนเคลื่อนที่ พฤติกรรมของตัวละครน่าจะเปลี่ยนอย่างไร",
+    "ทดลองตรวจหรือเปลี่ยนเฉพาะทิศทางเริ่มต้นหนึ่งจุด แล้วกดเริ่มใหม่"
+  ],
+  loop:[
+    "สิ่งใดต้องเกิดซ้ำ และควรเกิดซ้ำทั้งหมดกี่ครั้งหรือจนกว่าเงื่อนไขใดจะเป็นจริง",
+    "มีคำสั่งใดอยู่ในส่วนที่ทำซ้ำ และมีคำสั่งใดหลุดอยู่นอกส่วนที่ทำซ้ำ",
+    "ถ้าจำนวนรอบหรือขอบเขตของคำสั่งซ้ำไม่ตรง ผลที่เกิดขึ้นควรแตกต่างอย่างไร",
+    "ทดลองปรับเพียงจำนวนรอบหรือขอบเขตของคำสั่งหนึ่งจุด แล้วนับผลที่เกิดขึ้น"
+  ],
+  condition:[
+    "โปรแกรมต้องตรวจอะไร ก่อนตัดสินใจว่าจะทำคำสั่งใดต่อ",
+    "เมื่อถึงจุดที่ควรตัดสินใจ ค่าหรือเหตุการณ์ที่ใช้ตรวจสอบเป็นจริงหรือยัง",
+    "ถ้าเงื่อนไขยังไม่เป็นจริง โปรแกรมควรทำอะไร และถ้าเป็นจริงควรทำอะไร",
+    "ทดลองทำให้เงื่อนไขหนึ่งข้อเกิดขึ้นอย่างชัดเจน แล้วสังเกตว่าโปรแกรมเลือกทางใด"
+  ],
+  other:[
+    "แบ่งปัญหาออกเป็นส่วนเล็ก ๆ: เริ่มต้น การเคลื่อนที่ การทำซ้ำ การตรวจเงื่อนไข และผลลัพธ์ ส่วนใดผิดจากที่คาด",
+    "ลองหยุดดูทีละช่วง แล้วหาว่าช่วงสุดท้ายที่ยังทำงานถูกต้องคือช่วงใด",
+    "จุดถัดจากช่วงที่ทำงานถูกต้องอาจเป็นสาเหตุหรือไม่ มีหลักฐานอะไรสนับสนุน",
+    "เลือกเปลี่ยนเพียงจุดแรกหลังจากช่วงที่ทำงานถูกต้อง แล้วทดลองใหม่"
+  ]
+};
+
+let currentMission={id:"",title:""};
+let currentIssue="";
+let completedSteps=0;
+
+function toggleUtilityMenu(){
+  const menu=document.getElementById("utilityDropdown");
+  const button=document.getElementById("hamburgerButton");
+  const open=menu.classList.toggle("show");
+  button.classList.toggle("open",open);
+  button.setAttribute("aria-expanded",String(open));
+}
+document.addEventListener("click",e=>{
+  const wrapper=document.querySelector(".hamburger-wrapper");
+  if(wrapper&&!wrapper.contains(e.target)){
+    document.getElementById("utilityDropdown")?.classList.remove("show");
+    document.getElementById("hamburgerButton")?.classList.remove("open");
+  }
+});
+
+function loadCoins(){
+  const el=document.getElementById("topCoinAmount");
+  const groupId=localStorage.getItem("currentGroupId");
+  if(!groupId){el.textContent="0";return}
+  db.collection("group_wallets").doc(groupId).onSnapshot(doc=>{
+    el.textContent=doc.exists?(Number(doc.data().magicCoins)||0):"0";
+  },()=>el.textContent="--");
+}
+
+async function loadMissions(){
+  const select=document.getElementById("missionSelect");
+  select.innerHTML='<option value="">-- เลือกภารกิจ --</option>';
+  try{
+    const snap=await db.collection("missions").get();
+    const rows=[];
+    snap.forEach(doc=>{
+      const d=doc.data()||{};
+      rows.push({id:doc.id,title:d.title||d.missionTitle||d.name||("ภารกิจ "+doc.id),order:Number(d.order||d.missionNumber||d.number||9999)});
+    });
+    rows.sort((a,b)=>a.order-b.order||a.title.localeCompare(b.title,"th"));
+    rows.forEach(row=>{
+      const op=document.createElement("option");
+      op.value=row.id;op.textContent=row.title;op.dataset.title=row.title;select.appendChild(op);
+    });
+    if(!rows.length){
+      select.innerHTML='<option value="general">ภารกิจที่กำลังทำ</option>';
+    }
+  }catch(error){
+    console.error(error);
+    select.innerHTML='<option value="general">ภารกิจที่กำลังทำ</option>';
+  }
+}
+
+function setStatus(id,msg,type=""){
+  const el=document.getElementById(id);el.textContent=msg;el.className="status "+type;
+}
+
+function startCoach(){
+  const select=document.getElementById("missionSelect");
+  const checked=document.querySelector('input[name="issue"]:checked');
+  const observed=document.getElementById("observedProblem").value.trim();
+  const expected=document.getElementById("expectedResult").value.trim();
+  if(!select.value){setStatus("setupStatus","กรุณาเลือกภารกิจก่อน","error");return}
+  if(!checked){setStatus("setupStatus","กรุณาเลือกอาการที่ใกล้เคียงที่สุด","error");return}
+  if(observed.length<5||expected.length<5){setStatus("setupStatus","กรุณาเล่าสิ่งที่เกิดขึ้นจริงและผลที่ต้องการอย่างน้อยช่องละ 5 ตัวอักษร","error");return}
+  currentMission={id:select.value,title:select.options[select.selectedIndex].text};
+  currentIssue=checked.value;
+  const ps=prompts[currentIssue]||prompts.other;
+  for(let i=1;i<=4;i++)document.getElementById("prompt"+i).textContent=ps[i-1];
+  document.getElementById("coachIntro").innerHTML=
+    "ตอนนี้กลุ่มกำลังทำ <strong>"+escapeHtml(currentMission.title)+"</strong> และพบว่า <strong>"+escapeHtml(issueTexts[currentIssue])+"</strong><br>เราจะไม่รีบบอกคำตอบ แต่จะหาหลักฐานและทดลองทีละจุด";
+  document.getElementById("setupCard").classList.add("hidden");
+  document.getElementById("coachCard").classList.remove("hidden");
+  window.scrollTo({top:document.getElementById("coachCard").offsetTop-20,behavior:"smooth"});
+}
+
+function completeStep(step){
+  const answer=document.getElementById("answer"+step).value.trim();
+  if(answer.length<8){setStatus("coachStatus","ขั้นนี้ขอให้กลุ่มเขียนความคิดอย่างน้อย 8 ตัวอักษรก่อนนะ","error");return}
+  document.getElementById("step"+step).classList.remove("active");
+  document.getElementById("step"+step).classList.add("done");
+  completedSteps=Math.max(completedSteps,step);
+  const next=step+1;
+  if(next<=5){
+    document.getElementById("step"+next).classList.add("active");
+    document.getElementById("step"+next).scrollIntoView({behavior:"smooth",block:"center"});
+  }
+  setStatus("coachStatus","บันทึกความคิดขั้นที่ "+step+" แล้ว ✅","ok");
+}
+
+async function finishCoach(){
+  const answer5=document.getElementById("answer5").value.trim();
+  if(completedSteps<4){setStatus("coachStatus","กรุณาคิดให้ครบ 4 ขั้นก่อนบันทึกผล","error");return}
+  if(answer5.length<8){setStatus("coachStatus","กรุณาเขียนผลการทดลองและสิ่งที่เรียนรู้อย่างน้อย 8 ตัวอักษร","error");return}
+  const groupId=localStorage.getItem("currentGroupId")||"";
+  const room=localStorage.getItem("currentRoom")||"";
+  let names=[];
+  try{names=JSON.parse(localStorage.getItem("currentGroupNames")||"[]")}catch(e){}
+  const payload={
+    groupId,room,memberNames:Array.isArray(names)?names:[],
+    missionId:currentMission.id,missionTitle:currentMission.title,
+    issueType:currentIssue,issueLabel:issueTexts[currentIssue],
+    observedProblem:document.getElementById("observedProblem").value.trim(),
+    expectedResult:document.getElementById("expectedResult").value.trim(),
+    responses:{
+      understand:document.getElementById("answer1").value.trim(),
+      observe:document.getElementById("answer2").value.trim(),
+      hypothesis:document.getElementById("answer3").value.trim(),
+      experimentPlan:document.getElementById("answer4").value.trim(),
+      reflection:answer5
+    },
+    createdAt:firebase.firestore.FieldValue.serverTimestamp()
+  };
+  try{
+    await db.collection("coach_logs").add(payload);
+    document.getElementById("step5").classList.add("done");
+    const summary=document.getElementById("summaryBox");
+    summary.innerHTML="<strong>✅ กลุ่มได้ใช้กระบวนการแก้ปัญหาครบแล้ว</strong>"+
+      "<ul class='summary-list'><li>อธิบายเป้าหมายด้วยภาษาของตนเอง</li><li>สังเกตหลักฐานจากโปรแกรม</li><li>ตั้งสมมติฐานที่ตรวจสอบได้</li><li>วางแผนเปลี่ยนทีละจุด</li><li>สะท้อนผลจากการทดลอง</li></ul>"+
+      "<br>ตอนนี้ให้กลับไปทดลองตามแผนก่อน หากยังติดปัญหา จึงค่อยค้นคว้าแหล่งเรียนรู้หรือเลือกคำใบ้ที่ตรงกับอาการ";
+    document.getElementById("finishArea").classList.remove("hidden");
+    setStatus("coachStatus","บันทึกกระบวนการคิดลงระบบแล้ว","ok");
+    document.getElementById("finishArea").scrollIntoView({behavior:"smooth",block:"center"});
+  }catch(error){
+    console.error(error);
+    setStatus("coachStatus","บันทึกไม่สำเร็จ กรุณาตรวจ Firestore Rules ของ collection coach_logs","error");
+  }
+}
+
+function resetCoach(){
+  if(!confirm("ต้องการล้างคำตอบและเริ่มวิเคราะห์ใหม่หรือไม่"))return;
+  ["answer1","answer2","answer3","answer4","answer5"].forEach(id=>document.getElementById(id).value="");
+  for(let i=1;i<=5;i++){
+    const el=document.getElementById("step"+i);
+    el.classList.remove("active","done");
+  }
+  document.getElementById("step1").classList.add("active");
+  document.getElementById("finishArea").classList.add("hidden");
+  completedSteps=0;
+  setStatus("coachStatus","","");
+  document.getElementById("step1").scrollIntoView({behavior:"smooth"});
+}
+
+function escapeHtml(value){
+  return String(value).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[ch]));
+}
+
+loadCoins();
+loadMissions();
+</script>
+</body>
+</html>
