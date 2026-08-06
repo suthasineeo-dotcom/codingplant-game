@@ -1,300 +1,1116 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🤝 แบ่งปัน | สวนแสนสุข</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Kanit', sans-serif; background-color: #fff1f2; background-image: radial-gradient(#fecdd3 3px, transparent 3px); background-size: 40px 40px; text-align: center; color: #333; margin: 0; padding: 0 0 50px 0; }
-        .nav-menu { background: #a855f7; padding: 15px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; position: relative; }
-        .nav-menu a.main-link { background: #d8b4fe; color: #4c1d95; text-decoration: none; font-weight: 800; font-size: 18px; padding: 10px 20px; border-radius: 20px; border: 3px solid #f3e8ff; box-shadow: 0 4px 0px #9333ea; transition: 0.2s; }
-        .nav-menu a.main-link:active { transform: translateY(4px); box-shadow: 0 0px 0px #9333ea; }
-        
-        .top-left-menu { position: absolute; top: 12px; left: 15px; z-index: 100; display: flex; gap: 10px; align-items: center; }
-        .btn-home-login { background: #ffffff; border: 3px solid #f3e8ff; width: 46px; height: 46px; font-size: 22px; border-radius: 50%; text-decoration: none; box-shadow: 0 4px 0px #9333ea; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
-        .btn-home-login:hover { background: #fdf4ff; }
-        .btn-home-login:active { transform: translateY(4px); box-shadow: 0 0px 0px #9333ea; }
-        
-        /* กล่องโปรไฟล์มุมซ้ายบน */
-        .profile-box { display: flex; align-items: center; gap: 10px; background: white; padding: 4px 12px; border-radius: 25px; border: 3px solid #f3e8ff; box-shadow: 0 4px 0px #9333ea; }
-        .profile-avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #a855f7; object-fit: cover; }
-        .profile-info { display: flex; flex-direction: column; align-items: flex-start; }
-        .user-name { font-size: 13px; font-weight: 800; color: #4c1d95; max-width: 110px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; }
-        .btn-logout { background: #fca5a5; color: #7f1d1d; border: none; padding: 1px 8px; font-size: 11px; font-weight: 800; border-radius: 8px; cursor: pointer; font-family: 'Kanit'; margin-top: 2px; transition: 0.1s; }
-        .page-title { font-size: 36px; font-weight: 800; color: #db2777; margin: 30px 0 10px 0; text-shadow: 2px 2px 0 white; }
-        .padlet-container { max-width: 900px; margin: 0 auto; padding: 20px; }
-        
-        .mission-board { background: rgba(255, 255, 255, 0.9); border: 5px solid #f472b6; border-radius: 25px; padding: 25px; margin-bottom: 40px; box-shadow: 0 10px 0px #fbcfe8; }
-        .board-header { font-size: 26px; font-weight: 800; color: #9d174d; margin: 0; border-bottom: 3px dashed #fbcfe8; padding-bottom: 15px; margin-bottom: 20px; text-align: left; }
-        .upload-form { display: flex; flex-direction: column; gap: 15px; background: #fff5f5; padding: 20px; border-radius: 20px; border: 3px dashed #fca5a5; align-items: center; margin-bottom: 25px; }
-        .input-name { padding: 12px 15px; font-size: 18px; border: 3px solid #fecaca; border-radius: 15px; outline: none; font-family: 'Kanit'; font-weight: 600; width: 100%; max-width: 400px; text-align: center; }
-        select.input-name { cursor: pointer; background-color: #fff; color: #333; }
-        .paste-zone { border: 3px dashed #38bdf8; border-radius: 15px; padding: 20px; width: 100%; max-width: 400px; background-color: #f0f9ff; color: #0284c7; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: center; align-items: center; outline: none; }
-        .preview-image { max-width: 100%; max-height: 200px; border-radius: 10px; margin-top: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .btn-post { background: #4ade80; color: #14532d; border: none; padding: 12px 30px; font-size: 20px; font-weight: 800; border-radius: 15px; cursor: pointer; box-shadow: 0 4px 0px #16a34a; font-family: 'Kanit'; width: 100%; max-width: 436px; transition: 0.2s; }
-        .btn-post:active { transform: translateY(4px); box-shadow: 0 0px 0px #16a34a; }
-        
-        .post-grid { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
-        .post-card { background: #fef3c7; border: 4px solid #fde047; border-radius: 15px; padding: 15px; width: 220px; box-shadow: 3px 5px 10px rgba(0,0,0,0.1); text-align: center; position: relative; }
-        .post-card.graded-stamp::before { content: "✅ ตรวจแล้ว"; position: absolute; top: -10px; right: -10px; background: #10b981; color: white; padding: 5px 12px; border-radius: 15px; font-weight: bold; font-size: 13px; box-shadow: 0 4px 0px #047857; transform: rotate(10deg); z-index: 10; }
-        .post-image { background: #fffbeb; width: 100%; height: 140px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 40px; border: 2px dashed #fcd34d; margin-bottom: 10px; overflow: hidden; }
-        .post-image img { width: 100%; height: 100%; object-fit: cover; }
-        .post-name { font-size: 18px; font-weight: 800; color: #78350f; background: white; padding: 5px; border-radius: 10px; margin-bottom: 10px; border: 2px solid #fde047; }
-        .reaction-bar { display: flex; justify-content: center; gap: 8px; }
-        .btn-react { background: white; border: 2px solid #fde047; border-radius: 10px; padding: 5px 10px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.1s; }
-        
-        .modal { display: none; position: fixed; z-index: 1000; padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); }
-        .modal-content { margin: auto; display: block; max-width: 90%; max-height: 80vh; border-radius: 15px; border: 5px solid #fff; }
-        .close-modal { position: absolute; top: 20px; right: 40px; color: #f1f1f1; font-size: 50px; font-weight: bold; cursor: pointer; }
-        @keyframes wiggle { 0%, 100% { transform: scale(1) rotate(0deg); } 20%, 60% { transform: scale(1.05) rotate(-4deg); } 40%, 80% { transform: scale(1.05) rotate(4deg); } }
-        .anim-wiggle { animation: wiggle 0.5s ease; }
-        @media (max-width: 768px) { .top-left-menu { position: static; margin-bottom: 10px; display: flex; justify-content: center; width: 100%; flex-wrap: wrap; } .nav-menu { flex-direction: column; align-items: center; } }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🤝 แลกเปลี่ยนเรียนรู้ | สวนแสนสุข</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --purple:#a855f7; --purple-dark:#4c1d95; --purple-soft:#f3e8ff;
+      --pink:#db2777; --green:#22c55e; --yellow:#fde047; --brown:#854d0e;
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0; padding:0 0 70px; font-family:'Kanit',sans-serif; color:#333; text-align:center;
+      background-color:#fff1f2; background-image:radial-gradient(#fecdd3 3px,transparent 3px); background-size:40px 40px;
+    }
+    button,input,textarea,select { font-family:'Kanit',sans-serif; }
+    button { cursor:pointer; }
+
+    /* เมนูหลัก */
+    .nav-menu { background:var(--purple); padding:15px; display:flex; justify-content:center; gap:15px; flex-wrap:wrap; position:relative; }
+    .nav-menu a.main-link { background:#d8b4fe; color:var(--purple-dark); text-decoration:none; font-weight:800; font-size:18px; padding:10px 20px; border-radius:20px; border:3px solid var(--purple-soft); box-shadow:0 4px 0 #9333ea; transition:.2s; }
+    .nav-menu a.main-link:active { transform:translateY(4px); box-shadow:none; }
+    .top-left-menu { position:absolute; top:12px; left:15px; z-index:100; }
+    .btn-home-login { background:#fff; border:3px solid var(--purple-soft); width:46px; height:46px; font-size:22px; border-radius:50%; text-decoration:none; box-shadow:0 4px 0 #9333ea; display:flex; justify-content:center; align-items:center; }
+    .hamburger-wrapper { position:absolute; right:18px; top:50%; transform:translateY(-50%); z-index:1000; }
+    .hamburger-button { width:44px; height:44px; display:flex; justify-content:center; align-items:center; background:#fff; color:var(--purple-dark); border:3px solid var(--purple-soft); border-radius:14px; font-size:23px; font-weight:800; box-shadow:0 4px 0 #9333ea; }
+    .hamburger-button.open,.hamburger-button:active { transform:translateY(4px); box-shadow:none; }
+    .utility-dropdown { display:none; position:absolute; top:56px; right:0; width:285px; padding:14px; background:#fff; border:3px solid #e9d5ff; border-radius:20px; box-shadow:0 12px 28px rgba(76,29,149,.24); text-align:left; }
+    .utility-dropdown.show { display:block; }
+    .dropdown-title { color:var(--purple-dark); font-size:18px; font-weight:800; text-align:center; margin-bottom:10px; }
+    .dropdown-coin { display:flex; justify-content:space-between; gap:10px; background:#fef9c3; color:var(--brown); border:2px solid var(--yellow); border-radius:14px; padding:10px 12px; margin-bottom:10px; font-weight:800; }
+    .dropdown-link { display:flex; align-items:center; gap:11px; padding:10px 12px; margin-top:8px; color:var(--purple-dark); text-decoration:none; background:#faf5ff; border:2px solid #e9d5ff; border-radius:14px; }
+    .dropdown-icon { width:34px; text-align:center; font-size:24px; }
+    .dropdown-link strong,.dropdown-link small { display:block; }
+    .dropdown-link small { color:#7c3aed; font-size:12px; font-weight:400; }
+    .logout-link { color:#991b1b; background:#fff1f2; }
+
+    .page-title { font-size:38px; font-weight:800; color:var(--pink); margin:30px 10px 5px; text-shadow:2px 2px #fff; }
+    .page-subtitle { color:#9d174d; font-weight:600; margin:0 15px 20px; }
+    .section-tabs { max-width:1100px; margin:0 auto 20px; padding:0 18px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+    .tab-btn { border:3px solid #e9d5ff; background:#fff; color:var(--purple-dark); border-radius:18px; padding:11px 20px; font-size:18px; font-weight:800; box-shadow:0 4px 0 #c084fc; }
+    .tab-btn.active { background:var(--yellow); color:var(--brown); border-color:#fff; box-shadow:0 4px 0 #ca8a04; }
+    .page-section { display:none; }
+    .page-section.active { display:block; }
+
+    /* กระดานโพสต์อิท */
+    .knowledge-wrap { max-width:1180px; margin:auto; padding:0 18px; }
+    .game-dashboard { display:grid; grid-template-columns:1.2fr .8fr; gap:18px; margin-bottom:20px; }
+    .mission-panel,.leader-panel { background:rgba(255,255,255,.94); border:4px solid #c084fc; border-radius:24px; padding:18px; box-shadow:0 8px 0 #e9d5ff; text-align:left; }
+    .mission-panel h3,.leader-panel h3 { margin:0 0 10px; color:var(--purple-dark); font-size:22px; }
+    .progress-track { height:18px; background:#ede9fe; border-radius:20px; overflow:hidden; border:2px solid #c4b5fd; }
+    .progress-fill { width:0; height:100%; background:linear-gradient(90deg,#4ade80,#fde047); transition:.4s; }
+    .helper-status { margin-top:8px; font-weight:700; color:#166534; }
+    .leader-list { margin:0; padding:0; list-style:none; }
+    .leader-list li { display:flex; justify-content:space-between; background:#faf5ff; border:2px solid #e9d5ff; border-radius:12px; padding:7px 10px; margin-top:7px; }
+
+    .board-tools { background:#fff; border:4px solid #f472b6; border-radius:24px; padding:18px; box-shadow:0 8px 0 #fbcfe8; margin-bottom:20px; }
+    .tool-row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+    .search-input,.filter-select { border:3px solid #f9a8d4; border-radius:15px; padding:11px 14px; font-size:16px; background:#fff; min-width:210px; }
+    .new-note-btn { border:none; border-radius:15px; padding:11px 20px; font-size:17px; font-weight:800; color:#14532d; background:#4ade80; box-shadow:0 4px 0 #16a34a; }
+    .ai-box { margin-top:14px; background:#f0f9ff; border:3px dashed #7dd3fc; border-radius:16px; padding:12px; color:#075985; text-align:left; }
+    .ai-box strong { color:#0369a1; }
+    .similar-list button { border:0; background:#fff; border-radius:10px; margin:4px; padding:5px 9px; color:#0369a1; font-weight:700; }
+
+    .cork-board { min-height:500px; padding:30px 24px; border:12px solid #92400e; border-radius:25px; background-color:#b77943; background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.04) 0 2px,transparent 2px 7px); box-shadow:inset 0 0 25px rgba(69,26,3,.55),0 12px 22px rgba(0,0,0,.2); }
+    .notes-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:26px; align-items:start; }
+    .sticky-note { position:relative; min-height:220px; padding:28px 17px 17px; text-align:left; color:#422006; box-shadow:5px 8px 12px rgba(0,0,0,.25); transform:rotate(var(--tilt)); transition:.2s; cursor:pointer; overflow:hidden; }
+    .sticky-note:hover { transform:rotate(0deg) translateY(-6px) scale(1.02); z-index:2; }
+    .sticky-note::before { content:'📌'; position:absolute; top:-8px; left:50%; transform:translateX(-50%); font-size:30px; filter:drop-shadow(0 2px 1px rgba(0,0,0,.25)); }
+    .sticky-yellow { background:#fef08a; } .sticky-pink { background:#fbcfe8; } .sticky-blue { background:#bae6fd; } .sticky-green { background:#bbf7d0; } .sticky-purple { background:#ddd6fe; }
+    .sticky-note.pinned { outline:5px solid #f97316; }
+    .sticky-note.solved { filter:saturate(.7); }
+    .sticky-note.solved::after { content:'✔ แก้แล้ว'; position:absolute; right:-29px; top:15px; transform:rotate(38deg); background:#16a34a; color:#fff; width:120px; text-align:center; padding:3px; font-size:12px; font-weight:800; }
+    .note-badges { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px; }
+    .badge { padding:3px 8px; border-radius:20px; background:rgba(255,255,255,.75); font-size:12px; font-weight:800; }
+    .badge-alert { background:#fee2e2; color:#991b1b; animation:pulse 1.5s infinite; }
+    .note-title { margin:0 0 7px; font-size:20px; line-height:1.3; }
+    .note-body { font-size:15px; white-space:pre-wrap; overflow-wrap:anywhere; }
+    .note-meta { border-top:2px dashed rgba(120,53,15,.25); margin-top:12px; padding-top:9px; font-size:12px; font-weight:700; display:flex; justify-content:space-between; gap:6px; }
+    @keyframes pulse { 50% { transform:scale(1.05); } }
+
+    /* ฟอร์มและหน้าต่างคำถาม */
+    .dialog-overlay { display:none; position:fixed; inset:0; z-index:3000; background:rgba(30,10,50,.72); padding:20px; overflow:auto; }
+    .dialog-overlay.show { display:block; }
+    .dialog-card { width:min(720px,100%); margin:25px auto; background:#fff; border:5px solid #c084fc; border-radius:25px; padding:22px; text-align:left; box-shadow:0 12px 0 #6b21a8; }
+    .dialog-card h2 { margin:0 0 12px; color:var(--purple-dark); }
+    .dialog-close { float:right; border:none; background:#fee2e2; color:#991b1b; border-radius:50%; width:38px; height:38px; font-size:22px; font-weight:800; }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .field { display:flex; flex-direction:column; gap:5px; margin-bottom:12px; }
+    .field.full { grid-column:1/-1; }
+    .field label { font-weight:800; color:#5b21b6; }
+    .field input,.field textarea,.field select { width:100%; border:3px solid #ddd6fe; border-radius:13px; padding:10px 12px; font-size:16px; }
+    .field textarea { min-height:100px; resize:vertical; }
+    .attachment-box { background:#f0f9ff; border:3px dashed #7dd3fc; border-radius:16px; padding:12px; }
+    .attachment-preview { display:none; margin-top:10px; border-radius:14px; overflow:hidden; background:#fff; border:2px solid #bae6fd; }
+    .attachment-preview.show { display:block; }
+    .attachment-preview img { display:block; width:100%; max-height:360px; object-fit:contain; background:#fff; }
+    .attachment-preview iframe { display:block; width:100%; height:360px; border:0; }
+    .attachment-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+    .question-attachment { margin-top:14px; border:3px solid #bae6fd; border-radius:16px; overflow:hidden; background:#fff; }
+    .question-attachment img { display:block; width:100%; max-height:480px; object-fit:contain; }
+    .question-attachment iframe { display:block; width:100%; height:430px; border:0; }
+    .attachment-label { padding:8px 12px; background:#e0f2fe; color:#075985; font-weight:800; }
+    .mini-attachment { margin:8px 0; padding:6px 9px; display:inline-block; border-radius:12px; background:rgba(255,255,255,.78); font-size:12px; font-weight:800; }
+    .primary-btn,.secondary-btn,.danger-btn,.teacher-btn { border:none; border-radius:13px; padding:9px 14px; font-weight:800; font-size:15px; margin:3px; }
+    .primary-btn { background:#4ade80; color:#14532d; box-shadow:0 3px 0 #16a34a; }
+    .secondary-btn { background:#e9d5ff; color:#4c1d95; }
+    .danger-btn { background:#fecaca; color:#991b1b; }
+    .teacher-btn { background:#fde047; color:#713f12; }
+    .question-detail { background:#fef9c3; border:3px solid #fde047; border-radius:18px; padding:15px; }
+    .answer-card { border:3px solid #e9d5ff; background:#faf5ff; border-radius:16px; padding:13px; margin-top:12px; }
+    .answer-card.best { border-color:#f59e0b; background:#fffbeb; box-shadow:0 0 0 4px #fef3c7; }
+    .answer-card.approved { border-color:#4ade80; }
+    .answer-top { display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
+    .answer-text { white-space:pre-wrap; margin:8px 0; }
+    .answer-status { font-size:12px; font-weight:800; border-radius:20px; padding:4px 8px; background:#e5e7eb; }
+    .approved .answer-status { background:#dcfce7; color:#166534; }
+    .best .answer-status { background:#fef3c7; color:#92400e; }
+    .helping-banner { background:#e0f2fe; color:#075985; border:2px solid #7dd3fc; padding:8px 10px; border-radius:12px; margin:10px 0; font-weight:700; }
+    .empty-state { background:rgba(255,255,255,.8); padding:25px; border-radius:18px; font-weight:800; color:#7c2d12; }
+    .toast { position:fixed; z-index:5000; right:20px; bottom:20px; max-width:340px; padding:15px 18px; border-radius:16px; background:#4c1d95; color:#fff; font-weight:800; box-shadow:0 8px 20px rgba(0,0,0,.25); transform:translateY(140px); opacity:0; transition:.3s; }
+    .toast.show { transform:translateY(0); opacity:1; }
+
+    /* ระบบส่งงานเดิม */
+    .padlet-container { max-width:950px; margin:0 auto; padding:20px; }
+    .mission-board { background:rgba(255,255,255,.92); border:5px solid #f472b6; border-radius:25px; padding:25px; margin-bottom:40px; box-shadow:0 10px 0 #fbcfe8; }
+    .board-header { font-size:26px; font-weight:800; color:#9d174d; margin:0 0 20px; border-bottom:3px dashed #fbcfe8; padding-bottom:15px; text-align:left; }
+    .upload-form { display:flex; flex-direction:column; gap:15px; background:#fff5f5; padding:20px; border-radius:20px; border:3px dashed #fca5a5; align-items:center; margin-bottom:25px; }
+    .input-name { padding:12px 15px; font-size:18px; border:3px solid #fecaca; border-radius:15px; outline:none; font-weight:600; width:100%; max-width:400px; text-align:center; }
+    .input-link { background:#f0f9ff; border-color:#38bdf8; color:#0284c7; }
+    .preview-iframe { width:100%; max-width:400px; height:330px; border:0; border-radius:15px; display:none; }
+    .btn-post { background:#4ade80; color:#14532d; border:0; padding:12px 30px; font-size:20px; font-weight:800; border-radius:15px; box-shadow:0 4px 0 #16a34a; width:100%; max-width:400px; }
+    .post-grid { display:flex; gap:20px; flex-wrap:wrap; justify-content:center; }
+    .post-card { background:#fef3c7; border:4px solid #fde047; border-radius:15px; padding:15px; width:340px; box-shadow:3px 5px 10px rgba(0,0,0,.1); position:relative; }
+    .post-card.graded-stamp::before { content:'✅ ตรวจแล้ว'; position:absolute; top:-10px; right:-10px; background:#10b981; color:#fff; padding:5px 12px; border-radius:15px; font-weight:bold; font-size:13px; box-shadow:0 4px 0 #047857; transform:rotate(10deg); z-index:10; }
+    .post-project { background:#fffbeb; width:100%; height:260px; border-radius:10px; margin-bottom:10px; overflow:hidden; }
+    .post-project iframe,.post-project img { width:100%; height:100%; border:0; object-fit:cover; }
+    .post-name { font-size:18px; font-weight:800; color:#78350f; background:#fff; padding:5px; border-radius:10px; margin-bottom:10px; border:2px solid #fde047; }
+    .reaction-bar { display:flex; justify-content:center; gap:8px; }
+    .btn-react { background:#fff; border:2px solid #fde047; border-radius:10px; padding:5px 10px; font-weight:800; }
+    @keyframes wiggle { 20%,60%{transform:scale(1.05) rotate(-4deg)} 40%,80%{transform:scale(1.05) rotate(4deg)} }
+    .anim-wiggle { animation:wiggle .5s ease; }
+
+    @media(max-width:900px){ .game-dashboard{grid-template-columns:1fr;} }
+    @media(max-width:768px){
+      .nav-menu{padding:75px 15px 15px; flex-direction:column; align-items:center;}
+      .top-left-menu{top:14px;left:15px}.hamburger-wrapper{top:16px;right:15px;transform:none}
+      .form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.page-title{font-size:30px}
+      .cork-board{padding:25px 15px}.notes-grid{grid-template-columns:1fr}.sticky-note{transform:none!important}
+    }
+  
+    /* ===== ระบบป้องกันการปั๊มเหรียญจากคำถาม ===== */
+    .anti-cheat-note{
+      margin:12px 0;padding:12px 14px;border:3px dashed #f59e0b;border-radius:15px;
+      background:#fffbeb;color:#92400e;font-weight:700;line-height:1.65
+    }
+    .helpful-btn{
+      margin-top:10px;width:100%;border:none;border-radius:13px;padding:11px 14px;
+      background:#22c55e;color:#14532d;font-size:16px;font-weight:800;
+      box-shadow:0 4px 0 #16a34a;cursor:pointer
+    }
+    .helpful-btn:active{transform:translateY(4px);box-shadow:none}
+    .helpful-btn:disabled{background:#cbd5e1;color:#64748b;box-shadow:none;cursor:not-allowed}
+    .selected-helpful{
+      margin-top:9px;padding:8px 10px;border-radius:12px;background:#dcfce7;
+      color:#166534;font-weight:800;text-align:center
+    }
+    .waiting-approved{
+      margin:10px 0;padding:12px;border-radius:13px;background:#eff6ff;
+      color:#1e3a8a;border:2px solid #93c5fd;font-weight:700;line-height:1.6
+    }
+
+
+    /* ===== Reflection เด้งหลังส่งงาน ===== */
+    .reflection-overlay{
+      display:none;position:fixed;inset:0;background:rgba(30,41,59,.68);
+      z-index:3000;align-items:center;justify-content:center;padding:18px
+    }
+    .reflection-overlay.show{display:flex}
+    .reflection-popup{
+      width:min(620px,100%);max-height:92vh;overflow:auto;background:white;
+      border:5px solid #38bdf8;border-radius:26px;box-shadow:0 14px 0 rgba(2,132,199,.35);
+      padding:22px;text-align:left
+    }
+    .reflection-popup h2{margin:0;color:#0369a1;text-align:center;font-size:27px}
+    .reflection-popup .subtext{
+      color:#475569;text-align:center;line-height:1.65;font-weight:600;margin:7px 0 16px
+    }
+    .reflection-member{
+      background:#f0f9ff;border:3px solid #7dd3fc;border-radius:16px;padding:12px 14px;
+      color:#075985;font-weight:800;text-align:center;margin-bottom:14px
+    }
+    .reflection-progress{
+      display:flex;justify-content:space-between;gap:10px;color:#0369a1;font-weight:800;
+      margin-bottom:8px
+    }
+    .reflection-progress-track{
+      height:14px;background:#e0f2fe;border-radius:999px;overflow:hidden;margin-bottom:15px
+    }
+    .reflection-progress-bar{
+      height:100%;background:linear-gradient(90deg,#38bdf8,#22c55e);width:0;transition:.3s
+    }
+    .reflection-popup .field{margin-bottom:12px}
+    .reflection-popup label{
+      display:block;color:#1e40af;font-weight:800;margin-bottom:5px
+    }
+    .reflection-popup select,.reflection-popup textarea{
+      width:100%;border:2px solid #bfdbfe;border-radius:12px;padding:10px 12px;
+      font-family:'Kanit',sans-serif;font-size:15px;outline:none
+    }
+    .reflection-popup textarea{min-height:78px;resize:vertical}
+    .reflection-actions{display:flex;gap:10px;margin-top:14px}
+    .reflection-save{
+      flex:1;border:none;border-radius:14px;padding:12px;background:#22c55e;color:#14532d;
+      font-size:17px;font-weight:800;box-shadow:0 4px 0 #16a34a;cursor:pointer
+    }
+    .reflection-save:active{transform:translateY(4px);box-shadow:none}
+    .reflection-save:disabled{background:#cbd5e1;color:#64748b;box-shadow:none;cursor:not-allowed}
+    .reflection-reminder{
+      margin-top:10px;padding:10px 12px;background:#fef9c3;border:2px dashed #facc15;
+      border-radius:12px;color:#854d0e;font-weight:700;line-height:1.55
+    }
+
+</style>
 </head>
 <body>
-    <div class="nav-menu">
-        <div class="top-left-menu">
-            <a href="login.html" class="btn-home-login" title="กลับหน้าเข้าสู่ระบบ">🏠</a>
-            <div id="profileBox" class="profile-box" style="display: none;">
-                <img id="userAvatar" src="" alt="โปรไฟล์" class="profile-avatar">
-                <div class="profile-info">
-                    <span id="userName" class="user-name">กำลังโหลด...</span>
-                    <button class="btn-logout" onclick="logout()">🚪 ออกจากระบบ</button>
-                </div>
-            </div>
+  <nav class="nav-menu">
+    <div class="top-left-menu"><a href="index.html" class="btn-home-login" title="กลับหน้าแรก">🏠</a></div>
+    <a href="mission.html" class="main-link">⚔️ สถานการณ์ปัญหา</a>
+    <a href="resource.html" class="main-link">📚 แหล่งเรียนรู้</a>
+    <a href="hints.html" class="main-link">💡 ฐานการช่วยเหลือ</a>
+    <a href="share.html" class="main-link" style="background:#fde047;color:#854d0e;border-color:#fff;box-shadow:0 4px 0 #ca8a04">🤝 แลกเปลี่ยนเรียนรู้</a>
+    <a href="coach.html" class="main-link">🧑‍🏫 โค้ช</a>
+    <div class="hamburger-wrapper">
+      <button id="hamburgerButton" class="hamburger-button" onclick="toggleUtilityMenu()">☰</button>
+      <div id="utilityDropdown" class="utility-dropdown">
+        <div class="dropdown-title">เมนูของฉัน</div>
+        <div class="dropdown-coin"><span>🪙 เหรียญเวทมนตร์</span><strong id="topCoinAmount">--</strong></div>
+        <a href="monster-hatchery.html" class="dropdown-link"><span class="dropdown-icon">🌱</span><span><strong>แปลงปลูกต้นไม้</strong><small>ดูคะแนนและการเติบโต</small></span></a>
+        <a href="profile.html" class="dropdown-link"><span class="dropdown-icon">👤</span><span><strong>โปรไฟล์</strong><small>เปลี่ยนชื่อและอวตาร</small></span></a>
+        <a href="login.html" class="dropdown-link logout-link"><span class="dropdown-icon">🚪</span><span><strong>ออกจากระบบ</strong><small>กลับหน้าเข้าสู่ระบบ</small></span></a>
+      </div>
+    </div>
+  </nav>
+
+  <h1 class="page-title">🌸 พื้นที่แลกเปลี่ยนเรียนรู้ 🌸</h1>
+  <p class="page-subtitle">ถามเมื่อสงสัย ช่วยกันตอบ และเติบโตไปด้วยกันทั้งห้อง</p>
+
+  <div class="section-tabs">
+    <button class="tab-btn active" data-target="knowledgeSection" onclick="switchSection(this)">📌 กระดานโพสต์อิท</button>
+    <button class="tab-btn" data-target="workSection" onclick="switchSection(this)">🚀 ส่งและชมผลงาน</button>
+  </div>
+
+  <section id="knowledgeSection" class="page-section active">
+    <div class="knowledge-wrap">
+      <div class="game-dashboard">
+        <div class="mission-panel">
+          <h3>⭐ เส้นทางนักช่วยเหลือ</h3>
+          <div class="progress-track"><div id="helperProgress" class="progress-fill"></div></div>
+          <div id="helperStatus" class="helper-status">ช่วยเพื่อนที่ครูอนุมัติครบ 5 ครั้ง รับ 💧 10 หยดน้ำ</div>
         </div>
-        
-        <a href="index.html" class="main-link">🏡 หน้าแรก</a>
-        <a href="mission.html" class="main-link">⚔️ ภารกิจ</a>
-        <a href="resource.html" class="main-link">📚 แหล่งเรียนรู้</a>
-        <a href="share.html" class="main-link" style="background:#fde047; color:#854d0e; border-color:white; box-shadow: 0 4px 0px #ca8a04;">🤝 แบ่งปัน</a>
-        <a href="monster-hatchery.html" class="main-link">🌱 แปลงปลูกต้นไม้</a>
-        <a href="profile.html" class="main-link" style="background:#60a5fa; color:#1e3a8a; border-color:#bfdbfe; box-shadow: 0 4px 0px #2563eb;">👤 โปรไฟล์</a> 
+        <div class="leader-panel">
+          <h3>🏆 นักช่วยเหลือประจำห้อง</h3>
+          <ol id="leaderList" class="leader-list"><li><span>กำลังโหลด...</span><b>⏳</b></li></ol>
+        </div>
+      </div>
+
+      <div class="board-tools">
+        <div class="tool-row">
+          <input id="searchInput" class="search-input" type="search" placeholder="🔎 ค้นหาคำถามหรือชื่อเพื่อน" oninput="renderKnowledgePosts()">
+          <select id="statusFilter" class="filter-select" onchange="renderKnowledgePosts()">
+            <option value="all">โพสต์ทั้งหมด</option><option value="open">ยังต้องการคำตอบ</option><option value="unanswered">ยังไม่มีคนตอบ</option><option value="solved">แก้ปัญหาแล้ว</option><option value="pinned">ครูปักหมุด</option>
+          </select>
+          <button class="new-note-btn" onclick="openNewPostDialog()">➕ ปักโพสต์อิทคำถาม</button>
+        </div>
+        <div id="aiSuggestion" class="ai-box"><strong>🤖 ผู้ช่วยคิดคำถาม:</strong> พิมพ์คำค้นหรือเปิดแบบฟอร์ม ระบบจะช่วยตรวจคำถามคล้ายกันและแนะนำให้เขียนคำถามชัดขึ้น</div>
+      </div>
+
+      <div class="cork-board">
+        <div id="notesGrid" class="notes-grid"><div class="empty-state">กำลังเปิดกระดานภูมิปัญญา... ⏳</div></div>
+      </div>
     </div>
+  </section>
 
-    <h1 class="page-title">🤝 บอร์ดส่งงานแสนรัก 🤝</h1>
-
-    <div class="padlet-container" id="dynamicMissionContainer">
-        <p style="color: #db2777; font-weight: bold; font-size: 20px;">กำลังโหลดภารกิจเวทมนตร์... ⏳</p>
+  <section id="workSection" class="page-section">
+    <div class="padlet-container">
+      <div id="dynamicMissionContainer"><p style="color:#db2777;font-weight:800;font-size:20px">กำลังโหลดภารกิจเวทมนตร์... ⏳</p></div>
     </div>
+  </section>
 
-    <div id="imageModal" class="modal">
-        <span class="close-modal" onclick="closeModal()">&times;</span>
-        <img class="modal-content" id="fullImage">
+  <!-- หน้าต่างสร้างคำถาม -->
+  <div id="newPostDialog" class="dialog-overlay">
+    <div class="dialog-card">
+      <button class="dialog-close" onclick="closeDialog('newPostDialog')">×</button>
+      <h2>📌 ปักโพสต์อิทคำถาม</h2>
+      <div class="form-grid">
+        <div class="field"><label>ชื่อผู้ถาม</label><input id="questionName" placeholder="ชื่อเล่นหรือชื่อกลุ่ม"></div>
+        <div class="field"><label>ห้องเรียน</label><select id="questionRoom"><option value="">เลือกห้อง</option><option value="ป.4/1">ป.4/1</option><option value="ป.4/2">ป.4/2</option><option value="ป.4/3">ป.4/3</option></select></div>
+        <div class="field full"><label>หัวข้อคำถาม ❓</label><input id="questionTitle" maxlength="100" placeholder="เช่น ทำไมตัวละครไม่เดินเมื่อกดธงเขียว" oninput="checkQuestionQuality()"></div>
+        <div class="field full"><label>รายละเอียดปัญหา</label><textarea id="questionBody" maxlength="600" placeholder="บอกว่าต้องการให้ Scratch ทำอะไร เกิดปัญหาอะไร และลองแก้แบบไหนแล้ว" oninput="checkQuestionQuality()"></textarea></div>
+        <div class="field full attachment-box">
+          <label>🐱 แนบโปรเจกต์หรือภาพปัญหา (เลือกอย่างใดอย่างหนึ่งหรือแนบทั้งสองอย่างก็ได้)</label>
+          <input id="questionScratchLink" type="url" placeholder="🔗 วางลิงก์โปรเจกต์ Scratch เช่น https://scratch.mit.edu/projects/123456789/" oninput="previewQuestionScratch()">
+          <input id="questionImage" type="file" accept="image/png,image/jpeg,image/webp" onchange="previewQuestionImage(event)">
+          <small>แนะนำให้แคปภาพบล็อกคำสั่งหรือหน้าจอที่เกิดปัญหา ภาพจะถูกย่อก่อนบันทึก</small>
+          <div id="scratchAttachmentPreview" class="attachment-preview"></div>
+          <div id="imageAttachmentPreview" class="attachment-preview"></div>
+          <div class="attachment-actions"><button type="button" class="danger-btn" onclick="clearQuestionAttachments()">🗑️ ล้างไฟล์แนบ</button></div>
+        </div>
+        <div class="field full"><label>สีโพสต์อิท</label><select id="questionColor"><option value="yellow">🟨 เหลือง</option><option value="pink">🩷 ชมพู</option><option value="blue">🟦 ฟ้า</option><option value="green">🟩 เขียว</option><option value="purple">🟪 ม่วง</option></select></div>
+      </div>
+      <div id="aiWritingHelp" class="ai-box"><strong>🤖 คำแนะนำ:</strong> คำถามที่ดีควรบอกว่า “ต้องการทำอะไร–เกิดอะไรขึ้น–ลองแก้อะไรแล้ว”</div>
+      <div class="anti-cheat-note">
+        🛡️ การรับเหรียญของผู้ถาม: การปักคำถามยังไม่ได้เหรียญทันที
+        ต้องรอให้มีคำตอบที่ครูอนุมัติ แล้วเจ้าของคำถามเลือก
+        “คำตอบนี้ช่วยแก้ปัญหาได้” จึงจะปิดคำถามและรับ 1 เหรียญ
+      </div>
+      <div style="text-align:center;margin-top:14px"><button id="submitQuestionBtn" class="primary-btn" onclick="submitQuestion()">📌 ปักคำถามบนกระดาน</button></div>
     </div>
+  </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, updateDoc, increment, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  <!-- หน้าต่างอ่านและตอบ -->
+  <div id="postDetailDialog" class="dialog-overlay">
+    <div class="dialog-card">
+      <button class="dialog-close" onclick="closeDialog('postDetailDialog')">×</button>
+      <div id="postDetailContent"></div>
+    </div>
+  </div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDfBIp5gujB9cE2twLz483hllYOubgYuks",
-            authDomain: "codingplant-f19fc.firebaseapp.com",
-            projectId: "codingplant-f19fc",
-            storageBucket: "codingplant-f19fc.firebasestorage.app",
-            messagingSenderId: "194545106875",
-            appId: "1:194545106875:web:d4b7ca3dd6b57f46cc8e9e"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
 
-        let pastedImages = {}; 
-        const themeColors = [
-            { border: '#f472b6', bg: '#fff5f5', shadow: '#fbcfe8', title: '#9d174d', dash: '#fca5a5' },
-            { border: '#a78bfa', bg: '#f5f3ff', shadow: '#ede9fe', title: '#5b21b6', dash: '#c4b5fd' },
-            { border: '#38bdf8', bg: '#f0f9ff', shadow: '#bae6fd', title: '#0369a1', dash: '#7dd3fc' },
-            { border: '#4ade80', bg: '#f0fdf4', shadow: '#bbf7d0', title: '#14532d', dash: '#86efac' }
-        ];
+  <div id="reflectionOverlay" class="reflection-overlay">
+    <div class="reflection-popup">
+      <h2>🪞 Reflection หลังส่งงาน</h2>
+      <div class="subtext">
+        ผลงานถูกส่งสำเร็จแล้ว ตอนนี้สมาชิกแต่ละคนสะท้อนสิ่งที่ได้เรียนรู้สั้น ๆ
+        ข้อมูลนี้จะไปแสดงในหน้าโปรไฟล์ของตนเอง
+      </div>
 
-        onAuthStateChanged(auth, (user) => {
-            const profileBox = document.getElementById('profileBox');
-            if (user) {
-                profileBox.style.display = 'flex';
-                document.getElementById('userAvatar').src = user.photoURL || 'https://via.placeholder.com/150';
-                document.getElementById('userName').innerText = user.displayName;
-                document.querySelectorAll('.input-name-text').forEach(input => {
-                    if (!input.value) input.value = user.displayName;
-                });
-            } else { profileBox.style.display = 'none'; }
+      <div class="reflection-progress">
+        <span id="reflectionStepText">สมาชิก 1/1</span>
+        <span id="reflectionMissionText">ภารกิจ</span>
+      </div>
+      <div class="reflection-progress-track">
+        <div id="reflectionProgressBar" class="reflection-progress-bar"></div>
+      </div>
+
+      <div id="reflectionMemberName" class="reflection-member">
+        👤 ผู้เรียน
+      </div>
+
+      <div class="field">
+        <label for="submitReflectionDifficulty">📊 ภารกิจนี้ยากระดับไหน</label>
+        <select id="submitReflectionDifficulty">
+          <option value="ง่าย">ง่าย</option>
+          <option value="พอดี" selected>พอดี</option>
+          <option value="ยาก">ยาก</option>
+          <option value="ยากมาก">ยากมาก</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="submitReflectionHelp">🤝 อะไรช่วยให้ทำงานสำเร็จ</label>
+        <select id="submitReflectionHelp">
+          <option value="ทำด้วยตนเอง">ทำด้วยตนเอง</option>
+          <option value="ใช้โค้ช">ใช้โค้ช</option>
+          <option value="ใช้คำใบ้">ใช้คำใบ้</option>
+          <option value="เพื่อนช่วย">เพื่อนช่วย</option>
+          <option value="ครูช่วย">ครูช่วย</option>
+          <option value="หลายวิธีร่วมกัน">หลายวิธีร่วมกัน</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="submitReflectionLearned">💡 ฉันเข้าใจหรือค้นพบอะไรจากภารกิจนี้</label>
+        <textarea id="submitReflectionLearned" maxlength="600"
+          placeholder="เช่น เข้าใจว่าต้องกำหนดทิศทางก่อนสั่งให้ตัวละครเดิน"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="submitReflectionNext">🚀 ครั้งหน้าฉันจะปรับปรุงอย่างไร</label>
+        <textarea id="submitReflectionNext" maxlength="600"
+          placeholder="เช่น จะทดลองเปลี่ยนทีละบล็อกและสังเกตผลก่อนแก้จุดอื่น"></textarea>
+      </div>
+
+      <div class="reflection-reminder">
+        สมาชิกแต่ละคนต้องบันทึก Reflection ของตนเอง ระบบจึงจะปิดหน้าต่างนี้
+      </div>
+
+      <div class="reflection-actions">
+        <button id="submitReflectionSaveBtn" class="reflection-save"
+          onclick="saveSubmissionReflection()">
+          📝 บันทึกและไปสมาชิกคนถัดไป
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getFirestore, collection, addDoc, doc, updateDoc, increment, onSnapshot, query, orderBy,
+      serverTimestamp, runTransaction, getDoc, setDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey:"AIzaSyDfBIp5gujB9cE2twLz483hllYOubgYuks",
+      authDomain:"codingplant-f19fc.firebaseapp.com",
+      projectId:"codingplant-f19fc",
+      storageBucket:"codingplant-f19fc.firebasestorage.app",
+      messagingSenderId:"194545106875",
+      appId:"1:194545106875:web:d4b7ca3dd6b57f46cc8e9e"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    let knowledgePosts = [];
+    let answersByPost = {};
+    let selectedPostId = null;
+    let currentUser = null;
+    let walletUnsubscribe = null;
+    let pendingQuestionImage = '';
+    let pendingQuestionImageName = '';
+    let pendingQuestionScratchId = '';
+    let selectedWorkRoom = '';
+    let sharedWorksSnapshot = [];
+    const helpingClaimedLocally = new Set();
+
+    let reflectionMembers = [];
+    let reflectionMemberIndex = 0;
+    let reflectionMissionId = "";
+    let reflectionMissionTitle = "";
+    let reflectionWorkId = "";
+    
+
+    const currentGroupId = () => localStorage.getItem('currentGroupId') || '';
+    const currentRoom = () => localStorage.getItem('currentRoom') || '';
+    const currentNames = () => JSON.parse(localStorage.getItem('currentGroupNames') || '[]');
+    const displayName = () => currentNames().join(', ') || currentUser?.displayName || localStorage.getItem('currentUserName') || '';
+    const roleText = () => (localStorage.getItem('currentRole') || localStorage.getItem('role') || '').toLowerCase();
+    const isTeacher = () => ['teacher','admin','ครู','ผู้ดูแล'].includes(roleText()) || localStorage.getItem('isAdmin') === 'true';
+    const escapeHtml = (value='') => String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    const millis = ts => ts?.toMillis ? ts.toMillis() : 0;
+    const extractScratchId = url => { const match=String(url||'').match(/projects\/(\d+)/); return match?match[1]:''; };
+    async function compressImage(file,maxSize=1000,quality=.78){
+      if(!file) return '';
+      if(file.size>8*1024*1024) throw new Error('ภาพต้องมีขนาดไม่เกิน 8 MB');
+      const dataUrl=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file);});
+      const img=await new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=dataUrl;});
+      const scale=Math.min(1,maxSize/Math.max(img.width,img.height));
+      const canvas=document.createElement('canvas'); canvas.width=Math.round(img.width*scale); canvas.height=Math.round(img.height*scale);
+      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+      const compressed=canvas.toDataURL('image/jpeg',quality);
+      if(compressed.length>850000) throw new Error('ภาพยังมีขนาดใหญ่เกินไป กรุณาครอปภาพเฉพาะส่วนบล็อกคำสั่งแล้วลองใหม่');
+      return compressed;
+    }
+    window.previewQuestionScratch=function(){
+      const link=document.getElementById('questionScratchLink').value.trim(); pendingQuestionScratchId=extractScratchId(link);
+      const box=document.getElementById('scratchAttachmentPreview');
+      if(!pendingQuestionScratchId){box.classList.remove('show');box.innerHTML='';return;}
+      box.innerHTML=`<div class="attachment-label">🔗 ตัวอย่างโปรเจกต์ Scratch</div><iframe src="https://scratch.mit.edu/projects/${pendingQuestionScratchId}/embed" allowtransparency="true" scrolling="no" allowfullscreen></iframe>`;box.classList.add('show');
+    };
+    window.previewQuestionImage=async function(event){
+      const file=event.target.files?.[0]; const box=document.getElementById('imageAttachmentPreview');
+      if(!file){pendingQuestionImage='';pendingQuestionImageName='';box.classList.remove('show');box.innerHTML='';return;}
+      try{pendingQuestionImage=await compressImage(file);pendingQuestionImageName=file.name;box.innerHTML=`<div class="attachment-label">📷 ภาพประกอบปัญหา</div><img src="${pendingQuestionImage}" alt="ภาพปัญหา Scratch">`;box.classList.add('show');}
+      catch(e){alert(e.message||'อ่านภาพไม่สำเร็จ');event.target.value='';}
+    };
+    window.clearQuestionAttachments=function(){
+      pendingQuestionImage='';pendingQuestionImageName='';pendingQuestionScratchId='';
+      const link=document.getElementById('questionScratchLink'),file=document.getElementById('questionImage');if(link)link.value='';if(file)file.value='';
+      ['scratchAttachmentPreview','imageAttachmentPreview'].forEach(id=>{const b=document.getElementById(id);if(b){b.innerHTML='';b.classList.remove('show');}});
+    };
+    function renderQuestionAttachments(p){
+      let html='';
+      if(p.scratchId) html+=`<div class="question-attachment"><div class="attachment-label">🐱 โปรเจกต์ Scratch ที่แนบมา</div><iframe src="https://scratch.mit.edu/projects/${escapeHtml(p.scratchId)}/embed" allowtransparency="true" scrolling="no" allowfullscreen></iframe></div>`;
+      if(p.imageData) html+=`<div class="question-attachment"><div class="attachment-label">📷 ภาพหน้าจอปัญหา</div><img src="${p.imageData}" alt="ภาพประกอบคำถามของ ${escapeHtml(p.authorName||'ผู้ถาม')}"></div>`;
+      return html;
+    }
+
+    window.toggleUtilityMenu = () => {
+      document.getElementById('utilityDropdown').classList.toggle('show');
+      document.getElementById('hamburgerButton').classList.toggle('open');
+    };
+    document.addEventListener('click', e => {
+      const wrapper=document.querySelector('.hamburger-wrapper');
+      if(wrapper && !wrapper.contains(e.target)){document.getElementById('utilityDropdown').classList.remove('show');document.getElementById('hamburgerButton').classList.remove('open');}
+    });
+    window.switchSection = btn => {
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));
+      btn.classList.add('active'); document.getElementById(btn.dataset.target).classList.add('active');
+    };
+    window.closeDialog = id => document.getElementById(id).classList.remove('show');
+    window.showToast = msg => { const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3200); };
+
+    function loadTopMenuCoins(){
+      const el=document.getElementById('topCoinAmount'); const gid=currentGroupId();
+      if(walletUnsubscribe){walletUnsubscribe();walletUnsubscribe=null;}
+      if(!gid){el.textContent='0';return;}
+      walletUnsubscribe=onSnapshot(doc(db,'group_wallets',gid),snap=>{el.textContent=snap.exists()?(Number(snap.data().magicCoins)||0):'0';updateHelperProgress(snap.exists()?snap.data():{});},()=>el.textContent='--');
+    }
+    function updateHelperProgress(wallet={}){
+      const count=Number(wallet.helperApprovedCount)||0; const cycle=count%5; const rewardedCycles=Number(wallet.helperRewardCycles)||0;
+      document.getElementById('helperProgress').style.width=`${(cycle/5)*100}%`;
+      document.getElementById('helperStatus').textContent=`คำตอบผ่านครู ${count} ครั้ง • รอบนี้ ${cycle}/5 • รับรางวัลน้ำแล้ว ${rewardedCycles} รอบ`;
+    }
+
+    onAuthStateChanged(auth,user=>{
+      currentUser=user;
+      const nameEl=document.getElementById('questionName'); if(nameEl && !nameEl.value) nameEl.value=displayName();
+      const roomEl=document.getElementById('questionRoom'); if(roomEl && currentRoom()) roomEl.value=currentRoom();
+      loadTopMenuCoins();
+    });
+    loadTopMenuCoins();
+
+    /* ======================== กระดานภูมิปัญญา ======================== */
+    const postQuery=query(collection(db,'knowledge_posts'),orderBy('createdAt','desc'));
+    onSnapshot(postQuery,snapshot=>{
+      knowledgePosts=snapshot.docs.map(d=>({id:d.id,...d.data()}));
+      renderKnowledgePosts(); renderLeaderboard();
+      if(selectedPostId) renderPostDetail(selectedPostId);
+    },err=>{console.error(err);document.getElementById('notesGrid').innerHTML='<div class="empty-state">โหลดกระดานไม่สำเร็จ กรุณาตรวจ Firestore Rules</div>';});
+
+    const answerQuery=query(collection(db,'knowledge_answers'),orderBy('createdAt','asc'));
+    onSnapshot(answerQuery,snapshot=>{
+      answersByPost={};
+      snapshot.forEach(d=>{const a={id:d.id,...d.data()};(answersByPost[a.postId]??=[]).push(a);});
+      renderKnowledgePosts(); renderLeaderboard(); if(selectedPostId) renderPostDetail(selectedPostId);
+    });
+
+    window.renderKnowledgePosts = function(){
+      const term=(document.getElementById('searchInput')?.value||'').trim().toLowerCase();
+      const filter=document.getElementById('statusFilter')?.value||'all';
+      const now=Date.now();
+      let items=knowledgePosts.filter(p=>{
+        const answers=answersByPost[p.id]||[];
+        const searchable=`${p.title||''} ${p.body||''} ${p.authorName||''} ${p.room||''}`.toLowerCase();
+        if(term && !searchable.includes(term)) return false;
+        if(filter==='open' && p.status==='solved') return false;
+        if(filter==='unanswered' && answers.length>0) return false;
+        if(filter==='solved' && p.status!=='solved') return false;
+        if(filter==='pinned' && !p.isPinned) return false;
+        return true;
+      });
+      items.sort((a,b)=>(Number(b.isPinned)-Number(a.isPinned)) || (millis(b.createdAt)-millis(a.createdAt)));
+      const grid=document.getElementById('notesGrid');
+      if(!items.length){grid.innerHTML='<div class="empty-state">ยังไม่พบโพสต์ที่ตรงกับการค้นหา 🌱</div>'; updateSearchAI(term); return;}
+      grid.innerHTML=items.map((p,index)=>{
+        const answers=answersByPost[p.id]||[];
+        const unanswered=answers.length===0 && p.status!=='solved' && now-millis(p.createdAt)>30*60*1000;
+        const tilt=[-2,1.5,-1,2,-1.5][index%5];
+        return `<article class="sticky-note sticky-${escapeHtml(p.color||'yellow')} ${p.status==='solved'?'solved':''} ${p.isPinned?'pinned':''}" style="--tilt:${tilt}deg" onclick="openPostDetail('${p.id}')">
+          <div class="note-badges">
+            ${p.isPinned?'<span class="badge">📌 ครูปักหมุด</span>':''}
+            <span class="badge">🐱 ${escapeHtml(p.room||'ไม่ระบุห้อง')}</span>
+            ${(p.scratchId||p.imageData)?`<span class="badge">${p.scratchId?'🔗 Scratch ':''}${p.imageData?'📷 ภาพ':''}</span>`:''}
+            ${p.helpingName?`<span class="badge">🙋 ${escapeHtml(p.helpingName)} กำลังช่วย</span>`:''}
+            ${unanswered?'<span class="badge badge-alert">🔔 ยังไม่มีคนตอบ</span>':''}
+          </div>
+          <h3 class="note-title">❓ ${escapeHtml(p.title||'คำถาม')}</h3>
+          <div class="note-body">${escapeHtml((p.body||'').slice(0,180))}${(p.body||'').length>180?'…':''}</div>
+          <div class="note-meta"><span>👤 ${escapeHtml(p.authorName||'ไม่ระบุชื่อ')}</span><span>💬 ${answers.length}</span></div>
+        </article>`;
+      }).join('');
+      updateSearchAI(term);
+    };
+
+    function updateSearchAI(term){
+      const box=document.getElementById('aiSuggestion');
+      if(!term){box.innerHTML='<strong>🤖 ผู้ช่วยคิดคำถาม:</strong> พิมพ์คำค้นหรือเปิดแบบฟอร์ม ระบบจะช่วยตรวจคำถามคล้ายกันและแนะนำให้เขียนคำถามชัดขึ้น';return;}
+      const matches=knowledgePosts.filter(p=>(`${p.title} ${p.body}`).toLowerCase().includes(term)).slice(0,3);
+      box.innerHTML=matches.length?`<strong>🤖 พบคำถามใกล้เคียง:</strong><div class="similar-list">${matches.map(p=>`<button onclick="openPostDetail('${p.id}')">${escapeHtml(p.title)}</button>`).join('')}</div>`:`<strong>🤖 ยังไม่พบคำถามเดิม:</strong> สามารถปักโพสต์ใหม่ได้ และควรบอกสิ่งที่ลองทำแล้วด้วย`;
+    }
+
+    window.openNewPostDialog=function(){
+      if(!currentGroupId()){alert('กรุณาเข้าสู่ระบบกลุ่มก่อนปักคำถาม');location.href='login.html';return;}
+      document.getElementById('questionName').value=displayName();
+      if(currentRoom()) document.getElementById('questionRoom').value=currentRoom();
+      document.getElementById('newPostDialog').classList.add('show'); checkQuestionQuality();
+    };
+    window.checkQuestionQuality=function(){
+      const title=document.getElementById('questionTitle').value.trim(); const body=document.getElementById('questionBody').value.trim();
+      const tips=[];
+      if(title.length<10) tips.push('ตั้งหัวข้อให้เห็นปัญหาชัดเจนอย่างน้อย 10 ตัวอักษร');
+      if(body.length<25) tips.push('เพิ่มรายละเอียดว่าเกิดอะไรขึ้นและลองทำอะไรแล้ว');
+      if(!/[?？ไหมอย่างไรทำไม]/.test(title+body)) tips.push('ลองเขียนให้เป็นคำถาม เช่น “ทำไม...” หรือ “แก้อย่างไร”');
+      const words=(title+' '+body).toLowerCase().split(/\s+/).filter(w=>w.length>2);
+      const similar=knowledgePosts.map(p=>({p,score:words.filter(w=>(`${p.title} ${p.body}`).toLowerCase().includes(w)).length})).filter(x=>x.score>=2).sort((a,b)=>b.score-a.score).slice(0,3);
+      document.getElementById('aiWritingHelp').innerHTML=`<strong>🤖 ผู้ช่วยตรวจคำถาม:</strong> ${tips.length?tips.join(' • '):'คำถามชัดเจนดีแล้ว พร้อมปักได้เลย ✅'}${similar.length?`<div class="similar-list">คำถามคล้ายกัน: ${similar.map(x=>`<button type="button" onclick="closeDialog('newPostDialog');openPostDetail('${x.p.id}')">${escapeHtml(x.p.title)}</button>`).join('')}</div>`:''}`;
+    };
+
+    window.submitQuestion=async function(){
+      const gid=currentGroupId(); if(!gid)return;
+      const title=document.getElementById('questionTitle').value.trim();
+      const body=document.getElementById('questionBody').value.trim();
+      const name=document.getElementById('questionName').value.trim();
+      const room=document.getElementById('questionRoom').value;
+
+      if(!name||!room||title.length<10||body.length<20){
+        alert('กรุณากรอกชื่อ ห้อง หัวข้ออย่างน้อย 10 ตัวอักษร และรายละเอียดอย่างน้อย 20 ตัวอักษร');
+        return;
+      }
+
+      /*
+        ป้องกันการสร้างคำถามจำนวนมาก:
+        1. กลุ่มหนึ่งมีคำถามที่ยังเปิดอยู่ได้ไม่เกิน 3 ข้อ
+        2. เว้นอย่างน้อย 2 นาทีระหว่างการปักคำถาม
+      */
+      const ownOpenPosts=knowledgePosts.filter(
+        p=>p.authorGroupId===gid && p.status!=='solved'
+      );
+      if(ownOpenPosts.length>=3){
+        alert('กลุ่มของหนูมีคำถามที่ยังรอคำตอบอยู่ 3 ข้อแล้ว\nกรุณารอคำตอบหรือปิดคำถามเดิมก่อนปักคำถามใหม่');
+        return;
+      }
+
+      const lastAskedAt=Number(localStorage.getItem('lastQuestionSubmittedAt')||0);
+      const waitMs=2*60*1000;
+      const remain=waitMs-(Date.now()-lastAskedAt);
+      if(remain>0){
+        alert('กรุณารออีกประมาณ '+Math.ceil(remain/1000)+' วินาที ก่อนปักคำถามใหม่');
+        return;
+      }
+
+      const btn=document.getElementById('submitQuestionBtn');
+      btn.disabled=true;btn.textContent='⏳ กำลังปัก...';
+      try{
+        await addDoc(collection(db,'knowledge_posts'),{
+          title,body,authorName:name,authorGroupId:gid,room,
+          color:document.getElementById('questionColor').value,
+          scratchId:pendingQuestionScratchId,
+          imageData:pendingQuestionImage,
+          imageName:pendingQuestionImageName,
+          status:'open',
+          isPinned:false,
+          helpingGroupId:'',
+          helpingName:'',
+          questionRewarded:false,
+          helpfulAnswerId:'',
+          helpfulAnswerSelected:false,
+          createdAt:serverTimestamp(),
+          updatedAt:serverTimestamp()
+        });
+        localStorage.setItem('lastQuestionSubmittedAt',String(Date.now()));
+        document.getElementById('questionTitle').value='';
+        document.getElementById('questionBody').value='';
+        clearQuestionAttachments();
+        closeDialog('newPostDialog');
+        showToast('📌 ปักคำถามแล้ว รอคำตอบที่ช่วยแก้ปัญหาก่อนจึงรับเหรียญได้');
+      }catch(e){
+        console.error(e);
+        alert('ปักคำถามไม่สำเร็จ กรุณาตรวจการเชื่อมต่อ Firebase');
+      }
+      btn.disabled=false;btn.textContent='📌 ปักคำถามบนกระดาน';
+    };
+
+    window.openPostDetail=function(postId){selectedPostId=postId;document.getElementById('postDetailDialog').classList.add('show');renderPostDetail(postId);};
+    function renderPostDetail(postId){
+      const p=knowledgePosts.find(x=>x.id===postId); if(!p)return;
+      const answers=answersByPost[postId]||[]; const owner=p.authorGroupId===currentGroupId(); const teacher=isTeacher();
+      const approvedAnswers=answers.filter(a=>a.isApproved);
+      const answerHtml=answers.length?answers.map(a=>`<div class="answer-card ${a.isBest?'best':a.isApproved?'approved':''}">
+        <div class="answer-top"><strong>👤 ${escapeHtml(a.authorName||'ผู้ช่วย')}</strong><span class="answer-status">${a.isBest?'🏆 คำตอบดีที่สุด':a.isApproved?'✅ ครูอนุมัติแล้ว':'⏳ รอครูตรวจ'}</span></div>
+        <div class="answer-text">${escapeHtml(a.text||'')}</div>
+        <small>${escapeHtml(a.room||'')}</small>
+        ${owner&&p.status!=='solved'&&a.isApproved
+          ?`<button class="helpful-btn" onclick="selectHelpfulAnswer('${postId}','${a.id}')">✅ คำตอบนี้ช่วยแก้ปัญหาได้</button>`
+          :''}
+        ${p.helpfulAnswerId===a.id
+          ?'<div class="selected-helpful">🌟 เจ้าของคำถามเลือกคำตอบนี้ว่าเป็นคำตอบที่ช่วยได้</div>'
+          :''}
+        ${teacher?`<div style="margin-top:8px">${!a.isApproved?`<button class="teacher-btn" onclick="approveAnswer('${a.id}')">✅ อนุมัติ +5 เหรียญ</button>`:''}<button class="teacher-btn" onclick="markBestAnswer('${a.id}','${postId}')">🏆 เลือกดีที่สุด รวม 10 เหรียญ</button></div>`:''}
+      </div>`).join(''):'<div class="empty-state" style="margin-top:12px">ยังไม่มีคำตอบ ลองเป็นคนแรกที่ช่วยเพื่อนนะ 🙋</div>';
+      document.getElementById('postDetailContent').innerHTML=`
+        <div class="question-detail"><div class="note-badges">${p.isPinned?'<span class="badge">📌 ครูปักหมุด</span>':''}<span class="badge">${p.status==='solved'?'✔️ แก้แล้ว':'❓ รอความช่วยเหลือ'}</span></div><h2>${escapeHtml(p.title)}</h2><p style="white-space:pre-wrap">${escapeHtml(p.body)}</p>${renderQuestionAttachments(p)}<small>👤 ${escapeHtml(p.authorName)} • ${escapeHtml(p.room)}</small></div>
+        ${p.helpingName?`<div class="helping-banner">🙋 ${escapeHtml(p.helpingName)} กำลังช่วยตอบคำถามนี้</div>`:''}
+        <div style="margin:10px 0">
+          ${owner&&p.status!=='solved'
+            ?(approvedAnswers.length
+              ?'<div class="waiting-approved">✅ มีคำตอบที่ครูอนุมัติแล้ว กรุณาเลือกปุ่ม “คำตอบนี้ช่วยแก้ปัญหาได้” ใต้คำตอบที่ช่วยจริง เพื่อปิดคำถามและรับ 1 เหรียญ</div>'
+              :'<div class="waiting-approved">⏳ ยังรับเหรียญไม่ได้ ต้องรอให้มีคำตอบและผ่านการอนุมัติจากครูก่อน</div>')
+            :''}
+          ${teacher?`<button class="teacher-btn" onclick="togglePin('${postId}',${!p.isPinned})">${p.isPinned?'📌 เลิกปักหมุด':'📌 ปักหมุด'}</button>`:''}
+        </div>
+        ${p.status!=='solved'&&!owner?`<div class="field"><label>💬 เขียนคำตอบหรือวิธีช่วยเพื่อน</label><textarea id="answerText" maxlength="700" placeholder="อธิบายขั้นตอน เหตุผล หรือตัวอย่างให้เพื่อนเข้าใจ" onfocus="autoClaimHelping('${postId}')" oninput="autoClaimHelping('${postId}')"></textarea></div><button class="primary-btn" onclick="submitAnswer('${postId}')">ส่งคำตอบให้ครูตรวจ</button>`:owner&&p.status!=='solved'?'<div class="ai-box"><strong>🔒 โพสต์ของคุณ:</strong> เจ้าของคำถามตอบโพสต์ของตนเองไม่ได้ และยังปิดคำถามเองทันทีไม่ได้ ต้องเลือกคำตอบที่ครูอนุมัติและช่วยแก้ปัญหาได้จริง</div>':''}
+        <h3 style="color:#4c1d95;margin-top:18px">คำตอบจากเพื่อน (${answers.length})</h3>${answerHtml}`;
+    }
+
+    window.autoClaimHelping=async function(postId){
+      const gid=currentGroupId(); if(!gid||helpingClaimedLocally.has(postId))return;
+      const p=knowledgePosts.find(x=>x.id===postId); if(!p||p.status==='solved'||p.authorGroupId===gid)return;
+      helpingClaimedLocally.add(postId);
+      try{
+        await updateDoc(doc(db,'knowledge_posts',postId),{helpingGroupId:gid,helpingName:displayName(),updatedAt:serverTimestamp()});
+      }catch(e){helpingClaimedLocally.delete(postId);console.error(e);}
+    };
+    window.claimHelping=window.autoClaimHelping;
+    window.submitAnswer=async postId=>{
+      const gid=currentGroupId(); if(!gid){alert('กรุณาเข้าสู่ระบบกลุ่มก่อนตอบ');return;}
+      const p=knowledgePosts.find(x=>x.id===postId); if(!p||p.status==='solved'){alert('คำถามนี้ปิดแล้ว');return;}
+      if(p.authorGroupId===gid){alert('เจ้าของโพสต์ไม่สามารถตอบคำถามของตนเองได้');return;}
+      const text=document.getElementById('answerText')?.value.trim(); if(!text||text.length<10){alert('กรุณาอธิบายคำตอบอย่างน้อย 10 ตัวอักษร');return;}
+      await autoClaimHelping(postId);
+      await addDoc(collection(db,'knowledge_answers'),{postId,text,authorName:displayName(),authorGroupId:gid,room:currentRoom(),isApproved:false,isBest:false,coinRewarded:false,bestBonusRewarded:false,createdAt:serverTimestamp()});
+      await updateDoc(doc(db,'knowledge_posts',postId),{helpingGroupId:'',helpingName:'',updatedAt:serverTimestamp()}); showToast('💬 ส่งคำตอบแล้ว รอครูอนุมัติเพื่อรับเหรียญ');
+    };
+
+    async function addWalletReward(groupId,coins=0,water=0,extra={}){
+      if(!groupId)return;
+      const ref=doc(db,'group_wallets',groupId);
+      await setDoc(ref,{magicCoins:increment(coins),water:increment(water),...extra},{merge:true});
+    }
+
+    window.approveAnswer=async answerId=>{
+      if(!isTeacher()){alert('เฉพาะบัญชีครูหรือผู้ดูแลเท่านั้น');return;}
+      const a=Object.values(answersByPost).flat().find(x=>x.id===answerId); if(!a)return;
+      const aRef=doc(db,'knowledge_answers',answerId); const walletRef=doc(db,'group_wallets',a.authorGroupId);
+      await runTransaction(db,async tx=>{
+        const aSnap=await tx.get(aRef); if(!aSnap.exists())return; const data=aSnap.data(); if(data.coinRewarded)return;
+        const wSnap=await tx.get(walletRef); const w=wSnap.exists()?wSnap.data():{}; const newCount=(Number(w.helperApprovedCount)||0)+1; const oldCycles=Number(w.helperRewardCycles)||0; const newCycles=Math.floor(newCount/5); const waterBonus=newCycles>oldCycles?10:0;
+        tx.set(walletRef,{magicCoins:(Number(w.magicCoins)||0)+5,water:(Number(w.water)||0)+waterBonus,helperApprovedCount:newCount,helperRewardCycles:newCycles},{merge:true});
+        tx.update(aRef,{isApproved:true,coinRewarded:true,approvedAt:serverTimestamp()});
+      });
+      showToast('✅ อนุมัติคำตอบแล้ว: +5 เหรียญ'+(a?' และตรวจรางวัลดาวผู้ช่วยแล้ว':''));
+    };
+
+    window.markBestAnswer=async(answerId,postId)=>{
+      if(!isTeacher()){alert('เฉพาะบัญชีครูหรือผู้ดูแลเท่านั้น');return;}
+      const all=answersByPost[postId]||[]; const target=all.find(x=>x.id===answerId); if(!target)return;
+      for(const a of all){if(a.isBest&&a.id!==answerId) await updateDoc(doc(db,'knowledge_answers',a.id),{isBest:false});}
+      const aRef=doc(db,'knowledge_answers',answerId); const walletRef=doc(db,'group_wallets',target.authorGroupId);
+      await runTransaction(db,async tx=>{
+        const aSnap=await tx.get(aRef); const wSnap=await tx.get(walletRef); if(!aSnap.exists())return;
+        const data=aSnap.data(),w=wSnap.exists()?wSnap.data():{};
+        let coinAdd=0,newCount=Number(w.helperApprovedCount)||0,newCycles=Number(w.helperRewardCycles)||0,waterAdd=0;
+        if(!data.coinRewarded){coinAdd+=5;newCount+=1;const cycles=Math.floor(newCount/5);if(cycles>newCycles){waterAdd+=10;newCycles=cycles;}}
+        if(!data.bestBonusRewarded)coinAdd+=5;
+        tx.set(walletRef,{magicCoins:(Number(w.magicCoins)||0)+coinAdd,water:(Number(w.water)||0)+waterAdd,helperApprovedCount:newCount,helperRewardCycles:newCycles},{merge:true});
+        tx.update(aRef,{isApproved:true,isBest:true,coinRewarded:true,bestBonusRewarded:true,approvedAt:data.approvedAt||serverTimestamp(),bestAt:serverTimestamp()});
+      });
+      showToast('🏆 เลือกคำตอบดีที่สุดแล้ว ผู้ตอบได้รับรวม 10 เหรียญ');
+    };
+
+    /*
+      เจ้าของคำถามจะได้รับ 1 เหรียญได้เมื่อ:
+      - มีคำตอบที่เลือกอยู่จริง
+      - คำตอบนั้นผ่านการอนุมัติจากครู
+      - คำตอบมาจากกลุ่มอื่น
+      - คำถามยังไม่เคยรับรางวัล
+    */
+    window.selectHelpfulAnswer=async(postId,answerId)=>{
+      const gid=currentGroupId();
+      const p=knowledgePosts.find(x=>x.id===postId);
+
+      if(!p)return;
+      if(p.authorGroupId!==gid){
+        alert('เฉพาะเจ้าของคำถามเท่านั้นที่เลือกคำตอบที่ช่วยได้');
+        return;
+      }
+      if(p.status==='solved'){
+        showToast('คำถามนี้ถูกปิดแล้ว');
+        return;
+      }
+
+      const answer=(answersByPost[postId]||[]).find(a=>a.id===answerId);
+      if(!answer||!answer.isApproved){
+        alert('คำตอบนี้ยังไม่ผ่านการอนุมัติจากครู');
+        return;
+      }
+      if(answer.authorGroupId===gid){
+        alert('ไม่สามารถเลือกคำตอบจากกลุ่มของตนเองได้');
+        return;
+      }
+
+      if(!confirm('ยืนยันว่าคำตอบนี้ช่วยให้กลุ่มแก้ปัญหาได้จริงหรือไม่?\n\nเมื่อยืนยัน คำถามจะถูกปิดและกลุ่มได้รับ 1 เหรียญเพียงครั้งเดียว')){
+        return;
+      }
+
+      const pRef=doc(db,'knowledge_posts',postId);
+      const aRef=doc(db,'knowledge_answers',answerId);
+      const walletRef=doc(db,'group_wallets',gid);
+
+      try{
+        await runTransaction(db,async tx=>{
+          const ps=await tx.get(pRef);
+          const as=await tx.get(aRef);
+          const ws=await tx.get(walletRef);
+
+          if(!ps.exists()||!as.exists()){
+            throw new Error('ไม่พบข้อมูลคำถามหรือคำตอบ');
+          }
+
+          const pd=ps.data();
+          const ad=as.data();
+          const w=ws.exists()?ws.data():{};
+
+          if(pd.authorGroupId!==gid){
+            throw new Error('ไม่ใช่เจ้าของคำถาม');
+          }
+          if(pd.status==='solved'||pd.questionRewarded){
+            throw new Error('คำถามนี้ปิดหรือรับรางวัลแล้ว');
+          }
+          if(!ad.isApproved){
+            throw new Error('คำตอบยังไม่ผ่านการอนุมัติ');
+          }
+          if(ad.postId!==postId){
+            throw new Error('คำตอบไม่ตรงกับคำถาม');
+          }
+          if(ad.authorGroupId===gid){
+            throw new Error('เลือกคำตอบของกลุ่มตนเองไม่ได้');
+          }
+
+          const after=(Number(w.magicCoins)||0)+1;
+
+          tx.set(walletRef,{
+            magicCoins:after,
+            updatedAt:serverTimestamp()
+          },{merge:true});
+
+          tx.update(pRef,{
+            status:'solved',
+            questionRewarded:true,
+            helpfulAnswerSelected:true,
+            helpfulAnswerId:answerId,
+            helpfulAnswerAuthorGroupId:ad.authorGroupId||'',
+            solvedAt:serverTimestamp(),
+            updatedAt:serverTimestamp()
+          });
+
+          tx.update(aRef,{
+            selectedHelpful:true,
+            selectedHelpfulAt:serverTimestamp()
+          });
+
+          const logRef=doc(collection(db,'group_wallets',gid,'transactions'));
+          tx.set(logRef,{
+            type:'QUESTION_SOLVED_WITH_APPROVED_ANSWER',
+            amount:1,
+            postId,
+            answerId,
+            balanceAfter:after,
+            createdAt:serverTimestamp()
+          });
         });
 
-        async function logout() {
-            if (confirm("หนูต้องการออกจากระบบใช่ไหมกั๊บ? 🚪")) {
-                await signOut(auth);
-                document.querySelectorAll('.input-name-text').forEach(input => input.value = '');
-                alert("ออกจากระบบเสร็จเรียบร้อยแล้ว บ๊ายบายกั๊บ 👋");
-            }
+        showToast('✅ เลือกคำตอบที่ช่วยได้แล้ว กลุ่มได้รับ 1 เหรียญ');
+      }catch(error){
+        console.error(error);
+        alert('ไม่สามารถปิดคำถามได้\n\n'+error.message);
+      }
+    };
+
+    window.togglePin=async(postId,value)=>{if(!isTeacher())return;await updateDoc(doc(db,'knowledge_posts',postId),{isPinned:value,updatedAt:serverTimestamp()});showToast(value?'📌 ปักหมุดแล้ว':'เลิกปักหมุดแล้ว');};
+
+    function renderLeaderboard(){
+      const stats={};
+      Object.values(answersByPost).flat().filter(a=>a.isApproved).forEach(a=>{const key=a.authorGroupId||a.authorName;if(!stats[key])stats[key]={name:a.authorName||'ผู้ช่วย',count:0,best:0};stats[key].count++;if(a.isBest)stats[key].best++;});
+      const leaders=Object.values(stats).sort((a,b)=>(b.count*5+b.best*5)-(a.count*5+a.best*5)).slice(0,5);
+      document.getElementById('leaderList').innerHTML=leaders.length?leaders.map((x,i)=>`<li><span>${['🥇','🥈','🥉','🌟','🌟'][i]} ${escapeHtml(x.name)}</span><b>${x.count} คำตอบ</b></li>`).join(''):'<li><span>ยังไม่มีผู้ช่วยที่ผ่านการอนุมัติ</span><b>🌱</b></li>';
+    }
+
+
+    function safeReflectionDocId(groupId,userId,missionId){
+      return [groupId||'nogroup',userId||'nouser',missionId||'nomission']
+        .map(v=>encodeURIComponent(String(v))).join('__');
+    }
+
+    function getReflectionMembers(){
+      let ids=[];
+      let names=[];
+
+      try{
+        ids=JSON.parse(localStorage.getItem('loggedInUsers')||'[]');
+      }catch(e){ ids=[]; }
+
+      try{
+        names=JSON.parse(
+          localStorage.getItem('currentGroupNames') ||
+          localStorage.getItem('loggedInNames') ||
+          '[]'
+        );
+      }catch(e){ names=[]; }
+
+      const max=Math.max(ids.length,names.length,1);
+      const members=[];
+
+      for(let i=0;i<max;i++){
+        members.push({
+          userId:String(ids[i]||('member_'+i)),
+          nickname:String(names[i]||displayName()||('สมาชิก '+(i+1)))
+        });
+      }
+
+      return members;
+    }
+
+    function openSubmissionReflection(missionId,missionTitle,workId){
+      reflectionMembers=getReflectionMembers();
+      reflectionMemberIndex=0;
+      reflectionMissionId=missionId;
+      reflectionMissionTitle=missionTitle||missionId;
+      reflectionWorkId=workId||'';
+
+      document.getElementById('reflectionOverlay').classList.add('show');
+      document.body.style.overflow='hidden';
+      renderReflectionMember();
+    }
+
+    function renderReflectionMember(){
+      const member=reflectionMembers[reflectionMemberIndex];
+      if(!member)return;
+
+      document.getElementById('reflectionMemberName').textContent=
+        '👤 '+member.nickname;
+
+      document.getElementById('reflectionStepText').textContent=
+        'สมาชิก '+(reflectionMemberIndex+1)+'/'+reflectionMembers.length;
+
+      document.getElementById('reflectionMissionText').textContent=
+        reflectionMissionTitle;
+
+      document.getElementById('reflectionProgressBar').style.width=
+        ((reflectionMemberIndex+1)/reflectionMembers.length*100)+'%';
+
+      document.getElementById('submitReflectionDifficulty').value='พอดี';
+      document.getElementById('submitReflectionHelp').value='ทำด้วยตนเอง';
+      document.getElementById('submitReflectionLearned').value='';
+      document.getElementById('submitReflectionNext').value='';
+
+      const btn=document.getElementById('submitReflectionSaveBtn');
+      btn.disabled=false;
+      btn.textContent=
+        reflectionMemberIndex===reflectionMembers.length-1
+          ?'✅ บันทึก Reflection คนสุดท้าย'
+          :'📝 บันทึกและไปสมาชิกคนถัดไป';
+    }
+
+    window.saveSubmissionReflection=async()=>{
+      const member=reflectionMembers[reflectionMemberIndex];
+      if(!member)return;
+
+      const learned=
+        document.getElementById('submitReflectionLearned').value.trim();
+
+      const nextPlan=
+        document.getElementById('submitReflectionNext').value.trim();
+
+      if(learned.length<5){
+        alert('กรุณาเขียนสิ่งที่เข้าใจหรือค้นพบอย่างน้อย 5 ตัวอักษร');
+        return;
+      }
+
+      if(nextPlan.length<5){
+        alert('กรุณาเขียนสิ่งที่จะปรับปรุงครั้งหน้าอย่างน้อย 5 ตัวอักษร');
+        return;
+      }
+
+      const gid=currentGroupId();
+      const room=currentRoom()||'';
+      const btn=document.getElementById('submitReflectionSaveBtn');
+      btn.disabled=true;
+      btn.textContent='⏳ กำลังบันทึก...';
+
+      try{
+        const reflectionId=
+          safeReflectionDocId(gid,member.userId,reflectionMissionId);
+
+        await setDoc(doc(db,'reflections',reflectionId),{
+          groupId:gid,
+          room,
+          userId:member.userId,
+          nickname:member.nickname,
+          missionId:reflectionMissionId,
+          missionTitle:reflectionMissionTitle,
+          sharedWorkId:reflectionWorkId,
+          difficulty:
+            document.getElementById('submitReflectionDifficulty').value,
+          helpSource:
+            document.getElementById('submitReflectionHelp').value,
+          status:'completed',
+          learned,
+          nextPlan,
+          source:'after_submission',
+          updatedAt:serverTimestamp(),
+          createdAt:serverTimestamp()
+        },{merge:true});
+
+        reflectionMemberIndex++;
+
+        if(reflectionMemberIndex<reflectionMembers.length){
+          renderReflectionMember();
+        }else{
+          document.getElementById('reflectionOverlay').classList.remove('show');
+          document.body.style.overflow='';
+          showToast('🪞 สมาชิกทุกคนบันทึก Reflection เรียบร้อยแล้ว');
         }
+      }catch(error){
+        console.error(error);
+        alert(
+          'บันทึก Reflection ไม่สำเร็จ\n\n'+
+          'กรุณาตรวจ Firestore Rules ของ collection reflections'
+        );
+        btn.disabled=false;
+        btn.textContent='📝 บันทึก Reflection';
+      }
+    };
 
-        // 🌟 1. ดึงข้อมูลภารกิจมาสร้างหน้าจอส่งงาน (มี Dropdown ห้องเรียน)
-        const missionQuery = query(collection(db, "missions"), orderBy("updatedAt", "asc"));
-        onSnapshot(missionQuery, (snapshot) => {
-            const container = document.getElementById("dynamicMissionContainer");
-            container.innerHTML = "";
-            if (snapshot.empty) { container.innerHTML = `<p>📭 ยังไม่มีภารกิจให้ส่งงานในตอนนี้นะกั๊บ</p>`; return; }
+    /* ======================== ระบบส่งงานเดิม ======================== */
+    const themeColors=[
+      {border:'#f472b6',bg:'#fff5f5',shadow:'#fbcfe8',title:'#9d174d',dash:'#fca5a5'},
+      {border:'#a78bfa',bg:'#f5f3ff',shadow:'#ede9fe',title:'#5b21b6',dash:'#c4b5fd'},
+      {border:'#38bdf8',bg:'#f0f9ff',shadow:'#bae6fd',title:'#0369a1',dash:'#7dd3fc'},
+      {border:'#4ade80',bg:'#f0fdf4',shadow:'#bbf7d0',title:'#14532d',dash:'#86efac'}
+    ];
+    window.extractScratchId=url=>{const m=String(url).match(/projects\/(\d+)/);return m?m[1]:null;};
+    window.previewScratch=mId=>{const input=document.getElementById('link_'+mId),frame=document.getElementById('preview_'+mId),id=extractScratchId(input.value);frame.src=id?`https://scratch.mit.edu/projects/${id}/embed`:'';frame.style.display=id?'block':'none';};
 
-            let index = 0;
-            snapshot.forEach((docSnap) => {
-                const mission = docSnap.data();
-                const mId = docSnap.id; 
-                const theme = themeColors[index % themeColors.length]; 
-                const boardHtml = `
-                    <div class="mission-board" id="board_${mId}" style="border-color:${theme.border}; box-shadow: 0 10px 0px ${theme.shadow};">
-                        <h2 class="board-header" style="color:${theme.title}; border-color:${theme.shadow};">🌟 ${mission.title}</h2>
-                        <div class="upload-form" style="background:${theme.bg}; border-color:${theme.dash};">
-                            
-                            <input type="text" class="input-name input-name-text" id="name_${mId}" style="border-color:${theme.dash}; margin-bottom: 5px;" placeholder="👉 พิมพ์ชื่อเล่นหนูตรงนี้กั๊บ...">
-                            
-                            <select class="input-name" id="room_${mId}" style="border-color:${theme.dash}; margin-bottom: 5px;" required>
-                                <option value="" disabled selected>-- 🏫 เลือกห้องเรียนของหนู --</option>
-                                <option value="ห้อง 1/1">ห้อง 1/1</option>
-                                <option value="ห้อง 1/2">ห้อง 1/2</option>
-                                <option value="ห้อง 1/3">ห้อง 1/3</option>
-                                <option value="ห้อง 1/4">ห้อง 1/4</option>
-                            </select>
+    const missionQuery=query(collection(db,'missions'),orderBy('updatedAt','asc'));
+    onSnapshot(missionQuery,snapshot=>{
+      const container=document.getElementById('dynamicMissionContainer');container.innerHTML='';
+      if(snapshot.empty){container.innerHTML='<p>📭 ยังไม่มีภารกิจให้ส่งงาน</p>';return;}
+      let i=0;snapshot.forEach(ds=>{const mission=ds.data(),mId=ds.id,t=themeColors[i++%themeColors.length];container.insertAdjacentHTML('beforeend',`
+        <div class="mission-board" id="board_${mId}" style="border-color:${t.border};box-shadow:0 10px 0 ${t.shadow}"><h2 class="board-header" style="color:${t.title};border-color:${t.shadow}">🌟 ${escapeHtml(mission.title)}</h2>
+        <div class="upload-form" style="background:${t.bg};border-color:${t.dash}"><input class="input-name input-name-text" id="name_${mId}" placeholder="ชื่อผู้ส่งงาน" value="${escapeHtml(displayName())}"><select class="input-name" id="room_${mId}" required><option value="" disabled selected>-- กรุณาเลือกห้องเรียน --</option><option value="ป.4/1">ป.4/1</option><option value="ป.4/2">ป.4/2</option><option value="ป.4/3">ป.4/3</option></select><input type="url" class="input-name input-link" id="link_${mId}" placeholder="🔗 วางลิงก์ Scratch" oninput="previewScratch('${mId}')"><iframe class="preview-iframe" id="preview_${mId}" allowfullscreen></iframe><button class="btn-post" id="btnPost_${mId}" onclick="postWork('${mId}')">ส่งผลงานเวทมนตร์! 🚀</button></div><div class="post-grid" id="grid_${mId}"></div></div>`);
+      });
+    });
 
-                            <div class="paste-zone" id="pasteZone_${mId}" tabindex="0" data-mission="${mId}" style="border-color: ${theme.border};">
-                                <p class="paste-text" style="margin: 0; color:${theme.title};">📸 คลิกที่นี่ แล้วกด <strong>Ctrl + V</strong><br>เพื่อวางรูปผลงาน!</p>
-                                <img class="preview-image" id="preview_${mId}" src="" alt="พรีวิว" style="display: none;">
-                            </div>
-                            <button class="btn-post" id="btnPost_${mId}" onclick="postWork('${mId}')">ส่งงานเลย! 🚀</button>
-                        </div>
-                        <div class="post-grid" id="grid_${mId}"></div>
-                    </div>
-                `;
-                container.insertAdjacentHTML('beforeend', boardHtml);
-                index++;
-            });
-            if (auth.currentUser) {
-                document.querySelectorAll('.input-name-text').forEach(input => {
-                    if (!input.value) input.value = auth.currentUser.displayName;
-                });
-            }
+    window.postWork=async missionId=>{
+      const name=document.getElementById('name_'+missionId).value.trim();
+      const room=document.getElementById('room_'+missionId).value;
+      const id=extractScratchId(document.getElementById('link_'+missionId).value);
+      const gid=currentGroupId();
+      const btn=document.getElementById('btnPost_'+missionId);
+
+      if(!gid){
+        alert('กรุณาเข้าสู่ระบบกลุ่มก่อนส่งงาน');
+        location.href='login.html';
+        return;
+      }
+      if(!name){alert('กรุณากรอกชื่อผู้ส่งงาน');return;}
+      if(!room){alert('กรุณาเลือกห้องเรียน');return;}
+      if(!id){alert('กรุณาวางลิงก์ Scratch ให้ถูกต้อง');return;}
+
+      btn.disabled=true;
+      btn.textContent='⏳ กำลังส่ง...';
+
+      try{
+        let memberIds=[];
+        try{
+          memberIds=JSON.parse(localStorage.getItem('loggedInUsers')||'[]');
+        }catch(e){ memberIds=[]; }
+
+        const workRef=await addDoc(collection(db,'shared_works'),{
+          groupId:gid,
+          groupMemberIds:memberIds,
+          groupMemberNames:currentNames(),
+          groupRoom:currentRoom()||room,
+          studentName:name,
+          name,
+          roomName:room,
+          missionId,
+          mission:missionId,
+          scratchId:id,
+          isGraded:false,
+          coinRewarded:false,
+          coinRewardAmount:10,
+          reactions:{love:0,like:0},
+          timestamp:serverTimestamp()
         });
 
-        // 📸 2. ระบบดักจับการกด Ctrl+V
-        document.addEventListener('paste', function (e) {
-            let targetZone = e.target.closest('.paste-zone');
-            if (!targetZone) return; 
-            e.preventDefault();
-            let missionId = targetZone.getAttribute('data-mission');
-            let clipboardItems = e.clipboardData.items;
+        document.getElementById('link_'+missionId).value='';
+        document.getElementById('preview_'+missionId).style.display='none';
 
-            for (let i = 0; i < clipboardItems.length; i++) {
-                if (clipboardItems[i].type.indexOf("image") !== -1) {
-                    let imageFile = clipboardItems[i].getAsFile();
-                    let reader = new FileReader();
-                    reader.onload = function (event) {
-                        let base64Image = event.target.result;
-                        pastedImages[missionId] = base64Image;
-                        let preview = document.getElementById('preview_' + missionId);
-                        preview.src = base64Image; preview.style.display = 'block';
-                        targetZone.querySelector('.paste-text').innerHTML = "✨ วางรูปภาพสำเร็จแล้ว!<br><span style='font-size:14px;'>(กด Ctrl+V เพื่อเปลี่ยนรูป)</span>";
-                    };
-                    reader.readAsDataURL(imageFile);
-                    break;
-                }
-            }
-        });
+        const board=document.getElementById('board_'+missionId);
+        const title=
+          board?.querySelector('.board-header')?.textContent
+            ?.replace(/^🌟\s*/,'')
+            ?.trim() || missionId;
 
-        // 🚀 3. ระบบส่งงาน
-        async function postWork(missionId) {
-            let nameInput = document.getElementById('name_' + missionId).value;
-            let roomInput = document.getElementById('room_' + missionId).value; 
-            let imageBase64 = pastedImages[missionId];
-            let btn = document.getElementById('btnPost_' + missionId);
+        showToast('🎉 ส่งผลงานสำเร็จแล้ว กรุณาทำ Reflection ต่อ');
+        openSubmissionReflection(missionId,title,workRef.id);
 
-            if (nameInput.trim() === '') { alert('อย่าลืมพิมพ์ชื่อของหนูก่อนกดส่งนะกั๊บ! 📝'); return; }
-            if (roomInput === '') { alert('อย่าลืมเลือกห้องเรียนของหนูด้วยนะกั๊บ! 🏫'); return; } 
-            if (!imageBase64) { alert('อย่าลืมคลิกที่กรอบแล้วกด Ctrl+V เพื่อวางรูปผลงานก่อนส่งนะกั๊บ! 📸'); return; }
+      }catch(e){
+        console.error(e);
+        alert('ส่งงานไม่สำเร็จ');
+      }
 
-            btn.disabled = true; btn.innerText = "⏳ กำลังส่งข้อมูล...";
+      btn.disabled=false;
+      btn.textContent='ส่งผลงานเวทมนตร์! 🚀';
+    };
 
-            try {
-                await addDoc(collection(db, "shared_works"), {
-                    studentName: nameInput,
-                    name: nameInput,
-                    roomName: roomInput, 
-                    missionId: missionId,
-                    mission: missionId,
-                    imageUrl: imageBase64,
-                    image: imageBase64,
-                    isGraded: false, 
-                    reactions: { love: 0, like: 0 },
-                    timestamp: serverTimestamp()
-                });
-                
-                pastedImages[missionId] = null;
-                let preview = document.getElementById('preview_' + missionId);
-                preview.src = ''; preview.style.display = 'none';
-                let targetZone = document.getElementById('pasteZone_' + missionId);
-                targetZone.querySelector('.paste-text').innerHTML = "📸 คลิกที่นี่ แล้วกด <strong>Ctrl + V</strong><br>เพื่อวางรูปผลงาน!";
-                
-                alert('เย้! ส่งงานสำเร็จแล้วกั๊บ 🎉');
-            } catch (error) { alert('เกิดข้อผิดพลาดในการส่งงาน กรุณาลองใหม่กั๊บ 🚀'); }
-
-            btn.disabled = false; btn.innerText = "ส่งงานเลย! 🚀";
-        }
-
-        // 🌟 4. ดึงผลงานมาแสดงในการ์ดตามภารกิจ
-        const sharesQuery = query(collection(db, "shared_works"), orderBy("timestamp", "desc"));
-        onSnapshot(sharesQuery, (snapshot) => {
-            document.querySelectorAll('.post-grid').forEach(grid => grid.innerHTML = '');
-            let reactedDocs = JSON.parse(localStorage.getItem('reactedDocs') || '{}');
-
-            snapshot.forEach((docSnap) => {
-                const id = docSnap.id; const data = docSnap.data();
-                
-                const missionId = data.missionId || data.mission;
-                const nameInput = data.studentName || data.name;
-                const roomNameDisplay = data.roomName || 'ไม่ระบุห้อง'; 
-                const imageBase64 = data.imageUrl || data.image;
-                const isGraded = data.isGraded || false;
-                
-                const loveCount = data.reactions?.love || 0; const likeCount = data.reactions?.like || 0;
-                const hasLoved = reactedDocs[id + '_❤️'] ? 'style="background: #fca5a5; color: white;" disabled' : '';
-                const hasLiked = reactedDocs[id + '_👍'] ? 'style="background: #fca5a5; color: white;" disabled' : '';
-                const gradedClass = isGraded ? 'graded-stamp' : '';
-
-                let targetGrid = document.getElementById('grid_' + missionId);
-                if (targetGrid) {
-                    const cardHtml = `
-                        <div class="post-card ${gradedClass}">
-                            <div class="post-image" style="padding: 0; border: none;">
-                                <img src="${imageBase64}" alt="ผลงานของ ${nameInput}" style="cursor: pointer; transition: 0.2s;" onclick="openModal('${imageBase64}')" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                            </div>
-                            <div class="post-name">${nameInput} <small style="color:#64748b; font-size: 14px; display:block;">(${roomNameDisplay})</small></div>
-                            <div class="reaction-bar">
-                                <button class="btn-react" ${hasLoved} onclick="addReaction(this, '${id}', '❤️')">❤️ <span>${loveCount}</span></button>
-                                <button class="btn-react" ${hasLiked} onclick="addReaction(this, '${id}', '👍')">👍 <span>${likeCount}</span></button>
-                            </div>
-                        </div>`;
-                    targetGrid.appendChild(document.createRange().createContextualFragment(cardHtml));
-                }
-            });
-        });
-
-        async function addReaction(btn, docId, emoji) {
-            let card = btn.closest('.post-card');
-            if (card) { card.classList.remove('anim-wiggle'); void card.offsetWidth; card.classList.add('anim-wiggle'); }
-            let reactedDocs = JSON.parse(localStorage.getItem('reactedDocs') || '{}');
-            if (reactedDocs[docId + '_' + emoji]) return;
-            try {
-                const docRef = doc(db, "shared_works", docId);
-                if (emoji === '❤️') await updateDoc(docRef, { "reactions.love": increment(1) });
-                else if (emoji === '👍') await updateDoc(docRef, { "reactions.like": increment(1) });
-                reactedDocs[docId + '_' + emoji] = true;
-                localStorage.setItem('reactedDocs', JSON.stringify(reactedDocs));
-            } catch (error) { console.error(error); }
-        }
-
-        function openModal(imgSrc) { document.getElementById('imageModal').style.display = "block"; document.getElementById('fullImage').src = imgSrc; }
-        function closeModal() { document.getElementById('imageModal').style.display = "none"; }
-        window.onclick = function (event) { let modal = document.getElementById('imageModal'); if (event.target == modal) closeModal(); }
-        window.logout = logout; window.postWork = postWork; window.addReaction = addReaction; window.openModal = openModal; window.closeModal = closeModal;
-    </script>
+    const sharesQuery=query(collection(db,'shared_works'),orderBy('timestamp','desc'));
+    onSnapshot(sharesQuery,snapshot=>{
+      sharedWorksSnapshot=snapshot.docs.map(ds=>({id:ds.id,...ds.data()}));
+      renderSharedWorks();
+    });
+    function renderSharedWorks(){
+      document.querySelectorAll('.post-grid').forEach(g=>g.innerHTML='');
+      const reacted=JSON.parse(localStorage.getItem('reactedDocs')||'{}');
+      sharedWorksSnapshot.forEach(d=>{
+        const id=d.id,missionId=d.missionId||d.mission,target=document.getElementById('grid_'+missionId);if(!target)return;
+        const name=d.studentName||d.name,room=d.roomName||d.groupRoom||'ไม่ระบุห้อง',love=d.reactions?.love||0,like=d.reactions?.like||0;
+        const preview=d.scratchId?`<iframe src="https://scratch.mit.edu/projects/${d.scratchId}/embed" allowfullscreen></iframe>`:d.imageUrl||d.image?`<img src="${escapeHtml(d.imageUrl||d.image)}" alt="ผลงาน">`:'';
+        target.insertAdjacentHTML('beforeend',`<div class="post-card ${d.isGraded?'graded-stamp':''}"><div class="post-project">${preview}</div><div class="post-name">${escapeHtml(name)}<small style="display:block;color:#64748b">(${escapeHtml(room)})</small></div><div class="reaction-bar"><button class="btn-react" ${reacted[id+'_❤️']?'disabled':''} onclick="addReaction(this,'${id}','❤️')">❤️ <span>${love}</span></button><button class="btn-react" ${reacted[id+'_👍']?'disabled':''} onclick="addReaction(this,'${id}','👍')">👍 <span>${like}</span></button></div></div>`);
+      });
+    }
+    window.addReaction=async(btn,id,emoji)=>{const reacted=JSON.parse(localStorage.getItem('reactedDocs')||'{}');if(reacted[id+'_'+emoji])return;const card=btn.closest('.post-card');card?.classList.add('anim-wiggle');await updateDoc(doc(db,'shared_works',id),{[emoji==='❤️'?'reactions.love':'reactions.like']:increment(1)});reacted[id+'_'+emoji]=true;localStorage.setItem('reactedDocs',JSON.stringify(reacted));};
+  </script>
 </body>
 </html>
