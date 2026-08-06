@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -198,61 +198,239 @@
             }
         }
 
+        // =========================================================
+        // 🪙 ระบบเข้าสู่ระบบกลุ่มและสร้างกระเป๋าเหรียญเวทมนตร์
+        // =========================================================
+        function makeSafeUserId(room, name) {
+            const safeRoom = room.replace(/\//g, "-");
+            return `${safeRoom}_${name.trim()}`;
+        }
+
+        function makeNewGroupId(userIds) {
+            const sorted = [...userIds].sort((a, b) => a.localeCompare(b, "th"));
+            return encodeURIComponent(sorted.join("__"));
+        }
+
+        function timestampToMillis(value) {
+            if (!value) return 0;
+            if (typeof value.toMillis === "function") return value.toMillis();
+            if (value.seconds) return value.seconds * 1000;
+            return 0;
+        }
+
+        function chooseCanonicalWallet(walletDocs) {
+            /*
+              ข้อมูลเก่าบางคนอาจถูกสร้างกระเป๋าซ้ำ เช่น
+              - กระเป๋ากลุ่มเดิม มีสมาชิกหลายคนและเหรียญถูกใช้ไปแล้ว
+              - กระเป๋าเดี่ยวที่ถูกสร้างใหม่ มี 100 เหรียญ
+
+              หลักเลือกกระเป๋าหลัก:
+              1) จำนวนสมาชิกมากที่สุด = มีแนวโน้มเป็นกระเป๋ากลุ่มจริง
+              2) ถ้าเท่ากัน เลือกเหรียญน้อยกว่า = รักษายอดที่ถูกใช้จริง
+              3) ถ้ายังเท่ากัน เลือกรายการที่อัปเดตล่าสุด
+            */
+            return [...walletDocs].sort((a, b) => {
+                const aData = a.data() || {};
+                const bData = b.data() || {};
+                const memberDiff = (bData.memberIds || []).length - (aData.memberIds || []).length;
+                if (memberDiff !== 0) return memberDiff;
+
+                const aCoins = Number.isFinite(Number(aData.magicCoins)) ? Number(aData.magicCoins) : 100;
+                const bCoins = Number.isFinite(Number(bData.magicCoins)) ? Number(bData.magicCoins) : 100;
+                if (aCoins !== bCoins) return aCoins - bCoins;
+
+                const aUpdated = timestampToMillis(aData.updatedAt || aData.lastLoginAt || aData.createdAt);
+                const bUpdated = timestampToMillis(bData.updatedAt || bData.lastLoginAt || bData.createdAt);
+                return bUpdated - aUpdated;
+            })[0];
+        }
+
+        async function findWalletIdForUser(userId, userData) {
+            // ตรวจว่ารหัสกระเป๋าที่บันทึกไว้ยังมีอยู่จริงก่อนใช้งาน
+            if (userData && userData.groupWalletId) {
+                const linkedWallet = await db.collection("group_wallets")
+                    .doc(userData.groupWalletId)
+                    .get();
+
+                if (linkedWallet.exists) {
+                    return linkedWallet.id;
+                }
+            }
+
+            // รองรับข้อมูลเก่า: ค้นหาทุกกระเป๋าที่มีรหัสนักเรียนคนนี้
+            const oldWalletQuery = await db.collection("group_wallets")
+                .where("memberIds", "array-contains", userId)
+                .get();
+
+            if (oldWalletQuery.empty) return null;
+
+            // ถ้ามีหลายกระเป๋า ให้เลือกกระเป๋ากลุ่มจริงอัตโนมัติ ไม่หยุดการเข้าสู่ระบบ
+            const canonicalWallet = chooseCanonicalWallet(oldWalletQuery.docs);
+            return canonicalWallet.id;
+        }
+
+        // =========================================================
+        // 🪙 เข้าสู่ระบบโดยผูกนักเรียนกับกระเป๋ากลุ่มถาวร
+        // =========================================================
         async function loginGroup() {
-            let room = document.getElementById('classroom').value;
-            let n1 = document.getElementById('name1').value.trim();
-            let n2 = document.getElementById('name2').value.trim();
-            let n3 = document.getElementById('name3').value.trim();
+            const room = document.getElementById("classroom").value;
+            const activeNames = [
+                document.getElementById("name1").value.trim(),
+                document.getElementById("name2").value.trim(),
+                document.getElementById("name3").value.trim()
+            ].filter(Boolean);
 
-            // ตรวจสอบข้อมูลเบื้องต้น
-            if (!room) { alert("อย่าลืมเลือกห้องเรียนก่อนนะกั๊บ! 🏫"); return; }
-            if (n1 === "" && n2 === "" && n3 === "") { alert("อย่างน้อยต้องพิมพ์ชื่อเล่น 1 คนนะกั๊บ! 📝"); return; }
+            if (!room) {
+                alert("อย่าลืมเลือกห้องเรียนก่อนนะกั๊บ! 🏫");
+                return;
+            }
 
-            let btn = document.getElementById('btnLogin');
+            if (activeNames.length === 0) {
+                alert("อย่างน้อยต้องพิมพ์ชื่อเล่น 1 คนนะกั๊บ! 📝");
+                return;
+            }
+
+            const normalizedNames = activeNames.map(name => name.toLocaleLowerCase("th"));
+            if (new Set(normalizedNames).size !== activeNames.length) {
+                alert("พบชื่อสมาชิกซ้ำกัน กรุณาตรวจสอบชื่ออีกครั้งนะกั๊บ! 👥");
+                return;
+            }
+
+            const btn = document.getElementById("btnLogin");
             btn.disabled = true;
-            btn.innerText = "กำลังพาเข้าสวน... ⏳";
-
-            // กรองเอาเฉพาะช่องที่มีการพิมพ์ชื่อจริง ๆ
-            let rawNames = [n1, n2, n3];
-            let activeNames = rawNames.filter(name => name !== "");
-
-            let loggedInUsers = []; // อาร์เรย์สำหรับเก็บรหัสที่จะใช้ในเครื่องนี้
+            btn.innerText = "กำลังตรวจสอบกระเป๋ากลุ่ม... ⏳";
 
             try {
-                // วนลูปตรวจสอบและสร้างฐานข้อมูลรายคน
-                for (let name of activeNames) {
-                    let docId = `${room.replace("/", "-")}_${name}`; // สร้างรหัสไม่ให้ซ้ำกัน เช่น "ป.1/1_สมชาย"
-                    let userRef = db.collection("users").doc(docId);
-                    let doc = await userRef.get();
+                const userIds = activeNames.map(name => makeSafeUserId(room, name));
+                const userRecords = [];
+                const discoveredWalletIds = new Set();
 
-                    if (!doc.exists) {
-                        // ถ้าเด็กคนนี้เพิ่งเคยเข้าเว็บครั้งแรก ให้สร้างข้อมูลและแจก 0 หยดน้ำเริ่มต้น
-                        await userRef.set({
-                            room: room,
-                            nickname: name,
-                            avatar: "👤", // 👈 เพิ่มอวตารเริ่มต้นตรงนี้ให้แล้วกั๊บ!
-                            waterDrops: 0, // แต้มหยดน้ำสะสมถาวร
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                    }
-                    // บันทึก ID นี้ลงรายการคนล็อกอินสำเร็จ
-                    loggedInUsers.push(docId);
+                // 1) อ่านข้อมูลนักเรียนและค้นหากระเป๋าเดิมก่อน
+                for (let index = 0; index < userIds.length; index++) {
+                    const userId = userIds[index];
+                    const userRef = db.collection("users").doc(userId);
+                    const userSnap = await userRef.get();
+                    const userData = userSnap.exists ? userSnap.data() : null;
+                    const walletId = await findWalletIdForUser(userId, userData);
+
+                    if (walletId) discoveredWalletIds.add(walletId);
+                    userRecords.push({
+                        userId,
+                        nickname: activeNames[index],
+                        userRef,
+                        userSnap,
+                        userData,
+                        walletId
+                    });
                 }
 
-                // บันทึกข้อมูลกลุ่มนี้ลงในความจำเบราว์เซอร์ชั่วคราว (เพื่อให้หน้าอื่นดึงไปใช้ได้)
+                // สมาชิกที่กรอกพร้อมกันต้องอยู่กระเป๋าเดียวกัน
+                if (discoveredWalletIds.size > 1) {
+                    alert(
+                        "สมาชิกที่กรอกอยู่คนละกลุ่มเดิม จึงไม่สามารถรวมกระเป๋าอัตโนมัติได้\n\n" +
+                        "กรุณาเข้าสู่ระบบแยกตามกลุ่มเดิม หรือให้คุณครูจัดกลุ่มใหม่ในหลังบ้าน"
+                    );
+                    return;
+                }
+
+                const existingWalletId = [...discoveredWalletIds][0] || null;
+                const groupId = existingWalletId || makeNewGroupId(userIds);
+                const walletRef = db.collection("group_wallets").doc(groupId);
+                let isBrandNewWallet = false;
+
+                // 2) ทำรายการแบบ Transaction เพื่อไม่ให้แจกเหรียญซ้ำ
+                await db.runTransaction(async transaction => {
+                    const walletSnap = await transaction.get(walletRef);
+                    const now = firebase.firestore.FieldValue.serverTimestamp();
+
+                    let allMemberIds = [...userIds];
+                    let allMemberNames = [...activeNames];
+
+                    if (!walletSnap.exists) {
+                        isBrandNewWallet = true;
+                        transaction.set(walletRef, {
+                            groupId,
+                            room,
+                            memberIds: allMemberIds,
+                            memberNames: allMemberNames,
+                            magicCoins: 100,
+                            purchasedHints: [],
+                            inventory: [],
+                            createdAt: now,
+                            updatedAt: now,
+                            lastLoginAt: now
+                        });
+                    } else {
+                        const walletData = walletSnap.data();
+                        allMemberIds = Array.from(new Set([
+                            ...(walletData.memberIds || []),
+                            ...userIds
+                        ]));
+
+                        const nameById = new Map();
+                        (walletData.memberIds || []).forEach((id, i) => {
+                            nameById.set(id, (walletData.memberNames || [])[i] || id);
+                        });
+                        userIds.forEach((id, i) => nameById.set(id, activeNames[i]));
+                        allMemberNames = allMemberIds.map(id => nameById.get(id) || id);
+
+                        transaction.update(walletRef, {
+                            room,
+                            memberIds: allMemberIds,
+                            memberNames: allMemberNames,
+                            updatedAt: now,
+                            lastLoginAt: now
+                        });
+                    }
+
+                    // 3) ผูกนักเรียนทุกคนกับ groupWalletId เดิมอย่างถาวร
+                    for (const record of userRecords) {
+                        const baseData = {
+                            room,
+                            nickname: record.nickname,
+                            groupWalletId: groupId,
+                            lastLoginAt: now,
+                            updatedAt: now
+                        };
+
+                        if (!record.userSnap.exists) {
+                            transaction.set(record.userRef, {
+                                ...baseData,
+                                avatar: "👤",
+                                waterDrops: 0,
+                                createdAt: now
+                            });
+                        } else {
+                            transaction.update(record.userRef, baseData);
+                        }
+                    }
+                });
+
+                // 4) บันทึก session ของเครื่องนี้ แต่ใช้กระเป๋ากลุ่มเดียวกันเสมอ
                 localStorage.setItem("currentRoom", room);
-                localStorage.setItem("loggedInUsers", JSON.stringify(loggedInUsers));
+                localStorage.setItem("loggedInUsers", JSON.stringify(userIds));
+                localStorage.setItem("currentGroupId", groupId);
+                localStorage.setItem("currentGroupNames", JSON.stringify(activeNames));
 
-                // พาเข้าสู่หน้าแรก
+                alert(
+                    isBrandNewWallet
+                        ? "✅ เข้าสู่ระบบสำเร็จ!\n\n🪙 สร้างกระเป๋ากลุ่มใหม่พร้อม 100 เหรียญแล้ว"
+                        : "✅ เข้าสู่ระบบสำเร็จ!\n\n🪙 เชื่อมต่อกระเป๋ากลุ่มเดิมและยอดเหรียญล่าสุดแล้ว"
+                );
+
                 window.location.href = "index.html";
-
             } catch (error) {
-                console.error("Error:", error);
-                alert("เกิดข้อผิดพลาด ลองตรวจสอบโค้ด Firebase Config อีกครั้งนะกั๊บ 😢");
+                console.error("Login error:", error);
+                alert(
+                    "เกิดข้อผิดพลาดระหว่างเข้าสู่ระบบ 😢\n\n" +
+                    "รายละเอียด: " + error.message
+                );
+            } finally {
                 btn.disabled = false;
                 btn.innerText = "เข้าสู่สวนแสนสุข 🚀";
             }
         }
+        
     </script>
 </body>
 </html>
