@@ -1,15 +1,14 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
+
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📚 แหล่งเรียนรู้ | สวนแสนสุข</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800&display=swap" rel="stylesheet">
-
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>📚 แหล่งเรียนรู้ | สวนแสนสุข</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800&amp;display=swap" rel="stylesheet"/>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<style>
         body {
             font-family: 'Kanit', sans-serif;
             background-color: #f0f9ff; 
@@ -214,34 +213,201 @@
         .btn-doc:active { transform: translateY(4px); box-shadow: 0 1px 0px #065f46; }
 
     </style>
-</head>
+<style>
+/* =========================================================
+   👑 เมนูหลักมาตรฐาน + เมนูสามขีด
+   ========================================================= */
+.nav-menu {
+    min-height: 80px;
+    background: #a855f7;
+    padding: 14px 170px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 900;
+}
+.learning-menu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.nav-menu a.main-link {
+    background: #d8b4fe;
+    color: #4c1d95;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 17px;
+    padding: 10px 17px;
+    border-radius: 18px;
+    border: 3px solid #f3e8ff;
+    box-shadow: 0 4px 0 #9333ea;
+    white-space: nowrap;
+    transition: 0.2s;
+}
+.nav-menu a.main-link:hover {
+    background: #c084fc;
+    color: white;
+    transform: translateY(-2px);
+}
+.nav-menu a.main-link:active {
+    transform: translateY(4px);
+    box-shadow: none;
+}
+.nav-menu a.main-link.active-menu {
+    background: #fde047;
+    color: #854d0e;
+    border-color: white;
+    box-shadow: 0 4px 0 #ca8a04;
+}
+.top-left-menu {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1001;
+}
+.btn-home-login {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    border: 3px solid #f3e8ff;
+    border-radius: 50%;
+    font-size: 23px;
+    text-decoration: none;
+    box-shadow: 0 4px 0 #9333ea;
+    transition: 0.2s;
+}
+.btn-home-login:hover { background: #fdf4ff; transform: translateY(-2px); }
+.btn-home-login:active { transform: translateY(4px); box-shadow: none; }
+.hamburger-wrapper {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1002;
+}
+.hamburger-button {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    color: #4c1d95;
+    border: 3px solid #f3e8ff;
+    border-radius: 14px;
+    font-size: 23px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #9333ea;
+    transition: 0.2s;
+    font-family: 'Kanit', sans-serif;
+}
+.hamburger-button:hover { background: #fdf4ff; transform: translateY(-2px); }
+.hamburger-button:active,
+.hamburger-button.open { transform: translateY(4px); box-shadow: none; }
+.utility-dropdown {
+    display: none;
+    position: absolute;
+    top: 56px;
+    right: 0;
+    width: 285px;
+    padding: 14px;
+    background: white;
+    border: 3px solid #e9d5ff;
+    border-radius: 20px;
+    box-shadow: 0 12px 28px rgba(76, 29, 149, 0.24);
+    text-align: left;
+}
+.utility-dropdown.show { display: block; }
+.dropdown-title {
+    color: #4c1d95;
+    font-size: 18px;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 10px;
+}
+.dropdown-coin {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    background: #fef9c3;
+    color: #854d0e;
+    border: 2px solid #fde047;
+    border-radius: 14px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    font-weight: 800;
+}
+.dropdown-link {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 10px 12px;
+    margin-top: 8px;
+    color: #4c1d95;
+    text-decoration: none;
+    background: #faf5ff;
+    border: 2px solid #e9d5ff;
+    border-radius: 14px;
+    transition: 0.2s;
+}
+.dropdown-link:hover { background: #f3e8ff; transform: translateX(-2px); }
+.dropdown-icon { width: 34px; text-align: center; font-size: 24px; flex: 0 0 34px; }
+.dropdown-link strong,
+.dropdown-link small { display: block; }
+.dropdown-link small { margin-top: 2px; color: #7c3aed; font-size: 12px; font-weight: 400; }
+.logout-link { color: #991b1b; background: #fff1f2; border-color: #fecdd3; }
+.logout-link small { color: #be123c; }
+@media (max-width: 1100px) {
+    .nav-menu { padding: 75px 15px 15px 15px; }
+    .top-left-menu { top: 14px; left: 15px; transform: none; }
+    .hamburger-wrapper { top: 16px; right: 15px; transform: none; }
+}
+@media (max-width: 650px) {
+    .learning-menu { display: grid; grid-template-columns: 1fr 1fr; width: 100%; gap: 10px; }
+    .nav-menu a.main-link { width: 100%; font-size: 16px; padding: 10px 8px; text-align: center; }
+    .learning-menu a.main-link:last-child { grid-column: 1 / -1; width: 50%; justify-self: center; }
+    .utility-dropdown { width: min(285px, calc(100vw - 30px)); }
+}
+</style></head>
 <body>
-
-    <div class="nav-menu">
-        <div class="top-left-menu">
-            <a href="login.html" class="btn-home-login" title="กลับหน้าเข้าสู่ระบบ">🏠</a>
-        </div>
-
-        <a href="index.html" class="main-link">🏡 หน้าแรก</a>
-        <a href="mission.html" class="main-link">⚔️ ภารกิจ</a>
-        <a href="resource.html" class="main-link" style="background:#fde047; color:#854d0e; border-color:white; box-shadow: 0 4px 0px #ca8a04;">📚 แหล่งเรียนรู้</a>
-        <a href="share.html" class="main-link">🤝 แบ่งปัน</a>
-        <a href="monster-hatchery.html" class="main-link">🌱 แปลงปลูกต้นไม้</a>
-        <a href="profile.html" class="main-link" style="background:#60a5fa; color:#1e3a8a; border-color:#bfdbfe; box-shadow: 0 4px 0px #2563eb;">👤 โปรไฟล์</a> 
-    </div>
-
-    <div class="select-zone">
-        <h2 style="margin-top:0; color: #0369a1;">🎯 ค้นหาแหล่งเรียนรู้ประจำภารกิจ</h2>
-        <select id="missionFilter" onchange="filterResourceData()">
-            <option value="ALL">🌟 แสดงแหล่งเรียนรู้ทั้งหมด</option>
-        </select>
-    </div>
-
-    <div id="resourceContainer">
-        <p style="color: #0284c7; font-weight: bold; font-size: 20px;">กำลังเปิดคลังหนังสือเวทมนตร์... ⏳</p>
-    </div>
-
-    <script>
+<!-- =====================================================
+     👑 แถบเมนูหลักของเว็บไซต์
+     ===================================================== -->
+<nav class="nav-menu">
+<div class="top-left-menu"><a aria-label="กลับหน้าแรก" class="btn-home-login" href="index.html" title="กลับหน้าแรก">🏠</a></div>
+<div class="learning-menu"><a class="main-link" href="mission.html">⚔️ สถานการณ์ปัญหา</a>
+<a class="main-link active-menu" href="resource.html">📚 แหล่งเรียนรู้</a>
+<a class="main-link" href="hints.html">💡 ฐานการช่วยเหลือ</a>
+<a class="main-link" href="share.html">🤝 แลกเปลี่ยนเรียนรู้</a>
+<a class="main-link" href="coach.html">🧑‍🏫 โค้ช</a></div>
+<div class="hamburger-wrapper">
+<button aria-controls="utilityDropdown" aria-expanded="false" aria-label="เปิดเมนูเพิ่มเติม" class="hamburger-button" id="hamburgerButton" onclick="toggleUtilityMenu()" type="button">☰</button>
+<div class="utility-dropdown" id="utilityDropdown">
+<div class="dropdown-title">เมนูของฉัน</div>
+<div class="dropdown-coin"><span>🪙 เหรียญเวทมนตร์</span><strong id="topCoinAmount">--</strong></div>
+<a class="dropdown-link" href="monster-hatchery.html"><span class="dropdown-icon">🌱</span><span><strong>แปลงปลูกต้นไม้</strong><small>ดูคะแนนและการเติบโต</small></span></a>
+<a class="dropdown-link" href="profile.html"><span class="dropdown-icon">👤</span><span><strong>โปรไฟล์</strong><small>เปลี่ยนชื่อและอวตาร</small></span></a>
+<a class="dropdown-link logout-link" href="login.html"><span class="dropdown-icon">🚪</span><span><strong>ออกจากระบบ</strong><small>กลับหน้าเข้าสู่ระบบ</small></span></a>
+</div></div></nav>
+<div class="select-zone">
+<h2 style="margin-top:0; color: #0369a1;">🎯 ค้นหาแหล่งเรียนรู้ประจำภารกิจ</h2>
+<select id="missionFilter" onchange="filterResourceData()">
+<option value="ALL">🌟 แสดงแหล่งเรียนรู้ทั้งหมด</option>
+</select>
+</div>
+<div id="resourceContainer">
+<p style="color: #0284c7; font-weight: bold; font-size: 20px;">กำลังเปิดคลังหนังสือเวทมนตร์... ⏳</p>
+</div>
+<script>
         const firebaseConfig = {
             apiKey: "AIzaSyDfBIp5gujB9cE2twLz483hllYOubgYuks",
             authDomain: "codingplant-f19fc.firebaseapp.com",
@@ -274,9 +440,29 @@
 
             snapshot.forEach((doc) => {
                 let m = doc.data();
-                missionTitles[doc.id] = m.title; 
-                filterDropdown.innerHTML += `<option value="${doc.id}">${doc.id} : ${m.title}</option>`;
+
+                missionTitles[doc.id] = m.title;
+
+                filterDropdown.innerHTML += `
+                    <option value="${doc.id}">
+                        ${doc.id} : ${m.title}
+                    </option>
+                `;
             });
+
+            const savedMissionId =
+                localStorage.getItem("currentMissionFilter") ||
+                localStorage.getItem("currentMissionId");
+
+            if (savedMissionId) {
+                const missionOptionExists = Array.from(
+                    filterDropdown.options
+                ).some(option => option.value === savedMissionId);
+
+                if (missionOptionExists) {
+                    filterDropdown.value = savedMissionId;
+                }
+            }
 
             fetchAndRenderAllResources();
         });
@@ -392,11 +578,106 @@
             });
         }
 
+        // =====================================================
+        // 🎯 เลือกภารกิจที่ผู้เรียนกดมาจากหน้า mission.html
+        // =====================================================
+        const savedMissionId =
+            localStorage.getItem("currentMissionFilter") ||
+            localStorage.getItem("currentMissionId");
+
+        if (savedMissionId) {
+            const missionOptionExists = Array.from(
+                filterDropdown.options
+            ).some(option => option.value === savedMissionId);
+
+            if (missionOptionExists) {
+                filterDropdown.value = savedMissionId;
+            }
+        }
         // ฟิลเตอร์เมื่อขยับ Dropdown
         function filterResourceData() {
-            const selectedValue = document.getElementById("missionFilter").value;
+            const selectedValue =
+                document.getElementById("missionFilter").value;
+
+            // บันทึกภารกิจที่เลือกไว้
+            localStorage.setItem(
+                "currentMissionFilter",
+                selectedValue
+            );
+
+            // ถ้าไม่ได้เลือกแสดงทั้งหมด
+            // ให้บันทึกเป็นภารกิจปัจจุบันด้วย
+            if (selectedValue !== "ALL") {
+                localStorage.setItem(
+                    "currentMissionId",
+                    selectedValue
+                );
+            }
+
             renderCards(selectedValue);
         }
+
     </script>
-</body>
+<script>
+(function () {
+    window.toggleUtilityMenu = function () {
+        const menu = document.getElementById('utilityDropdown');
+        const button = document.getElementById('hamburgerButton');
+        if (!menu || !button) return;
+        const isOpen = menu.classList.toggle('show');
+        button.classList.toggle('open', isOpen);
+        button.setAttribute('aria-expanded', String(isOpen));
+    };
+
+    document.addEventListener('click', function (event) {
+        const wrapper = document.querySelector('.hamburger-wrapper');
+        const menu = document.getElementById('utilityDropdown');
+        const button = document.getElementById('hamburgerButton');
+        if (!wrapper || !menu || !button) return;
+        if (!wrapper.contains(event.target)) {
+            menu.classList.remove('show');
+            button.classList.remove('open');
+            button.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key !== 'Escape') return;
+        const menu = document.getElementById('utilityDropdown');
+        const button = document.getElementById('hamburgerButton');
+        if (!menu || !button) return;
+        menu.classList.remove('show');
+        button.classList.remove('open');
+        button.setAttribute('aria-expanded', 'false');
+    });
+
+    function loadTopMenuCoinsSafe() {
+        const coinElement = document.getElementById('topCoinAmount');
+        if (!coinElement) return;
+        const currentGroupId = localStorage.getItem('currentGroupId');
+        if (!currentGroupId) { coinElement.innerText = '0'; return; }
+        if (typeof db === 'undefined' || !db || !db.collection) {
+            coinElement.innerText = '--';
+            return;
+        }
+        db.collection('group_wallets').doc(currentGroupId).onSnapshot(
+            function (snapshot) {
+                if (!snapshot.exists) { coinElement.innerText = '0'; return; }
+                const data = snapshot.data() || {};
+                coinElement.innerText = Number(data.magicCoins) || 0;
+            },
+            function (error) {
+                console.error('Load menu coins error:', error);
+                coinElement.innerText = '--';
+            }
+        );
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadTopMenuCoinsSafe);
+    } else {
+        loadTopMenuCoinsSafe();
+    }
+})();
+</script></body>
 </html>
