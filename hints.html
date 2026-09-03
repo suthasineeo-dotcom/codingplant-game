@@ -166,6 +166,14 @@ select{
   .page-title{font-size:31px}
   .confirm-buttons{flex-direction:column}
 }
+
+/* ===== 👾 เพื่อนมอนสเตอร์ช่วยเรียน ===== */
+.study-buddy{position:fixed;right:20px;bottom:20px;z-index:2500;display:flex;align-items:flex-end;gap:10px;filter:drop-shadow(0 8px 12px rgba(76,29,149,.18))}
+.study-buddy-bubble{max-width:250px;background:#fff;border:3px solid #c084fc;border-radius:18px 18px 6px 18px;padding:10px 13px;color:#5b21b6;font-size:14px;font-weight:700;line-height:1.45;box-shadow:0 5px 0 #e9d5ff;transition:.2s}
+.study-buddy-char{width:64px;height:64px;border:0;border-radius:50%;background:linear-gradient(135deg,#c084fc,#8b5cf6);font-size:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 0 #6d28d9;animation:buddyFloat 2.4s ease-in-out infinite}
+.study-buddy-char:active{transform:translateY(5px);box-shadow:0 1px 0 #6d28d9}@keyframes buddyFloat{50%{transform:translateY(-6px)}}
+@media(max-width:650px){.study-buddy{right:10px;bottom:10px}.study-buddy-bubble{display:none}.study-buddy-char{width:54px;height:54px;font-size:31px}}
+
 </style>
 </head>
 <body>
@@ -181,12 +189,17 @@ select{
   <div class="hamburger-wrapper">
     <button type="button" id="hamburgerButton" class="hamburger-button" onclick="toggleUtilityMenu()">☰</button>
     <div id="utilityDropdown" class="utility-dropdown">
-      <div class="dropdown-title">เมนูของฉัน</div>
-      <div class="dropdown-coin"><span>🪙 เหรียญเวทมนตร์</span><strong id="topCoinAmount">--</strong></div>
-      <a href="monster-hatchery.html" class="dropdown-link"><span class="dropdown-icon">🌱</span><span><strong>แปลงปลูกต้นไม้</strong><small>ดูคะแนนและการเติบโต</small></span></a>
-      <a href="profile.html" class="dropdown-link"><span class="dropdown-icon">👤</span><span><strong>โปรไฟล์</strong><small>ดูความก้าวหน้า</small></span></a>
-      <a href="login.html" class="dropdown-link logout-link"><span class="dropdown-icon">🚪</span><span><strong>ออกจากระบบ</strong><small>กลับหน้าเข้าสู่ระบบ</small></span></a>
-    </div>
+                <div class="dropdown-title">เมนูของฉัน</div>
+                <div class="dropdown-coin"><span>🪙 เหรียญเวทมนตร์</span><strong id="topCoinAmount">--</strong></div>
+                <a href="monster-hatchery.html" class="dropdown-link"><span class="dropdown-icon">🌱</span><span><strong>แปลงปลูกต้นไม้</strong><small>ดูคะแนนและการเติบโต</small></span></a>
+                
+                
+                <a href="profile.html" class="dropdown-link">
+    <span class="dropdown-icon">👤</span>
+    <span><strong>โปรไฟล์</strong><small>ตัวละคร แต่งตัว และร้านค้า</small></span>
+</a>
+                <a href="login.html" class="dropdown-link logout-link"><span class="dropdown-icon">🚪</span><span><strong>ออกจากระบบ</strong><small>กลับหน้าเข้าสู่ระบบ</small></span></a>
+            </div>
   </div>
 </nav>
 
@@ -304,16 +317,28 @@ function listenWallet(){
   },error=>showError(error.message));
 }
 
+function missionOrderOf(m){
+  const explicit=Number(m?.missionOrder);
+  if(Number.isFinite(explicit)&&explicit>0)return explicit;
+  const match=`${m?.id||""} ${m?.title||""}`.match(/(\d+)/);
+  return match?Number(match[1]):Number.MAX_SAFE_INTEGER;
+}
+
 function loadMissions(){
-  db.collection("missions").orderBy("updatedAt","asc").onSnapshot(snapshot=>{
+  db.collection("missions").onSnapshot(snapshot=>{
     missions=[];
     snapshot.forEach(doc=>{
       const d=doc.data()||{};
       missions.push({
         id:doc.id,
         title:d.title||doc.id,
+        missionOrder:d.missionOrder,
         hints:Array.isArray(d.hints)?d.hints.map(normalizeHint):[]
       });
+    });
+    missions.sort((a,b)=>{
+      const diff=missionOrderOf(a)-missionOrderOf(b);
+      return diff||String(a.id).localeCompare(String(b.id),"th",{numeric:true});
     });
     const select=document.getElementById("missionFilter");
     select.innerHTML="";
@@ -478,5 +503,9 @@ function escapeAttr(v){return String(v).replace(/\\/g,"\\\\").replace(/'/g,"\\'"
 listenWallet();
 loadMissions();
 </script>
+
+<div class="study-buddy" aria-live="polite"><div class="study-buddy-bubble" id="studyBuddyBubble">ลองเองก่อน แล้วค่อยใช้คำใบ้</div><button type="button" class="study-buddy-char" id="studyBuddyChar" aria-label="คำแนะนำจากเพื่อนมอนสเตอร์" title="กดเพื่อดูคำแนะนำ">👾</button></div>
+<script>(function(){const tips=["ลองเองก่อน แล้วค่อยใช้คำใบ้", "เลือกคำใบ้ที่ตรงกับปัญหาที่สุด", "คำใบ้ช่วยคิด ไม่ได้เฉลยทั้งหมดนะ"];let i=0;const b=document.getElementById('studyBuddyChar'),x=document.getElementById('studyBuddyBubble');if(b&&x)b.addEventListener('click',()=>{i=(i+1)%tips.length;x.textContent=tips[i];});})();</script>
+
 </body>
 </html>
