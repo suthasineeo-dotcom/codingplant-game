@@ -48,6 +48,7 @@
             box-shadow: 0 0px 0px #d97706;
         }
 
+
         .login-box {
             background: white;
             padding: 40px;
@@ -197,7 +198,6 @@
                 alert("❌ รหัสผ่านไม่ถูกต้องกั๊บ ลองใหม่อีกครั้งนะ!");
             }
         }
-
         // =========================================================
         // 🪙 ระบบเข้าสู่ระบบกลุ่มและสร้างกระเป๋าเหรียญเวทมนตร์
         // =========================================================
@@ -270,9 +270,78 @@
         }
 
         // =========================================================
+        // 🌱 Migration คะแนนจากแปลงปลูกต้นไม้ระบบเดิม (localStorage)
+        // ใช้เฉพาะตอนที่ยังไม่มี users/{userId} ใน Firestore
+        // =========================================================
+        function normalizeLegacyName(name = "") {
+            return String(name)
+                .trim()
+                .replace(/\s+/g, " ")
+                .toLocaleLowerCase("th");
+        }
+
+        function normalizeLegacyRoom(room = "") {
+            const text = String(room).trim();
+            // ป.4/1, ห้อง 4/1, 4/1 -> 4/1
+            const match = text.match(/(\d+)\s*\/\s*(\d+)/);
+            if (match) return `${Number(match[1])}/${Number(match[2])}`;
+            return text
+                .replace(/^ห้อง\s*/i, "")
+                .replace(/^ป\.?\s*/i, "")
+                .replace(/\s+/g, "")
+                .toLocaleLowerCase("th");
+        }
+
+        function findLegacyGardenStudent(room, nickname) {
+            try {
+                const legacy = JSON.parse(
+                    localStorage.getItem("multiRoomGardenData") || "null"
+                );
+
+                if (!legacy || !legacy.rooms || typeof legacy.rooms !== "object") {
+                    return null;
+                }
+
+                const wantedRoom = normalizeLegacyRoom(room);
+                const wantedName = normalizeLegacyName(nickname);
+
+                // หา key ห้องที่ตรงกันก่อน เช่น ป.4/1 = ห้อง 4/1
+                const roomKey = Object.keys(legacy.rooms).find(
+                    key => normalizeLegacyRoom(key) === wantedRoom
+                );
+
+                if (!roomKey || !Array.isArray(legacy.rooms[roomKey])) {
+                    return null;
+                }
+
+                const student = legacy.rooms[roomKey].find(
+                    item => normalizeLegacyName(item?.name) === wantedName
+                );
+
+                if (!student) return null;
+
+                return {
+                    roomKey,
+                    name: String(student.name || nickname).trim(),
+                    water: Math.max(0, Number(student.water) || 0),
+                    legacyId: student.id || ""
+                };
+            } catch (error) {
+                console.warn("อ่านข้อมูลแปลงเดิมเพื่อ Migration ไม่สำเร็จ:", error);
+                return null;
+            }
+        }
+
+        // =========================================================
         // 🪙 เข้าสู่ระบบโดยผูกนักเรียนกับกระเป๋ากลุ่มถาวร
         // =========================================================
         async function loginGroup() {
+            // ทุกครั้งที่นักเรียนล็อกอิน ให้ยกเลิก session โหมดครูก่อน
+            localStorage.setItem("currentRole", "student");
+            localStorage.setItem("role", "student");
+            localStorage.removeItem("isAdmin");
+            localStorage.removeItem("currentTeacherName");
+
             const room = document.getElementById("classroom").value;
             const activeNames = [
                 document.getElementById("name1").value.trim(),
@@ -296,6 +365,49 @@
                 return;
             }
 
+            // =====================================================
+            // 👩‍🏫 บัญชีช่วยเหลือพิเศษ: Kru_Mild
+            // ใช้เข้าไปตอบ/คอมเมนต์ในหน้าแลกเปลี่ยนเรียนรู้เท่านั้น
+            // ไม่สร้าง users, waterDrops หรือ group_wallets ใน Firebase
+            // =====================================================
+            const isKruMild = activeNames.some(
+                name => name.toLowerCase() === "kru_mild"
+            );
+
+            if (isKruMild) {
+                if (activeNames.length !== 1 ||
+                    activeNames[0].toLowerCase() !== "kru_mild") {
+                    alert("Kru_Mild เป็นบัญชีพิเศษ กรุณาล็อกอินชื่อ Kru_Mild เพียงชื่อเดียว");
+                    return;
+                }
+
+                // ล้าง session นักเรียน/แอดมินเดิม
+                localStorage.removeItem("groupWalletId");
+                localStorage.removeItem("currentUserId");
+                localStorage.removeItem("isAdmin");
+                localStorage.removeItem("currentTeacherName");
+
+                // ใช้ role helper เพื่อให้ตอบช่วยได้ แต่ไม่มีสิทธิ์อนุมัติ/แจกคะแนน
+                localStorage.setItem("currentRole", "helper");
+                localStorage.setItem("role", "helper");
+
+                // Session สำหรับหน้า share.html เท่านั้น
+                localStorage.setItem("currentRoom", room);
+                localStorage.setItem("currentUserName", "Kru_Mild");
+                localStorage.setItem("currentGroupNames", JSON.stringify(["Kru_Mild"]));
+                localStorage.setItem("loggedInUsers", JSON.stringify(["KRU_MILD_HELPER"]));
+                localStorage.setItem("currentGroupId", "KRU_MILD_HELPER");
+
+                alert(
+                    "✅ เข้าสู่ระบบในชื่อ Kru_Mild แล้ว\\n\\n" +
+                    "สามารถตอบหรือคอมเมนต์ช่วยนักเรียนในหน้าแลกเปลี่ยนเรียนรู้ได้\\n" +
+                    "บัญชีนี้ไม่มีคะแนนน้ำ ไม่มีเหรียญ และไม่อยู่ในแปลงปลูก"
+                );
+
+                window.location.href = "share.html";
+                return;
+            }
+
             const btn = document.getElementById("btnLogin");
             btn.disabled = true;
             btn.innerText = "กำลังตรวจสอบกระเป๋ากลุ่ม... ⏳";
@@ -313,6 +425,11 @@
                     const userData = userSnap.exists ? userSnap.data() : null;
                     const walletId = await findWalletIdForUser(userId, userData);
 
+                    // ถ้ายังไม่มี user ใน Firebase ให้ค้นชื่อ/ห้องในแปลงเดิม
+                    const legacyStudent = !userSnap.exists
+                        ? findLegacyGardenStudent(room, activeNames[index])
+                        : null;
+
                     if (walletId) discoveredWalletIds.add(walletId);
                     userRecords.push({
                         userId,
@@ -320,7 +437,8 @@
                         userRef,
                         userSnap,
                         userData,
-                        walletId
+                        walletId,
+                        legacyStudent
                     });
                 }
 
@@ -394,13 +512,23 @@
                         };
 
                         if (!record.userSnap.exists) {
+                            const migratedWater = record.legacyStudent
+                                ? record.legacyStudent.water
+                                : 0;
+
                             transaction.set(record.userRef, {
                                 ...baseData,
                                 avatar: "👤",
-                                waterDrops: 0,
-                                createdAt: now
+                                waterDrops: migratedWater,
+                                createdAt: now,
+                                migratedFromLegacyGarden: Boolean(record.legacyStudent),
+                                legacyGardenRoom: record.legacyStudent?.roomKey || "",
+                                legacyGardenName: record.legacyStudent?.name || "",
+                                legacyGardenWater: migratedWater,
+                                migratedAt: record.legacyStudent ? now : null
                             });
                         } else {
+                            // user เดิม: ไม่แตะ waterDrops เพื่อรักษาคะแนนใน Firebase
                             transaction.update(record.userRef, baseData);
                         }
                     }
@@ -412,11 +540,22 @@
                 localStorage.setItem("currentGroupId", groupId);
                 localStorage.setItem("currentGroupNames", JSON.stringify(activeNames));
 
-                alert(
-                    isBrandNewWallet
-                        ? "✅ เข้าสู่ระบบสำเร็จ!\n\n🪙 สร้างกระเป๋ากลุ่มใหม่พร้อม 100 เหรียญแล้ว"
-                        : "✅ เข้าสู่ระบบสำเร็จ!\n\n🪙 เชื่อมต่อกระเป๋ากลุ่มเดิมและยอดเหรียญล่าสุดแล้ว"
+                const migratedStudents = userRecords.filter(
+                    record => !record.userSnap.exists && record.legacyStudent
                 );
+
+                let loginMessage = isBrandNewWallet
+                    ? "✅ เข้าสู่ระบบสำเร็จ!\n\n🪙 สร้างกระเป๋ากลุ่มใหม่พร้อม 100 เหรียญแล้ว"
+                    : "✅ เข้าสู่ระบบสำเร็จ!\n\n🪙 เชื่อมต่อกระเป๋ากลุ่มเดิมและยอดเหรียญล่าสุดแล้ว";
+
+                if (migratedStudents.length > 0) {
+                    loginMessage += "\n\n🌱 พบข้อมูลแปลงเดิมและย้ายคะแนนให้แล้ว:";
+                    migratedStudents.forEach(record => {
+                        loginMessage += `\n• ${record.nickname}: ${record.legacyStudent.water} 💧`;
+                    });
+                }
+
+                alert(loginMessage);
 
                 window.location.href = "index.html";
             } catch (error) {
