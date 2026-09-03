@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800&amp;display=swap" rel="stylesheet"/>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
         body {
             font-family: 'Kanit', sans-serif;
@@ -212,7 +213,31 @@
         }
         .btn-doc:active { transform: translateY(4px); box-shadow: 0 1px 0px #065f46; }
 
-    </style>
+    
+        /* ===== 📖 PDF Flashcard Viewer ===== */
+        .pdf-flashcard{margin:18px auto 8px;background:linear-gradient(180deg,#ecfeff,#f0fdf4);border:4px solid #10b981;border-radius:22px;padding:16px;box-shadow:0 7px 0 #a7f3d0;overflow:hidden}
+        .pdf-flashcard-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;color:#047857;font-weight:800}
+        .pdf-stage{position:relative;min-height:320px;display:flex;align-items:center;justify-content:center;background:#fff;border:3px solid #d1fae5;border-radius:18px;overflow:hidden;touch-action:pan-y}
+        .pdf-stage canvas{display:block;max-width:100%;height:auto;background:white;border-radius:10px;box-shadow:0 6px 20px rgba(15,23,42,.12);transition:transform .18s ease,opacity .18s ease}
+        .pdf-stage.turn-next canvas{transform:translateX(-22px);opacity:.55}
+        .pdf-stage.turn-prev canvas{transform:translateX(22px);opacity:.55}
+        .pdf-loading,.pdf-fallback{padding:30px 14px;color:#047857;font-weight:800;line-height:1.7;width:100%;box-sizing:border-box}
+        .pdf-fallback iframe{display:block;width:100%;min-height:520px;border:0;border-radius:14px;background:white}
+        .pdf-controls{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;margin-top:14px}
+        .pdf-nav-btn,.pdf-fullscreen-btn{border:0;border-radius:14px;padding:11px 16px;font-family:'Kanit',sans-serif;font-size:16px;font-weight:800;cursor:pointer;background:#10b981;color:white;box-shadow:0 4px 0 #047857}
+        .pdf-nav-btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+        .pdf-page-indicator{color:#065f46;font-weight:800;background:white;border:2px solid #a7f3d0;border-radius:999px;padding:8px 12px}
+        .pdf-tip{margin-top:9px;color:#64748b;font-size:13px;font-weight:600}
+        .pdf-flashcard:fullscreen{background:#ecfeff;padding:18px;overflow:auto}
+        .pdf-flashcard:fullscreen .pdf-stage{min-height:calc(100vh - 155px)}
+        @media(max-width:650px){
+            .pdf-flashcard{padding:11px;border-width:3px}
+            .pdf-stage{min-height:240px}
+            .pdf-controls{grid-template-columns:1fr 1fr}
+            .pdf-page-indicator{grid-column:1 / -1;grid-row:1}
+            .pdf-nav-btn{width:100%}
+        }
+</style>
 <style>
 /* =========================================================
    👑 เมนูหลักมาตรฐาน + เมนูสามขีด
@@ -377,6 +402,14 @@
     .learning-menu a.main-link:last-child { grid-column: 1 / -1; width: 50%; justify-self: center; }
     .utility-dropdown { width: min(285px, calc(100vw - 30px)); }
 }
+
+/* ===== 👾 เพื่อนมอนสเตอร์ช่วยเรียน ===== */
+.study-buddy{position:fixed;right:20px;bottom:20px;z-index:2500;display:flex;align-items:flex-end;gap:10px;filter:drop-shadow(0 8px 12px rgba(76,29,149,.18))}
+.study-buddy-bubble{max-width:250px;background:#fff;border:3px solid #c084fc;border-radius:18px 18px 6px 18px;padding:10px 13px;color:#5b21b6;font-size:14px;font-weight:700;line-height:1.45;box-shadow:0 5px 0 #e9d5ff;transition:.2s}
+.study-buddy-char{width:64px;height:64px;border:0;border-radius:50%;background:linear-gradient(135deg,#c084fc,#8b5cf6);font-size:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 0 #6d28d9;animation:buddyFloat 2.4s ease-in-out infinite}
+.study-buddy-char:active{transform:translateY(5px);box-shadow:0 1px 0 #6d28d9}@keyframes buddyFloat{50%{transform:translateY(-6px)}}
+@media(max-width:650px){.study-buddy{right:10px;bottom:10px}.study-buddy-bubble{display:none}.study-buddy-char{width:54px;height:54px;font-size:31px}}
+
 </style></head>
 <body>
 <!-- =====================================================
@@ -391,13 +424,18 @@
 <a class="main-link" href="coach.html">🧑‍🏫 โค้ช</a></div>
 <div class="hamburger-wrapper">
 <button aria-controls="utilityDropdown" aria-expanded="false" aria-label="เปิดเมนูเพิ่มเติม" class="hamburger-button" id="hamburgerButton" onclick="toggleUtilityMenu()" type="button">☰</button>
-<div class="utility-dropdown" id="utilityDropdown">
-<div class="dropdown-title">เมนูของฉัน</div>
-<div class="dropdown-coin"><span>🪙 เหรียญเวทมนตร์</span><strong id="topCoinAmount">--</strong></div>
-<a class="dropdown-link" href="monster-hatchery.html"><span class="dropdown-icon">🌱</span><span><strong>แปลงปลูกต้นไม้</strong><small>ดูคะแนนและการเติบโต</small></span></a>
-<a class="dropdown-link" href="profile.html"><span class="dropdown-icon">👤</span><span><strong>โปรไฟล์</strong><small>เปลี่ยนชื่อและอวตาร</small></span></a>
-<a class="dropdown-link logout-link" href="login.html"><span class="dropdown-icon">🚪</span><span><strong>ออกจากระบบ</strong><small>กลับหน้าเข้าสู่ระบบ</small></span></a>
-</div></div></nav>
+<div id="utilityDropdown" class="utility-dropdown">
+                <div class="dropdown-title">เมนูของฉัน</div>
+                <div class="dropdown-coin"><span>🪙 เหรียญเวทมนตร์</span><strong id="topCoinAmount">--</strong></div>
+                <a href="monster-hatchery.html" class="dropdown-link"><span class="dropdown-icon">🌱</span><span><strong>แปลงปลูกต้นไม้</strong><small>ดูคะแนนและการเติบโต</small></span></a>
+                
+                
+                <a href="profile.html" class="dropdown-link">
+    <span class="dropdown-icon">👤</span>
+    <span><strong>โปรไฟล์</strong><small>ตัวละคร แต่งตัว และร้านค้า</small></span>
+</a>
+                <a href="login.html" class="dropdown-link logout-link"><span class="dropdown-icon">🚪</span><span><strong>ออกจากระบบ</strong><small>กลับหน้าเข้าสู่ระบบ</small></span></a>
+            </div></div></nav>
 <div class="select-zone">
 <h2 style="margin-top:0; color: #0369a1;">🎯 ค้นหาแหล่งเรียนรู้ประจำภารกิจ</h2>
 <select id="missionFilter" onchange="filterResourceData()">
@@ -430,24 +468,41 @@
         }
 
         let allResources = []; 
-        let missionTitles = {}; 
+        let missionTitles = {};
+        let missionOrders = {};
 
-        // โหลดข้อมูลภารกิจเพื่อเอามาแมปชื่อ
-        db.collection("missions").orderBy("updatedAt", "asc").onSnapshot((snapshot) => {
+        function missionOrderOf(id, data = {}) {
+            const explicit = Number(data.missionOrder);
+            if (Number.isFinite(explicit) && explicit > 0) return explicit;
+            const match = `${id || ""} ${data.title || ""}`.match(/(\d+)/);
+            return match ? Number(match[1]) : Number.MAX_SAFE_INTEGER;
+        }
+
+        // โหลดข้อมูลภารกิจแบบ realtime แล้วเรียง Mission 1 → 2 → 3 → 4
+        db.collection("missions").onSnapshot((snapshot) => {
             const filterDropdown = document.getElementById("missionFilter");
             filterDropdown.innerHTML = '<option value="ALL">🌟 แสดงแหล่งเรียนรู้ทั้งหมด</option>';
             missionTitles = {};
+            missionOrders = {};
 
+            const missionList = [];
             snapshot.forEach((doc) => {
-                let m = doc.data();
+                const m = doc.data() || {};
+                missionTitles[doc.id] = m.title || doc.id;
+                missionOrders[doc.id] = missionOrderOf(doc.id, m);
+                missionList.push({ id: doc.id, ...m });
+            });
 
-                missionTitles[doc.id] = m.title;
+            missionList.sort((a, b) => {
+                const diff = missionOrderOf(a.id, a) - missionOrderOf(b.id, b);
+                return diff || String(a.id).localeCompare(String(b.id), "th", { numeric: true });
+            });
 
-                filterDropdown.innerHTML += `
-                    <option value="${doc.id}">
-                        ${doc.id} : ${m.title}
-                    </option>
-                `;
+            missionList.forEach((m) => {
+                const option = document.createElement("option");
+                option.value = m.id;
+                option.textContent = `${m.id} : ${m.title || m.id}`;
+                filterDropdown.appendChild(option);
             });
 
             const savedMissionId =
@@ -479,30 +534,256 @@
             return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
         }
 
-        // 🌟 เพิ่มฟังก์ชันแปลงลิงก์สไลด์/PDF ให้แสดงในกรอบได้ 🌟
-        function getDocumentEmbedUrl(url) {
-            if(!url) return "";
-            
-            if (url.includes("docs.google.com/presentation")) {
-                return url.split('/edit')[0].split('/view')[0] + "/embed?start=false&loop=false&delayms=3000";
+        // =====================================================
+        // 📖 PDF / Google Drive / Google Slides
+        // =====================================================
+        if (window.pdfjsLib) {
+            pdfjsLib.GlobalWorkerOptions.workerSrc =
+                "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? "")
+                .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+                .replace(/>/g,"&gt;").replace(/"/g,"&quot;")
+                .replace(/'/g,"&#039;");
+        }
+
+        function extractGoogleDriveFileId(url) {
+            if (!url) return "";
+            const patterns = [
+                /\/file\/d\/([a-zA-Z0-9_-]+)/,
+                /[?&]id=([a-zA-Z0-9_-]+)/,
+                /\/d\/([a-zA-Z0-9_-]+)/
+            ];
+            for (const p of patterns) {
+                const m = String(url).match(p);
+                if (m) return m[1];
             }
+            return "";
+        }
+
+        function isGoogleDriveUrl(url) {
+            return /drive\.google\.com/i.test(url || "");
+        }
+
+        function isGoogleSlidesUrl(url) {
+            return /docs\.google\.com\/presentation/i.test(url || "");
+        }
+
+        function isPdfLikeUrl(url, resourceType = "") {
+            return resourceType === "pdf" ||
+                   resourceType === "drive_pdf" ||
+                   /\.pdf(?:$|[?#])/i.test(url || "") ||
+                   isGoogleDriveUrl(url);
+        }
+
+        function getGoogleDrivePreviewUrl(url) {
+            const id = extractGoogleDriveFileId(url);
+            return id ? `https://drive.google.com/file/d/${id}/preview` : url;
+        }
+
+        function getPdfFetchUrl(url) {
+            const id = extractGoogleDriveFileId(url);
+            return id ? `https://drive.google.com/uc?export=download&id=${id}` : url;
+        }
+
+        function getDocumentEmbedUrl(url) {
+            if (!url) return "";
+            if (isGoogleSlidesUrl(url)) {
+                return url.split('/edit')[0].split('/view')[0] +
+                       "/embed?start=false&loop=false&delayms=3000";
+            }
+            if (isGoogleDriveUrl(url)) return getGoogleDrivePreviewUrl(url);
             if (url.includes("canva.com/design") && !url.includes("embed")) {
                 return url.replace("/view", "/view?embed");
             }
-            
             return url;
+        }
+
+        const pdfViewerState = {};
+
+        function makePdfViewerHtml(viewerId) {
+            return `
+                <div class="pdf-flashcard" id="${viewerId}">
+                    <div class="pdf-flashcard-head" style="justify-content:flex-end;">
+                        <button type="button" class="pdf-fullscreen-btn"
+                                onclick="togglePdfFullscreen('${viewerId}')">⛶ เต็มจอ</button>
+                    </div>
+                    <div class="pdf-stage" id="${viewerId}_stage">
+                        <div class="pdf-loading" id="${viewerId}_loading">กำลังเปิดสไลด์... ✨</div>
+                        <canvas id="${viewerId}_canvas" style="display:none"></canvas>
+                    </div>
+
+                </div>`;
+        }
+
+        async function initPdfViewer(viewerId, sourceUrl) {
+            const stage = document.getElementById(`${viewerId}_stage`);
+            const canvas = document.getElementById(`${viewerId}_canvas`);
+            if (!stage || !canvas || !window.pdfjsLib) {
+                showPdfFallback(viewerId, sourceUrl, "ไม่สามารถเปิดตัวอ่าน PDF ได้");
+                return;
+            }
+
+            pdfViewerState[viewerId] = {
+                pdf:null,page:1,total:0,rendering:false,pendingPage:null,sourceUrl
+            };
+
+            try {
+                const pdf = await pdfjsLib.getDocument({
+                    url:getPdfFetchUrl(sourceUrl),
+                    withCredentials:false
+                }).promise;
+
+                const state = pdfViewerState[viewerId];
+                state.pdf = pdf;
+                state.total = pdf.numPages;
+
+                const loading = document.getElementById(`${viewerId}_loading`);
+                if (loading) loading.style.display = "none";
+                canvas.style.display = "block";
+
+                setupPdfSwipe(viewerId);
+                await renderPdfPage(viewerId,1);
+            } catch (error) {
+                console.warn("PDF.js fallback:", error);
+                showPdfFallback(
+                    viewerId,
+                    sourceUrl,
+                    isGoogleDriveUrl(sourceUrl)
+                        ? "Google Drive ไม่อนุญาตให้อ่านไฟล์ตรง จึงเปิดด้วย Drive Viewer แทน"
+                        : "เปิดแบบแฟลชการ์ดไม่ได้ จึงเปิดเอกสารแบบปกติแทน"
+                );
+            }
+        }
+
+        async function renderPdfPage(viewerId,pageNumber) {
+            const state = pdfViewerState[viewerId];
+            if (!state?.pdf) return;
+            if (state.rendering) {
+                state.pendingPage = pageNumber;
+                return;
+            }
+
+            state.rendering = true;
+            state.page = Math.max(1,Math.min(pageNumber,state.total));
+
+            const canvas = document.getElementById(`${viewerId}_canvas`);
+            const stage = document.getElementById(`${viewerId}_stage`);
+            const pageText = document.getElementById(`${viewerId}_page`);
+            const prev = document.getElementById(`${viewerId}_prev`);
+            const next = document.getElementById(`${viewerId}_next`);
+
+            try {
+                const page = await state.pdf.getPage(state.page);
+                const base = page.getViewport({scale:1});
+                const available = Math.max(280,Math.min(stage.clientWidth-24,980));
+                const displayScale = available/base.width;
+                const pixelRatio = Math.min(window.devicePixelRatio || 1,1.75);
+                const viewport = page.getViewport({scale:displayScale*pixelRatio});
+
+                canvas.width = Math.floor(viewport.width);
+                canvas.height = Math.floor(viewport.height);
+                canvas.style.width = Math.floor(viewport.width/pixelRatio)+"px";
+                canvas.style.height = Math.floor(viewport.height/pixelRatio)+"px";
+
+                const ctx = canvas.getContext("2d",{alpha:false});
+                await page.render({canvasContext:ctx,viewport}).promise;
+
+                if (pageText) pageText.textContent = `หน้า ${state.page} / ${state.total}`;
+                if (prev) prev.disabled = state.page <= 1;
+                if (next) next.disabled = state.page >= state.total;
+            } finally {
+                state.rendering = false;
+                if (state.pendingPage !== null) {
+                    const p = state.pendingPage;
+                    state.pendingPage = null;
+                    if (p !== state.page) renderPdfPage(viewerId,p);
+                }
+            }
+        }
+
+        function changePdfPage(viewerId,delta) {
+            const state = pdfViewerState[viewerId];
+            if (!state?.pdf) return;
+            const target = state.page + delta;
+            if (target < 1 || target > state.total) return;
+
+            const stage = document.getElementById(`${viewerId}_stage`);
+            if (stage) {
+                stage.classList.remove("turn-next","turn-prev");
+                stage.classList.add(delta > 0 ? "turn-next" : "turn-prev");
+                setTimeout(()=>stage.classList.remove("turn-next","turn-prev"),180);
+            }
+            renderPdfPage(viewerId,target);
+        }
+
+        function setupPdfSwipe(viewerId) {
+            const stage = document.getElementById(`${viewerId}_stage`);
+            if (!stage || stage.dataset.swipeReady === "1") return;
+            let startX=0,startY=0;
+            stage.addEventListener("touchstart",e=>{
+                startX=e.changedTouches[0].clientX;
+                startY=e.changedTouches[0].clientY;
+            },{passive:true});
+            stage.addEventListener("touchend",e=>{
+                const dx=e.changedTouches[0].clientX-startX;
+                const dy=e.changedTouches[0].clientY-startY;
+                if (Math.abs(dx)>55 && Math.abs(dx)>Math.abs(dy)) {
+                    changePdfPage(viewerId,dx<0?1:-1);
+                }
+            },{passive:true});
+            stage.dataset.swipeReady="1";
+        }
+
+        function togglePdfFullscreen(viewerId) {
+            const viewer=document.getElementById(viewerId);
+            if (!viewer) return;
+            if (!document.fullscreenElement) {
+                viewer.requestFullscreen?.().then(()=>{
+                    const s=pdfViewerState[viewerId];
+                    if (s?.pdf) setTimeout(()=>renderPdfPage(viewerId,s.page),120);
+                }).catch(()=>{});
+            } else {
+                document.exitFullscreen?.();
+            }
+        }
+
+        function showPdfFallback(viewerId,sourceUrl,message) {
+            const stage=document.getElementById(`${viewerId}_stage`);
+            const prev=document.getElementById(`${viewerId}_prev`);
+            const next=document.getElementById(`${viewerId}_next`);
+            const pageText=document.getElementById(`${viewerId}_page`);
+            if (!stage) return;
+
+            stage.innerHTML=`
+                <div class="pdf-fallback" style="padding:0;">
+                    <iframe src="${escapeHtml(getDocumentEmbedUrl(sourceUrl))}"
+                            title="สไลด์แหล่งเรียนรู้"
+                            allowfullscreen
+                            style="min-height:520px;"></iframe>
+                </div>`;
+            if (prev) prev.style.display="none";
+            if (next) next.style.display="none";
+            if (pageText) pageText.style.display="none";
         }
 
         // ดึงคลังสื่อทั้งหมด
         function fetchAndRenderAllResources() {
-            db.collection("resources").orderBy("updatedAt", "asc").onSnapshot((snapshot) => {
+            db.collection("resources").onSnapshot((snapshot) => {
                 allResources = [];
                 snapshot.forEach((doc) => {
-                    let r = doc.data();
-                    r.id = doc.id; 
+                    const r = doc.data() || {};
+                    r.id = doc.id;
                     allResources.push(r);
                 });
-                renderCards("ALL");
+                allResources.sort((a, b) => {
+                    const aOrder = missionOrders[a.id] ?? missionOrderOf(a.id, a);
+                    const bOrder = missionOrders[b.id] ?? missionOrderOf(b.id, b);
+                    return (aOrder - bOrder) || String(a.id).localeCompare(String(b.id), "th", { numeric: true });
+                });
+                renderCards(document.getElementById("missionFilter")?.value || "ALL");
             });
         }
 
@@ -518,64 +799,65 @@
 
             if (targets.length === 0) {
                 container.innerHTML = `
-                    <div class="resource-card" style="border-color: #ef4444;">
-                        <h3 style="color:#ef4444; margin:0;">📭 ยังไม่มีแหล่งเรียนรู้ที่ต้องการค้นหาในระบบกั๊บ</h3>
-                    </div>
-                `;
+                    <div class="resource-card" style="border-color:#ef4444">
+                        <h3 style="color:#ef4444;margin:0">📭 ยังไม่มีแหล่งเรียนรู้ที่ต้องการค้นหาในระบบกั๊บ</h3>
+                    </div>`;
                 return;
             }
 
-            targets.forEach((r) => {
-                let embedUrl = getEmbedUrl(r.videoLink);
-                let embedDocUrl = getDocumentEmbedUrl(r.slideLink); // ประมวลผลเอกสาร
-                let displayTitle = missionTitles[r.id] || r.id; 
-                
+            const viewersToInit = [];
+
+            container.innerHTML = targets.map((r,index) => {
+                const embedUrl = getEmbedUrl(r.videoLink);
+                const displayTitle = missionTitles[r.id] || r.id;
+                const safeId = String(r.id).replace(/[^a-zA-Z0-9_-]/g,"_");
+                const viewerId = `pdfViewer_${safeId}_${index}`;
+
                 let cardHTML = `
                     <div class="resource-card">
-                        <div class="resource-card-title">📘 แหล่งเรียนรู้: ${displayTitle}</div>
-                `;
-                
-                // 1. โน้ต
+                        <div class="resource-card-title">📘 แหล่งเรียนรู้: ${escapeHtml(displayTitle)}</div>`;
+
                 if (r.note && r.note.trim() !== "") {
                     cardHTML += `
                         <div class="teacher-note">
                             👩‍🏫 <b>คุณครูฝากบอกว่า:</b><br>
-                            ${r.note.replace(/\n/g, "<br>")}
-                        </div>
-                    `;
+                            ${escapeHtml(r.note).replace(/\n/g,"<br>")}
+                        </div>`;
                 }
 
-                // 2. วิดีโอ YouTube
                 if (embedUrl) {
                     cardHTML += `
                         <div class="video-container">
-                            <iframe src="${embedUrl}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                        </div>
-                    `;
+                            <iframe src="${escapeHtml(embedUrl)}"
+                                    title="YouTube video player"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowfullscreen></iframe>
+                        </div>`;
                 }
 
-                // 🌟 3. กรอบแสดงสไลด์และเอกสาร 🌟
-                if (embedDocUrl) {
-                    cardHTML += `
-                        <div class="document-container">
-                            <iframe src="${embedDocUrl}" frameborder="0" allowfullscreen></iframe>
-                        </div>
-                        <div style="margin-top: 15px;">
-                            <a href="${r.slideLink}" target="_blank" class="btn-doc">
-                                ✨ เปิดหน้าจอใหญ่
-                            </a>
-                        </div>
-                    `;
+                if (r.slideLink) {
+                    if (isPdfLikeUrl(r.slideLink,r.resourceType || "")) {
+                        cardHTML += makePdfViewerHtml(viewerId);
+                        viewersToInit.push({viewerId,url:r.slideLink});
+                    } else {
+                        cardHTML += `
+                            <div class="document-container">
+                                <iframe src="${escapeHtml(getDocumentEmbedUrl(r.slideLink))}"
+                                        frameborder="0" allowfullscreen></iframe>
+                            </div>`;
+                    }
                 }
 
-                // กรณีว่าง
                 if (!r.videoLink && !r.slideLink && (!r.note || r.note.trim() === "")) {
-                    cardHTML += `<p style="color: #64748b; font-weight: bold; margin: 0;">ภารกิจนี้คุณครูยังไม่ได้เพิ่มสื่อการสอนกั๊บ 🎈</p>`;
+                    cardHTML += `<p style="color:#64748b;font-weight:bold;margin:0">ภารกิจนี้คุณครูยังไม่ได้เพิ่มสื่อการสอนกั๊บ 🎈</p>`;
                 }
 
                 cardHTML += `</div>`;
-                container.innerHTML += cardHTML;
-            });
+                return cardHTML;
+            }).join("");
+
+            viewersToInit.forEach(item => initPdfViewer(item.viewerId,item.url));
         }
 
         // =====================================================
@@ -679,5 +961,9 @@
         loadTopMenuCoinsSafe();
     }
 })();
-</script></body>
+</script>
+<div class="study-buddy" aria-live="polite"><div class="study-buddy-bubble" id="studyBuddyBubble">เลือกเรื่องที่ตรงกับปัญหาของหนู</div><button type="button" class="study-buddy-char" id="studyBuddyChar" aria-label="คำแนะนำจากเพื่อนมอนสเตอร์" title="กดเพื่อดูคำแนะนำ">👾</button></div>
+<script>(function(){const tips=["เลือกเรื่องที่ตรงกับปัญหาของหนู", "ดูทีละเรื่อง ไม่ต้องอ่านทุกอย่างก็ได้", "เจอคำตอบแล้วกลับไปลองทำทันที!"];let i=0;const b=document.getElementById('studyBuddyChar'),x=document.getElementById('studyBuddyBubble');if(b&&x)b.addEventListener('click',()=>{i=(i+1)%tips.length;x.textContent=tips[i];});})();</script>
+
+</body>
 </html>
