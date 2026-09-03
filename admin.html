@@ -306,7 +306,123 @@
         .question-media-links { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
         .question-media-links a { text-decoration:none; background:#eff6ff; color:#1d4ed8; border:2px solid #bfdbfe; border-radius:9px; padding:6px 10px; font-weight:800; }
 
-    </style>
+    
+/* =========================================================
+   👩‍🏫 คำแนะนำจากครูในกระดานแห่งภูมิปัญญา
+   ========================================================= */
+.teacher-guidance-panel{
+    margin:0 0 26px;
+    padding:18px;
+    border:3px solid #93c5fd;
+    border-radius:18px;
+    background:#eff6ff;
+}
+.teacher-guidance-panel h3{
+    margin:0 0 6px;
+    color:#1d4ed8;
+    text-align:center;
+    font-size:22px;
+}
+.teacher-guidance-panel .teacher-help-note{
+    text-align:center;
+    color:#475569;
+    font-weight:600;
+    margin-bottom:14px;
+}
+.teacher-question-list{display:grid;gap:14px}
+.teacher-question-card{
+    background:#fff;
+    border:3px solid #bfdbfe;
+    border-radius:16px;
+    padding:15px;
+    text-align:left;
+}
+.teacher-question-card.urgent{
+    border-color:#f59e0b;
+    background:#fffbeb;
+}
+.teacher-question-head{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    align-items:flex-start;
+    flex-wrap:wrap;
+}
+.teacher-question-title{
+    color:#7c2d12;
+    font-size:18px;
+    font-weight:800;
+}
+.teacher-question-meta{
+    margin-top:4px;
+    color:#64748b;
+    font-size:13px;
+    font-weight:700;
+}
+.teacher-question-body{
+    margin:10px 0;
+    padding:10px 12px;
+    border-radius:12px;
+    background:#f8fafc;
+    color:#334155;
+    white-space:pre-wrap;
+}
+.teacher-help-status{
+    display:inline-flex;
+    align-items:center;
+    padding:5px 9px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+}
+.teacher-help-status.waiting{background:#fee2e2;color:#991b1b}
+.teacher-help-status.has-answer{background:#e0f2fe;color:#075985}
+.teacher-help-status.guided{background:#dcfce7;color:#166534}
+.teacher-guidance-existing{
+    margin:10px 0;
+    padding:10px 12px;
+    background:#ecfdf5;
+    border:2px dashed #86efac;
+    border-radius:12px;
+    color:#166534;
+    font-weight:700;
+}
+.teacher-guidance-compose textarea{
+    width:100%;
+    min-height:82px;
+    resize:vertical;
+    margin-top:8px;
+    border:2px solid #93c5fd;
+    border-radius:12px;
+    padding:10px 12px;
+    font-family:'Kanit',sans-serif;
+    font-size:15px;
+}
+.teacher-guidance-actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:8px;
+}
+.btn-teacher-guidance{
+    border:0;
+    border-radius:12px;
+    padding:9px 13px;
+    background:#38bdf8;
+    color:#075985;
+    font-weight:800;
+    font-family:'Kanit',sans-serif;
+    cursor:pointer;
+    box-shadow:0 3px 0 #0284c7;
+}
+.btn-teacher-guidance:active{transform:translateY(3px);box-shadow:none}
+.btn-teacher-guidance.delete{
+    background:#fee2e2;
+    color:#991b1b;
+    box-shadow:0 3px 0 #fca5a5;
+}
+
+</style>
 </head>
 <body>
     
@@ -431,10 +547,23 @@
                 </div>
                 <div class="form-group"><label>🎥 ลิงก์ YouTube:</label><input type="url" id="r_video"></div>
                 <div class="form-group">
-                    <label style="color:#10b981;">📜 ไฟล์สไลด์ / ใบความรู้:</label>
-                    <input type="file" id="r_file_upload" accept=".pdf" style="margin-bottom: 10px;">
-                    <label style="font-size:14px;">🔗 หรือวางลิงก์ Google Slide:</label>
-                    <input type="url" id="r_slide">
+                    <label style="color:#10b981;">📜 PDF / สไลด์ / ใบความรู้:</label>
+                    <input type="file" id="r_file_upload" accept="application/pdf,.pdf" style="margin-bottom:10px;">
+
+                    <div style="text-align:center;color:#64748b;font-weight:800;margin:2px 0 10px;">— หรือ —</div>
+
+                    <label style="font-size:14px;">🔗 วางลิงก์ Google Drive PDF / Google Slides / ลิงก์ PDF โดยตรง:</label>
+                    <input type="url" id="r_slide"
+                           placeholder="เช่น https://drive.google.com/file/d/.../view?usp=sharing"
+                           oninput="previewResourceDocumentLink()">
+
+                    <small style="color:#64748b;margin-top:6px;line-height:1.6;">
+                        ถ้าใช้ Google Drive ให้ตั้งสิทธิ์เป็น <b>“ทุกคนที่มีลิงก์ดูได้”</b><br>
+                        หน้าแหล่งเรียนรู้จะพยายามแสดง PDF แบบแฟลชการ์ดทีละหน้าอัตโนมัติ
+                    </small>
+
+                    <div id="resourceDocLinkStatus"
+                         style="display:none;margin-top:8px;padding:9px 12px;border-radius:10px;font-weight:700;"></div>
                 </div>
                 <div class="form-group"><label>📝 คำแนะนำจากครู:</label><textarea id="r_note" rows="3"></textarea></div>
                 <button type="submit" id="btnSaveRes" class="btn-save btn-save-blue">💾 บันทึกแหล่งเรียนรู้</button>
@@ -451,6 +580,17 @@
             <p style="text-align:center;color:#64748b;font-weight:600;">
                 อนุมัติคำตอบที่ดีเพื่อมอบ 5 เหรียญ หรือเลือกเป็นคำตอบดีที่สุดเพื่อให้ผู้ตอบได้รับรวม 10 เหรียญ
             </p>
+
+
+            <div class="teacher-guidance-panel">
+                <h3>👩‍🏫 ให้คำแนะนำเมื่อนักเรียนติดปัญหา</h3>
+                <div class="teacher-help-note">
+                    คำถามที่ยังไม่มีเพื่อนตอบจะขึ้นก่อน คุณครูสามารถให้คำแนะนำได้โดยไม่ต้องเข้าสู่ระบบนักเรียน
+                </div>
+                <div id="teacherQuestionList" class="teacher-question-list">
+                    <div style="text-align:center;padding:20px;color:#64748b;font-weight:800;">⏳ กำลังโหลดคำถาม...</div>
+                </div>
+            </div>
 
             <div class="answer-admin-toolbar">
                 <select id="answerStatusFilter" onchange="renderKnowledgeAnswersAdmin()">
@@ -2097,7 +2237,7 @@
                     </td>
                     <td>
                         <button class="btn-action btn-blue" onclick="editMission('${doc.id}', '${encodeURIComponent(m.title || "")}', '${encodeURIComponent(m.detail || "")}', '${encodeURIComponent(JSON.stringify(m.hints || []))}', '${encodeURIComponent(m.imageUrl || "")}', '${encodeURIComponent(m.scratchLink || (m.scratchId ? `https://scratch.mit.edu/projects/${m.scratchId}/` : ""))}')">📝 แก้ไข</button>
-                        <button class="btn-action btn-red" onclick="deleteMission('${doc.id}')">🗑️</button>
+                        <button class="btn-action btn-red" onclick="deleteResource('${doc.id}')">🗑️</button>
                     </td>
                 </tr>`;
                 resourceSelect.innerHTML += `<option value="${doc.id}">${doc.id} : ${m.title}</option>`;
@@ -2123,27 +2263,134 @@
             document.getElementById("mission-tab").scrollIntoView({ behavior: "smooth", block: "start" });
         }
         function deleteMission(id) { if (confirm(`ลบ ${id}?`)) { db.collection("missions").doc(id).delete(); db.collection("resources").doc(id).delete(); } }
+        function isGoogleDriveLink(url) {
+            return /drive\.google\.com/i.test(url || "");
+        }
+
+        function previewResourceDocumentLink() {
+            const input = document.getElementById("r_slide");
+            const box = document.getElementById("resourceDocLinkStatus");
+            const url = (input?.value || "").trim();
+
+            if (!box) return;
+            if (!url) {
+                box.style.display = "none";
+                box.textContent = "";
+                return;
+            }
+
+            box.style.display = "block";
+
+            if (isGoogleDriveLink(url)) {
+                box.style.background = "#dcfce7";
+                box.style.color = "#166534";
+                box.style.border = "2px solid #86efac";
+                box.textContent = "✅ ตรวจพบลิงก์ Google Drive — อย่าลืมตั้งสิทธิ์เป็น “ทุกคนที่มีลิงก์ดูได้”";
+            } else if (/docs\.google\.com\/presentation/i.test(url)) {
+                box.style.background = "#e0f2fe";
+                box.style.color = "#075985";
+                box.style.border = "2px solid #7dd3fc";
+                box.textContent = "✅ ตรวจพบ Google Slides";
+            } else if (/\.pdf(?:$|[?#])/i.test(url)) {
+                box.style.background = "#dcfce7";
+                box.style.color = "#166534";
+                box.style.border = "2px solid #86efac";
+                box.textContent = "✅ ตรวจพบลิงก์ PDF";
+            } else {
+                box.style.background = "#fef3c7";
+                box.style.color = "#92400e";
+                box.style.border = "2px solid #fbbf24";
+                box.textContent = "⚠️ ลิงก์นี้บันทึกได้ แต่ถ้าไม่ใช่ PDF/Drive/Google Slides อาจแสดงตัวอย่างไม่ได้";
+            }
+        }
+
         async function saveResource(e) {
-            e.preventDefault(); const missionId = document.getElementById("r_mission_select").value; const fileInput = document.getElementById("r_file_upload");
-            let videoLink = document.getElementById("r_video").value.trim(); let slideLink = document.getElementById("r_slide").value.trim(); let note = document.getElementById("r_note").value.trim();
+            e.preventDefault();
+
+            const missionId = document.getElementById("r_mission_select").value;
+            const fileInput = document.getElementById("r_file_upload");
+            const saveBtn = document.getElementById("btnSaveRes");
+
+            let videoLink = document.getElementById("r_video").value.trim();
+            let slideLink = document.getElementById("r_slide").value.trim();
+            let note = document.getElementById("r_note").value.trim();
+
             try {
+                if (saveBtn) {
+                    saveBtn.disabled = true;
+                    saveBtn.textContent = "⏳ กำลังบันทึก...";
+                }
+
                 if (fileInput.files.length > 0) {
-                    let uploadTask = await storage.ref(`resources_slides/${missionId}_${fileInput.files[0].name}`).put(fileInput.files[0]);
+                    const file = fileInput.files[0];
+
+                    if (file.type && file.type !== "application/pdf" &&
+                        !file.name.toLowerCase().endsWith(".pdf")) {
+                        throw new Error("กรุณาเลือกไฟล์ PDF เท่านั้น");
+                    }
+
+                    const safeName = file.name.replace(/[^\w.\-\u0E00-\u0E7F]/g, "_");
+                    const uploadTask = await storage
+                        .ref(`resources_slides/${missionId}_${Date.now()}_${safeName}`)
+                        .put(file);
+
                     slideLink = await uploadTask.ref.getDownloadURL();
                 }
-                await db.collection("resources").doc(missionId).set({ videoLink: videoLink, slideLink: slideLink, note: note, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
-                alert("📚 บันทึกสื่อสำเร็จ!"); document.getElementById("resourceForm").reset();
-            } catch (err) { alert(err.message); }
+
+                const resourceType =
+                    slideLink && isGoogleDriveLink(slideLink) ? "drive_pdf" :
+                    slideLink && /docs\.google\.com\/presentation/i.test(slideLink) ? "google_slides" :
+                    slideLink && /\.pdf(?:$|[?#])/i.test(slideLink) ? "pdf" :
+                    slideLink ? "document" : "";
+
+                await db.collection("resources").doc(missionId).set({
+                    videoLink,
+                    slideLink,
+                    resourceType,
+                    note,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+
+                alert("📚 บันทึกสื่อสำเร็จ!");
+                document.getElementById("resourceForm").reset();
+                previewResourceDocumentLink();
+
+            } catch (err) {
+                console.error(err);
+                alert("บันทึกไม่สำเร็จ: " + (err.message || err));
+            } finally {
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = "💾 บันทึกแหล่งเรียนรู้";
+                }
+            }
         }
         db.collection("resources").orderBy("updatedAt", "desc").onSnapshot(snapshot => {
             document.getElementById("resourcesTableBody").innerHTML = "";
             snapshot.forEach(doc => {
                 const r = doc.data();
                 document.getElementById("resourcesTableBody").innerHTML += `<tr><td><strong>${doc.id}</strong></td><td>${r.videoLink?'📺':'-'}</td><td>${r.slideLink?'📜':'-'}</td><td>${r.note||'-'}</td>
-                    <td><button class="btn-action btn-blue" onclick="editResource('${doc.id}', '${encodeURIComponent(r.videoLink||'')}', '${encodeURIComponent(r.slideLink||'')}', '${encodeURIComponent(r.note||'')}')">📝</button><button class="btn-action btn-red" onclick="deleteMission('${doc.id}')">🗑️</button></td></tr>`;
+                    <td><button class="btn-action btn-blue" onclick="editResource('${doc.id}', '${encodeURIComponent(r.videoLink||'')}', '${encodeURIComponent(r.slideLink||'')}', '${encodeURIComponent(r.note||'')}')">📝</button><button class="btn-action btn-red" onclick="deleteResource('${doc.id}')">🗑️</button></td></tr>`;
             });
         });
-        function editResource(id, v, s, n) { document.getElementById("r_mission_select").value = id; document.getElementById("r_video").value = decodeURIComponent(v); document.getElementById("r_slide").value = decodeURIComponent(s); document.getElementById("r_note").value = decodeURIComponent(n); }
+        function editResource(id, v, s, n) {
+            document.getElementById("r_mission_select").value = id;
+            document.getElementById("r_video").value = decodeURIComponent(v);
+            document.getElementById("r_slide").value = decodeURIComponent(s);
+            document.getElementById("r_note").value = decodeURIComponent(n);
+            previewResourceDocumentLink();
+            document.getElementById("resource-tab").scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+        async function deleteResource(id) {
+            if (!confirm(`ลบเฉพาะสื่อของ ${id} ใช่หรือไม่?\n\nภารกิจจะไม่ถูกลบ`)) return;
+            try {
+                await db.collection("resources").doc(id).delete();
+                alert("🗑️ ลบสื่อเรียบร้อยแล้ว");
+            } catch (err) {
+                alert("ลบสื่อไม่สำเร็จ: " + (err.message || err));
+            }
+        }
         window.onload = () => { addHintField(); };
 
 
@@ -2153,6 +2400,7 @@
         // =========================================================
         let knowledgeAnswersAdmin = [];
         let knowledgePostsAdmin = {};
+        let teacherGuidanceAdmin = {};
 
         function escapeAdminHtml(value) {
             return String(value ?? '')
@@ -2179,6 +2427,7 @@
                 knowledgePostsAdmin[doc.id] = { id: doc.id, ...doc.data() };
             });
             renderKnowledgeAnswersAdmin();
+            renderTeacherGuidanceAdmin();
         }, error => {
             console.error('Load knowledge posts error:', error);
         });
@@ -2190,11 +2439,135 @@
             });
             updatePendingAnswerBadge();
             renderKnowledgeAnswersAdmin();
+            renderTeacherGuidanceAdmin();
         }, error => {
             console.error('Load knowledge answers error:', error);
             const list = document.getElementById('knowledgeAnswerAdminList');
             if (list) list.innerHTML = '<div style="text-align:center;padding:35px;color:#b91c1c;font-weight:800;">โหลดคำตอบไม่สำเร็จ กรุณาตรวจ Firestore Rules หรือ Index</div>';
         });
+
+
+        db.collection('knowledge_teacher_guidance').onSnapshot(snapshot => {
+            teacherGuidanceAdmin = {};
+            snapshot.forEach(doc => {
+                teacherGuidanceAdmin[doc.id] = { id: doc.id, ...doc.data() };
+            });
+            renderTeacherGuidanceAdmin();
+        }, error => {
+            console.error('Load teacher guidance error:', error);
+        });
+
+        function renderTeacherGuidanceAdmin() {
+            const list = document.getElementById('teacherQuestionList');
+            if (!list) return;
+
+            const posts = Object.values(knowledgePostsAdmin)
+                .filter(post => post.status !== 'solved')
+                .map(post => {
+                    const answerCount = knowledgeAnswersAdmin.filter(a => a.postId === post.id).length;
+                    return { ...post, answerCount };
+                })
+                .sort((a,b) => {
+                    if (a.answerCount === 0 && b.answerCount !== 0) return -1;
+                    if (a.answerCount !== 0 && b.answerCount === 0) return 1;
+                    const at = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+                    const bt = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+                    return bt-at;
+                });
+
+            if (!posts.length) {
+                list.innerHTML = '<div style="text-align:center;padding:20px;color:#64748b;font-weight:800;">✅ ตอนนี้ไม่มีคำถามที่เปิดค้างอยู่</div>';
+                return;
+            }
+
+            list.innerHTML = posts.map(post => {
+                const guidance = teacherGuidanceAdmin[post.id] || {};
+                const hasGuidance = !!String(guidance.text || '').trim();
+
+                const status = hasGuidance
+                    ? '<span class="teacher-help-status guided">👩‍🏫 ครูแนะนำแล้ว</span>'
+                    : post.answerCount === 0
+                        ? '<span class="teacher-help-status waiting">🆘 ยังไม่มีเพื่อนตอบ</span>'
+                        : `<span class="teacher-help-status has-answer">💬 เพื่อนตอบ ${post.answerCount}</span>`;
+
+                return `
+                    <div class="teacher-question-card ${post.answerCount===0?'urgent':''}">
+                        <div class="teacher-question-head">
+                            <div>
+                                <div class="teacher-question-title">❓ ${escapeAdminHtml(post.title || 'คำถาม')}</div>
+                                <div class="teacher-question-meta">
+                                    👤 ${escapeAdminHtml(post.authorName || 'ไม่ระบุชื่อ')}
+                                    • 🏫 ${escapeAdminHtml(post.room || 'ไม่ระบุห้อง')}
+                                    • ⏰ ${formatAdminTime(post.createdAt)}
+                                </div>
+                            </div>
+                            ${status}
+                        </div>
+
+                        <div class="teacher-question-body">${escapeAdminHtml(post.body || '')}</div>
+
+                        ${hasGuidance ? `
+                            <div class="teacher-guidance-existing">
+                                👩‍🏫 <strong>คำแนะนำปัจจุบัน:</strong><br>
+                                ${escapeAdminHtml(guidance.text)}
+                            </div>
+                        ` : ''}
+
+                        <div class="teacher-guidance-compose">
+                            <textarea id="teacherGuidance_${post.id}"
+                                      maxlength="800"
+                                      placeholder="เช่น ลองตรวจดูบล็อกตอนกดธงเขียวก่อนนะ แล้วค่อยดูว่าตัวละครได้รับคำสั่งเคลื่อนที่หรือยัง">${hasGuidance ? escapeAdminHtml(guidance.text) : ''}</textarea>
+                            <div class="teacher-guidance-actions">
+                                <button class="btn-teacher-guidance"
+                                        onclick="saveTeacherGuidance('${post.id}')">
+                                    ${hasGuidance ? '💾 แก้ไขคำแนะนำ' : '👩‍🏫 ส่งคำแนะนำจากครู'}
+                                </button>
+                                ${hasGuidance ? `
+                                    <button class="btn-teacher-guidance delete"
+                                            onclick="deleteTeacherGuidance('${post.id}')">
+                                        🗑️ ลบคำแนะนำ
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function saveTeacherGuidance(postId) {
+            const textarea = document.getElementById(`teacherGuidance_${postId}`);
+            const text = (textarea?.value || '').trim();
+            if (text.length < 5) {
+                alert('กรุณาพิมพ์คำแนะนำอย่างน้อย 5 ตัวอักษร');
+                return;
+            }
+
+            try {
+                await db.collection('knowledge_teacher_guidance').doc(postId).set({
+                    postId,
+                    text,
+                    teacherName: 'คุณครู',
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    createdAt: teacherGuidanceAdmin[postId]?.createdAt || firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge:true });
+
+                alert('👩‍🏫 ส่งคำแนะนำให้นักเรียนแล้ว');
+            } catch (error) {
+                console.error('Save teacher guidance error:', error);
+                alert('ส่งคำแนะนำไม่สำเร็จ\n\n' + error.message);
+            }
+        }
+
+        async function deleteTeacherGuidance(postId) {
+            if (!confirm('ลบคำแนะนำจากครูของคำถามนี้ใช่หรือไม่?')) return;
+            try {
+                await db.collection('knowledge_teacher_guidance').doc(postId).delete();
+            } catch (error) {
+                console.error('Delete teacher guidance error:', error);
+                alert('ลบคำแนะนำไม่สำเร็จ\n\n' + error.message);
+            }
+        }
 
         function updatePendingAnswerBadge() {
             const pending = knowledgeAnswersAdmin.filter(answer => !answer.isApproved).length;
